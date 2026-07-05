@@ -13,17 +13,17 @@ export const MagnetsSection = () => {
   const add = useCart((s) => s.add);
   const { language, t, formatPrice } = useLanguage();
   return (
-    <section id="magnets" className="relative py-28">
+    <section id="magnets" className="mobile-showcase-section relative py-28">
       <div className="container">
         <SectionHeader
           eyebrow={t("magnetsEyebrow")}
           title={t("magnetsTitle")}
           description={t("magnetsDescription")}
         />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mobile-product-rail mobile-magnet-rail grid grid-cols-1 md:grid-cols-3 gap-6">
           {magnets.map((m, i) => (
-            <Reveal key={m.id} delay={i * 100}>
-              <div className="group relative rounded-2xl overflow-hidden border border-border bg-gradient-card card-hover">
+            <Reveal key={m.id} delay={i * 100} className="mobile-snap-item">
+              <div className="mobile-product-card group relative rounded-2xl overflow-hidden border border-border bg-gradient-card card-hover">
                 <Link to={`/product/${m.id}`} className={`relative block aspect-[4/5] overflow-hidden bg-gradient-to-br ${tones[i]}`}>
                   <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(hsl(var(--pk-blue)/0.35)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.22)_1px,transparent_1px)] [background-size:36px_36px]" />
                   {m.gallery.length > 2 ? (

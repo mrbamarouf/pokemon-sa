@@ -19,14 +19,14 @@ export const CartDrawer = () => {
   return (
     <>
       <div
-        className={`fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm transition-opacity ${
+        className={`cart-drawer-backdrop fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm transition-opacity ${
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setOpen(false)}
       />
       <aside
-        className={`fixed bottom-0 right-0 top-0 z-[70] flex w-full max-w-md flex-col border-l border-border bg-card transition-transform duration-500 ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+        className={`cart-drawer fixed bottom-0 right-0 top-0 z-[70] flex w-full max-w-md flex-col border-l border-border bg-card transition-transform duration-500 ${
+          isOpen ? "cart-drawer-open translate-x-0" : "cart-drawer-closed translate-x-full"
         }`}
       >
         <div className="flex items-center justify-between p-5 border-b border-border">

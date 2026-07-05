@@ -12,18 +12,18 @@ export const BoostersSection = () => {
   const add = useCart((s) => s.add);
   const { language, t, formatPrice } = useLanguage();
   return (
-    <section id="boosters" className="relative py-28 bg-gradient-to-b from-background via-pk-blue/5 to-background">
+    <section id="boosters" className="mobile-showcase-section relative py-28 bg-gradient-to-b from-background via-pk-blue/5 to-background">
       <div className="container">
         <SectionHeader
           eyebrow={t("boostersEyebrow")}
           title={t("boostersTitle")}
           description={t("boostersDescription")}
         />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="mobile-product-rail mobile-booster-rail grid grid-cols-1 lg:grid-cols-3 gap-6">
           {boosters.map((b, i) => (
-            <Reveal key={b.id} delay={i * 100}>
+            <Reveal key={b.id} delay={i * 100} className="mobile-snap-item">
               <div
-                className={`group relative rounded-2xl overflow-hidden border ${
+                className={`mobile-product-card group relative rounded-2xl overflow-hidden border ${
                   b.featured ? "border-pk-yellow/60 lg:scale-105" : "border-border"
                 } bg-gradient-card card-hover`}
               >

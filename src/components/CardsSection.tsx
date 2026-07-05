@@ -12,17 +12,17 @@ export const CardsSection = () => {
   const add = useCart((s) => s.add);
   const { language, t, formatPrice } = useLanguage();
   return (
-    <section id="cards" className="relative py-28">
+    <section id="cards" className="mobile-showcase-section relative py-28">
       <div className="container">
         <SectionHeader
           eyebrow={t("cardsEyebrow")}
           title={t("cardsTitle")}
           description={t("cardsDescription")}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="mobile-product-rail grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {cards.map((c, i) => (
-            <Reveal key={c.id} delay={i * 80}>
-                <div className="group card-hover relative rounded-2xl bg-gradient-card border border-border overflow-hidden">
+            <Reveal key={c.id} delay={i * 80} className="mobile-snap-item">
+                <div className="mobile-product-card group card-hover relative rounded-2xl bg-gradient-card border border-border overflow-hidden">
                   <Link to={`/product/${c.id}`} className="relative block aspect-[3/4] overflow-hidden bg-black">
                     <img
                       src={c.image}

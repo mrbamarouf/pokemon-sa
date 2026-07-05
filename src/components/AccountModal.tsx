@@ -49,8 +49,8 @@ export const AccountModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[90] grid place-items-center bg-background/80 p-4 backdrop-blur-xl">
-      <div className="w-full max-w-lg rounded-2xl border border-border bg-card shadow-[0_0_80px_hsl(var(--pk-blue)/0.18)]" dir={dir}>
+    <div className="account-modal fixed inset-0 z-[90] grid place-items-center bg-background/80 p-4 backdrop-blur-xl">
+      <div className="account-modal-panel w-full max-w-lg rounded-2xl border border-border bg-card shadow-[0_0_80px_hsl(var(--pk-blue)/0.18)]" dir={dir}>
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-pk-yellow/35 bg-pk-yellow/10 px-3 py-1 text-xs font-bold text-pk-yellow">

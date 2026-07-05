@@ -122,12 +122,12 @@ const customText: Record<Language, Record<string, string>> = {
 };
 
 const SizeGuidePanel = ({ copy }: { copy: Record<string, string> }) => (
-  <div className="rounded-2xl border border-border bg-card/60 p-4">
+  <div className="size-guide-panel rounded-2xl border border-border bg-card/60 p-4">
     <div className="mb-3 flex items-center gap-2 font-display text-lg font-bold text-gradient-gold">
       <Ruler className="h-5 w-5 text-pk-yellow" />
       {copy.sizeGuide}
     </div>
-    <div className="overflow-hidden rounded-xl border border-border">
+    <div className="size-guide-table overflow-hidden rounded-xl border border-border">
       <div className="grid grid-cols-4 bg-muted/50 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
         <span>{copy.size}</span>
         <span>{copy.chest}</span>
@@ -157,7 +157,7 @@ const ApparelCard = ({ item }: { item: Product }) => {
   };
 
   return (
-    <div className="group relative rounded-2xl overflow-hidden border border-border bg-gradient-card card-hover">
+    <div className="mobile-product-card mobile-apparel-card group relative rounded-2xl overflow-hidden border border-border bg-gradient-card card-hover">
       <Link to={`/product/${item.id}`} className="relative block aspect-square overflow-hidden bg-black">
         <img
           src={item.image}
@@ -272,7 +272,7 @@ const CustomApparelStudio = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(380px,0.95fr)]">
+    <div className="custom-apparel-studio-grid grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(380px,0.95fr)]">
       <Reveal>
         <div className="apparel-preview-card relative min-h-[620px] overflow-hidden rounded-2xl border border-border bg-gradient-card">
           <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(hsl(var(--pk-blue)/0.3)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.18)_1px,transparent_1px)] [background-size:42px_42px]" />
@@ -313,7 +313,7 @@ const CustomApparelStudio = () => {
       </Reveal>
 
       <Reveal delay={100}>
-        <div className="rounded-2xl border border-border bg-card/70 p-5 backdrop-blur-xl md:p-6">
+        <div className="apparel-controls-card rounded-2xl border border-border bg-card/70 p-5 backdrop-blur-xl md:p-6">
           <div className="mb-5">
             <div className="text-[10px] uppercase tracking-[0.25em] text-pk-blue">{copy.eyebrow}</div>
             <h3 className="mt-2 font-display text-3xl font-black text-gradient-gold">{copy.title}</h3>
@@ -379,7 +379,7 @@ const CustomApparelStudio = () => {
 
             <div>
               <div className="mb-3 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{copy.character}</div>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="apparel-character-grid grid grid-cols-4 gap-2">
                 {characterArt.map((item) => (
                   <button
                     key={item.name}
@@ -450,13 +450,13 @@ export const ApparelSection = () => {
   const { t, language } = useLanguage();
   const copy = customText[language];
   return (
-    <section id="apparel" className="relative py-28 bg-gradient-to-b from-background via-pk-yellow/5 to-background">
+    <section id="apparel" className="mobile-showcase-section relative py-28 bg-gradient-to-b from-background via-pk-yellow/5 to-background">
       <div className="container space-y-20">
         <div>
           <SectionHeader eyebrow={t("teesEyebrow")} title={t("teesTitle")} description={t("teesDescription")} />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="mobile-product-rail mobile-apparel-rail grid grid-cols-1 md:grid-cols-2 gap-6">
             {tees.map((t, i) => (
-              <Reveal key={t.id} delay={i * 100}>
+              <Reveal key={t.id} delay={i * 100} className="mobile-snap-item">
                 <ApparelCard item={t} />
               </Reveal>
             ))}
@@ -465,9 +465,9 @@ export const ApparelSection = () => {
 
         <div>
           <SectionHeader eyebrow={t("hoodiesEyebrow")} title={t("hoodiesTitle")} description={t("hoodiesDescription")} />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="mobile-product-rail mobile-apparel-rail grid grid-cols-1 md:grid-cols-2 gap-6">
             {hoodies.map((h, i) => (
-              <Reveal key={h.id} delay={i * 100}>
+              <Reveal key={h.id} delay={i * 100} className="mobile-snap-item">
                 <ApparelCard item={h} />
               </Reveal>
             ))}

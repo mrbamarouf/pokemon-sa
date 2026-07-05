@@ -304,7 +304,7 @@ export const RewardGameSection = () => {
   const renderGame = () => {
     if (active === "wheel") {
       return (
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="reward-game-layout grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="reward-wheel-card relative min-h-[420px] overflow-hidden rounded-2xl border border-border bg-gradient-card p-8">
             <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(hsl(var(--pk-blue)/0.3)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.2)_1px,transparent_1px)] [background-size:44px_44px]" />
             <div className="reward-wheel relative mx-auto grid h-80 w-80 place-items-center sm:h-96 sm:w-96">
@@ -338,8 +338,8 @@ export const RewardGameSection = () => {
 
     if (active === "memory") {
       return (
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <div className="grid grid-cols-2 gap-4 rounded-2xl border border-border bg-gradient-card p-5 sm:grid-cols-4">
+        <div className="reward-game-layout grid gap-6 lg:grid-cols-[1fr_320px]">
+          <div className="reward-game-arena grid grid-cols-2 gap-4 rounded-2xl border border-border bg-gradient-card p-5 sm:grid-cols-4">
             {memoryDeck.map((card) => {
               const open = pickedCards.includes(card.id) || memoryWin;
               return (
@@ -366,8 +366,8 @@ export const RewardGameSection = () => {
 
     if (active === "type") {
       return (
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <div className="rounded-2xl border border-border bg-gradient-card p-6">
+        <div className="reward-game-layout grid gap-6 lg:grid-cols-[1fr_320px]">
+          <div className="reward-game-arena rounded-2xl border border-border bg-gradient-card p-6">
             <div className="mb-5 flex flex-col items-center gap-4 rounded-xl border border-pk-blue/35 bg-pk-blue/10 p-4 text-center sm:flex-row sm:text-start">
               <img src={typeBattle.image} alt={typeBattle.opponent} className="h-24 w-24 object-contain" />
               <div>
@@ -375,7 +375,7 @@ export const RewardGameSection = () => {
                 <p className="text-sm text-muted-foreground">{typeBattle.prompt[language]}</p>
               </div>
             </div>
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="reward-choice-grid grid gap-3 sm:grid-cols-3">
               {typeBattle.options.map((option) => (
                 <button
                   key={option.id}
@@ -394,8 +394,8 @@ export const RewardGameSection = () => {
     }
 
     return (
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="rounded-2xl border border-border bg-gradient-card p-6">
+      <div className="reward-game-layout grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="reward-game-arena rounded-2xl border border-border bg-gradient-card p-6">
           <div className="mb-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="font-display text-3xl font-black text-gradient-gold">{text.quiz}</div>
@@ -435,7 +435,7 @@ export const RewardGameSection = () => {
     onClick: () => void;
     button: string;
   }) => (
-    <div className="rounded-2xl border border-border bg-card/80 p-6 backdrop-blur-xl">
+    <div className="reward-panel rounded-2xl border border-border bg-card/80 p-6 backdrop-blur-xl">
       <Trophy className="mb-4 h-8 w-8 text-pk-yellow" />
       <h3 className="font-display text-2xl font-black text-gradient-gold">{title}</h3>
       <div className="mt-5 rounded-xl border border-pk-yellow/40 bg-pk-yellow/10 p-4">
@@ -454,20 +454,20 @@ export const RewardGameSection = () => {
   );
 
   return (
-    <section id="game" className="relative overflow-hidden py-28 bg-gradient-to-b from-background via-pk-yellow/5 to-background">
+    <section id="game" className="mobile-game-section relative overflow-hidden py-28 bg-gradient-to-b from-background via-pk-yellow/5 to-background">
       <div className="absolute inset-x-0 top-24 h-px bg-gradient-to-r from-transparent via-pk-yellow/50 to-transparent" />
       <div className="container">
         <SectionHeader eyebrow={t("gameEyebrow")} title={t("gameTitle")} description={t("gameDescription")} />
 
         <Reveal>
-          <div className="mb-6 grid gap-3 md:grid-cols-4">
+          <div className="mobile-game-tabs mb-6 grid gap-3 md:grid-cols-4">
             {games.map((game) => {
               const Icon = game.icon;
               return (
                 <button
                   key={game.key}
                   onClick={() => setActive(game.key)}
-                  className={`rounded-2xl border p-4 text-start transition ${
+                  className={`mobile-game-tab rounded-2xl border p-4 text-start transition ${
                     active === game.key ? "border-pk-yellow bg-pk-yellow/10" : "border-border bg-card/55 hover:border-pk-blue"
                   }`}
                 >

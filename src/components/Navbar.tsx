@@ -40,11 +40,11 @@ export const Navbar = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`site-header fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled ? "bg-background/80 backdrop-blur-xl border-b border-border" : "bg-transparent"
       }`}
     >
-      <nav className="container flex h-20 items-center justify-between gap-2 md:h-24 lg:h-28">
+      <nav className="site-nav container flex h-20 items-center justify-between gap-2 md:h-24 lg:h-28">
         <a href="/#top" onClick={markInternalNavigation} className="flex shrink-0 items-center gap-3 group">
           <img
             src={logo}
@@ -82,7 +82,7 @@ export const Navbar = () => {
           >
             <span className="flex items-center gap-1.5">
               <Globe2 className="h-4 w-4" />
-              {t("language")}
+              <span className="language-label">{t("language")}</span>
             </span>
           </button>
           <button
@@ -108,14 +108,14 @@ export const Navbar = () => {
       </nav>
 
       {open && (
-        <div className="bg-background/95 backdrop-blur-xl border-t border-border lg:hidden">
-          <div className="container py-4 flex flex-col gap-1">
+        <div className="mobile-nav-panel bg-background/95 backdrop-blur-xl border-t border-border lg:hidden">
+          <div className="mobile-nav-panel-inner container py-4 flex flex-col gap-1">
             <button
               onClick={() => {
                 setOpen(false);
                 openAccount();
               }}
-              className="py-3 text-start text-base font-medium hover:text-pk-yellow"
+              className="mobile-nav-link py-3 text-start text-base font-medium hover:text-pk-yellow"
             >
               {account ? account.name : t("account")}
             </button>
@@ -127,7 +127,7 @@ export const Navbar = () => {
                   markInternalNavigation(event);
                   setOpen(false);
                 }}
-                className="py-3 text-base font-medium hover:text-pk-yellow"
+                className="mobile-nav-link py-3 text-base font-medium hover:text-pk-yellow"
               >
                 {t(l.labelKey)}
               </a>

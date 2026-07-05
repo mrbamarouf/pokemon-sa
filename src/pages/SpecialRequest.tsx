@@ -81,9 +81,9 @@ const SpecialRequest = () => {
   };
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="special-request-page min-h-screen bg-background text-foreground">
       <Navbar />
-      <section className="relative min-h-screen overflow-hidden pt-36 md:pt-40">
+      <section className="special-request-hero relative min-h-screen overflow-hidden pt-36 md:pt-40">
         <div className="absolute inset-0 bg-gradient-to-b from-pk-blue/10 via-background to-background" />
         <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(hsl(var(--pk-blue)/0.3)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.18)_1px,transparent_1px)] [background-size:64px_64px]" />
         <div className="pointer-events-none absolute inset-0">
@@ -103,7 +103,7 @@ const SpecialRequest = () => {
           ))}
         </div>
 
-        <div className="container relative z-10 grid min-h-[calc(100vh-10rem)] grid-cols-1 items-center gap-10 pb-20 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,520px)]">
+        <div className="special-request-layout container relative z-10 grid min-h-[calc(100vh-10rem)] grid-cols-1 items-center gap-10 pb-20 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,520px)]">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-pk-yellow/40 bg-pk-yellow/5 px-3 py-1">
               <span className="h-1.5 w-1.5 rounded-full bg-pk-yellow" />
@@ -117,9 +117,9 @@ const SpecialRequest = () => {
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
               {t("specialDescription")}
             </p>
-            <div className="mt-8 grid max-w-xl grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="special-request-proof-grid mt-8 grid max-w-xl grid-cols-1 gap-3 sm:grid-cols-3">
               {[t("rareCards"), t("sealedBoxes"), t("quoteFollowUp")].map((item) => (
-                <div key={item} className="rounded-xl border border-border bg-card/55 p-4 text-sm font-semibold text-foreground/85">
+                <div key={item} className="special-request-proof-card rounded-xl border border-border bg-card/55 p-4 text-sm font-semibold text-foreground/85">
                   <CheckCircle2 className="mb-3 h-5 w-5 text-pk-yellow" />
                   {item}
                 </div>
@@ -127,7 +127,7 @@ const SpecialRequest = () => {
             </div>
           </div>
 
-          <form onSubmit={submitRequest} className="rounded-2xl border border-border bg-card/80 p-5 shadow-2xl backdrop-blur-xl md:p-6">
+          <form onSubmit={submitRequest} className="special-request-form rounded-2xl border border-border bg-card/80 p-5 shadow-2xl backdrop-blur-xl md:p-6">
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
                 <h2 className="font-display text-2xl font-bold">{t("requestDetails")}</h2>
@@ -139,7 +139,7 @@ const SpecialRequest = () => {
             <div className="space-y-5">
               <div>
                 <div className="mb-3 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{t("requestType")}</div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="special-request-type-grid grid grid-cols-2 gap-2">
                   {requestTypes.map((type) => {
                     const Icon = type.icon;
                     return (

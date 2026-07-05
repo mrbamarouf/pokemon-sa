@@ -7,10 +7,10 @@ export const Footer = () => {
   const [email, setEmail] = useState("");
   const { t } = useLanguage();
   return (
-    <footer className="relative border-t border-border bg-gradient-to-b from-background to-black/60">
+    <footer className="site-footer relative border-t border-border bg-gradient-to-b from-background to-black/60">
       {/* Newsletter */}
       <div className="container py-16">
-        <div className="rounded-3xl border border-pk-blue/30 bg-gradient-to-br from-pk-blue/10 via-background to-pk-yellow/10 p-5 text-center sm:p-8 md:p-12">
+        <div className="footer-newsletter rounded-3xl border border-pk-blue/30 bg-gradient-to-br from-pk-blue/10 via-background to-pk-yellow/10 p-5 text-center sm:p-8 md:p-12">
           <h3 className="font-display font-black text-3xl md:text-4xl text-gradient-gold">{t("footerJoin")}</h3>
           <p className="mt-3 text-muted-foreground max-w-lg mx-auto">
             {t("footerJoinCopy")}
@@ -38,7 +38,7 @@ export const Footer = () => {
       </div>
 
       {/* Links */}
-      <div className="container pb-12 grid grid-cols-2 md:grid-cols-4 gap-10">
+      <div className="footer-link-grid container pb-12 grid grid-cols-2 md:grid-cols-4 gap-10">
         <div className="col-span-2 md:col-span-1">
           <div className="flex items-center gap-3">
             <img src={logo} alt="Pokémon SA" className="h-10 w-auto" />

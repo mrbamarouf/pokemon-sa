@@ -45,9 +45,9 @@ const ProductDetail = () => {
   const fallbackRelated = related.length ? related : products.filter((item) => item.id !== product.id).slice(0, 3);
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="product-page min-h-screen bg-background text-foreground">
       <Navbar />
-      <section className="relative overflow-hidden pt-36 md:pt-44">
+      <section className="product-detail-hero relative overflow-hidden pt-36 md:pt-44">
         <div className="absolute inset-0 bg-gradient-to-b from-pk-blue/10 via-background to-background" />
         <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(hsl(var(--pk-blue)/0.3)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.18)_1px,transparent_1px)] [background-size:64px_64px]" />
         <div className="container relative z-10 pb-24">
@@ -57,8 +57,8 @@ const ProductDetail = () => {
           </Link>
 
           <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.7fr)]">
-            <div className="rounded-2xl border border-border bg-gradient-card p-4 shadow-[0_0_80px_hsl(var(--pk-blue)/0.12)] md:p-6">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-[radial-gradient(circle_at_50%_35%,hsl(var(--pk-blue)/0.22),hsl(0_0%_0%/0.72)_58%)]">
+            <div className="product-gallery-card rounded-2xl border border-border bg-gradient-card p-4 shadow-[0_0_80px_hsl(var(--pk-blue)/0.12)] md:p-6">
+              <div className="product-hero-image relative aspect-[4/3] overflow-hidden rounded-xl bg-[radial-gradient(circle_at_50%_35%,hsl(var(--pk-blue)/0.22),hsl(0_0%_0%/0.72)_58%)]">
                 <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(hsl(var(--pk-blue)/0.28)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.18)_1px,transparent_1px)] [background-size:42px_42px]" />
                 <img src={activeImage} alt={product.name[language]} className="relative z-10 h-full w-full object-contain p-6 drop-shadow-[0_24px_42px_hsl(0_0%_0%/0.55)]" />
                 {product.badge && (
@@ -67,7 +67,7 @@ const ProductDetail = () => {
                   </div>
                 )}
               </div>
-              <div className="mt-4 grid grid-cols-4 gap-3">
+              <div className="product-thumbnail-grid mt-4 grid grid-cols-4 gap-3">
                 {product.gallery.map((image) => (
                   <button
                     key={image}
@@ -82,7 +82,7 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card/80 p-5 backdrop-blur-xl md:p-6">
+            <div className="product-info-card rounded-2xl border border-border bg-card/80 p-5 backdrop-blur-xl md:p-6">
               <div className="text-[11px] font-medium uppercase tracking-[0.3em] text-pk-yellow">{t(product.category)}</div>
               <h1 className="mt-4 break-words font-display text-3xl font-black leading-tight sm:text-4xl md:text-5xl">{product.name[language]}</h1>
               <p className="mt-3 text-lg text-muted-foreground">{product.subtitle[language]}</p>
@@ -151,7 +151,7 @@ const ProductDetail = () => {
                 {t("addToCart")}
               </button>
 
-              <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="product-trust-grid mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="rounded-xl border border-border bg-muted/25 p-3 text-sm text-muted-foreground">
                   <ShieldCheck className="mb-2 h-5 w-5 text-pk-yellow" />
                   {language === "ar" ? "صور حقيقية ووصف واضح" : "Real imagery and clear details"}
@@ -168,7 +168,7 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="product-info-panels mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.1fr]">
             <section className="rounded-2xl border border-border bg-card/60 p-6">
               <h2 className="font-display text-2xl font-bold text-gradient-gold">{t("productStory")}</h2>
               <p className="mt-4 leading-relaxed text-muted-foreground">{product.description[language]}</p>
@@ -208,12 +208,12 @@ const ProductDetail = () => {
                 {t("backToShop")}
               </Link>
             </div>
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div className="mobile-product-rail product-related-rail grid grid-cols-1 gap-5 md:grid-cols-3">
               {fallbackRelated.map((item) => (
                 <Link
                   key={item.id}
                   to={`/product/${item.id}`}
-                  className="group overflow-hidden rounded-2xl border border-border bg-gradient-card transition hover:-translate-y-1 hover:border-pk-yellow"
+                  className="mobile-snap-item mobile-product-card group overflow-hidden rounded-2xl border border-border bg-gradient-card transition hover:-translate-y-1 hover:border-pk-yellow"
                 >
                   <div className="aspect-[4/3] bg-black/55">
                     <img src={item.image} alt={item.name[language]} className="h-full w-full object-contain p-5 transition duration-500 group-hover:scale-105" />

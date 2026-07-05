@@ -12,7 +12,7 @@ const rayquazaArt = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/384
 export const Hero = () => {
   const { t } = useLanguage();
   return (
-    <section id="top" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="top" className="mobile-hero relative min-h-screen flex items-center justify-center overflow-hidden">
       <img src={heroBg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-45" />
       <video
         autoPlay
@@ -33,6 +33,9 @@ export const Hero = () => {
       <div className="hero-storm-flash" aria-hidden="true" />
       <div className="hero-lightning hero-lightning-a" aria-hidden="true" />
       <div className="hero-lightning hero-lightning-b" aria-hidden="true" />
+      <div className="mobile-hero-orbit mobile-hero-orbit-a" aria-hidden="true" />
+      <div className="mobile-hero-orbit mobile-hero-orbit-b" aria-hidden="true" />
+      <div className="mobile-hero-ground" aria-hidden="true" />
 
       <div className="pointer-events-none absolute inset-0 z-[1]">
         <img
@@ -51,23 +54,28 @@ export const Hero = () => {
           className="absolute bottom-[9rem] left-[7%] w-28 opacity-95 drop-shadow-[0_0_36px_hsl(var(--pk-yellow)/0.45)] md:w-40 lg:left-[12%]"
         />
       </div>
+      <div className="mobile-hero-cinematic pointer-events-none absolute inset-0 z-[1]" aria-hidden="true">
+        <img src={charizardArt} alt="" className="mobile-hero-creature mobile-hero-charizard" />
+        <img src={rayquazaArt} alt="" className="mobile-hero-creature mobile-hero-rayquaza" />
+        <img src={pikachuArt} alt="" className="mobile-hero-creature mobile-hero-pikachu" />
+      </div>
 
-      <div className="relative container z-10 text-center pt-28 pb-20 animate-fade-in">
+      <div className="mobile-hero-content relative container z-10 text-center pt-28 pb-20 animate-fade-in">
         <img
           src={logo}
           alt="Pokémon SA logo"
-          className="mx-auto h-32 w-auto drop-shadow-[0_0_56px_hsl(var(--pk-blue)/0.8)] animate-float sm:h-40 md:h-56"
+          className="mobile-hero-logo mx-auto h-32 w-auto drop-shadow-[0_0_56px_hsl(var(--pk-blue)/0.8)] animate-float sm:h-40 md:h-56"
         />
 
-        <h1 className="mt-6 break-words font-display text-4xl font-black tracking-tight sm:text-5xl md:text-7xl lg:text-8xl">
+        <h1 className="mobile-hero-title mt-6 break-words font-display text-4xl font-black tracking-tight sm:text-5xl md:text-7xl lg:text-8xl">
           <span className="text-gradient-gold">{t("brand")}</span>
         </h1>
 
-        <p className="mt-6 max-w-xl mx-auto text-base md:text-lg text-muted-foreground leading-relaxed">
+        <p className="mobile-hero-copy mt-6 max-w-xl mx-auto text-base md:text-lg text-muted-foreground leading-relaxed">
           {t("heroCopy")}
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div className="mobile-hero-badges mt-8 flex flex-wrap items-center justify-center gap-3">
           <div className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-background/45 px-4 text-xs font-bold uppercase tracking-wider text-foreground/80 backdrop-blur">
             <PackageCheck className="h-3.5 w-3.5 text-pk-blue" />
             {t("sealedDrops")}
@@ -78,7 +86,7 @@ export const Hero = () => {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="mobile-hero-actions mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
             href="#cards"
             className="group relative grid h-14 w-full max-w-xs place-items-center rounded-full bg-gradient-electric px-8 font-display text-sm font-bold uppercase tracking-wider text-background glow-electric transition-transform hover:scale-105 sm:w-auto"
@@ -93,7 +101,7 @@ export const Hero = () => {
           </a>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="mobile-hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
           <ChevronDown className="h-6 w-6 text-pk-yellow/70" />
         </div>
       </div>

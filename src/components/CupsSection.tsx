@@ -100,7 +100,7 @@ export const CupsSection = () => {
   };
 
   return (
-    <section id="cups" className="relative py-28 bg-gradient-to-b from-background via-pk-blue/10 to-background overflow-hidden">
+    <section id="cups" className="mobile-configurator-section relative py-28 bg-gradient-to-b from-background via-pk-blue/10 to-background overflow-hidden">
       <div className="absolute inset-x-0 top-20 h-px bg-gradient-to-r from-transparent via-pk-yellow/50 to-transparent" />
       <div className="container">
         <SectionHeader
@@ -109,7 +109,7 @@ export const CupsSection = () => {
           description={t("cupsDescription")}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(360px,480px)] gap-8 items-start">
+        <div className="mobile-configurator-grid grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(360px,480px)] gap-8 items-start">
           <Reveal>
             <div className="cup-preview-card relative min-h-[560px] rounded-2xl border border-border bg-gradient-card overflow-hidden">
               <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(hsl(var(--pk-blue)/0.3)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.18)_1px,transparent_1px)] [background-size:42px_42px]" />
@@ -153,7 +153,7 @@ export const CupsSection = () => {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="rounded-2xl border border-border bg-card/70 backdrop-blur-xl p-5 md:p-6 space-y-6">
+            <div className="cup-controls-card rounded-2xl border border-border bg-card/70 backdrop-blur-xl p-5 md:p-6 space-y-6">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-3">{t("cupStyle")}</div>
                 <div className="grid gap-2">
@@ -198,7 +198,7 @@ export const CupsSection = () => {
 
               <div>
                 <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-3">{t("customize")}</div>
-                <div className="grid grid-cols-1 gap-2 min-[390px]:grid-cols-3">
+                <div className="cup-mode-grid grid grid-cols-1 gap-2 min-[390px]:grid-cols-3">
                   {printModes.map((item) => {
                     const Icon = item.icon;
                     return (
@@ -222,7 +222,7 @@ export const CupsSection = () => {
               {showsImage && (
                 <div>
                   <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-3">{t("characterPrint")}</div>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="cup-character-grid grid grid-cols-4 gap-2">
                     {officialArt.map((item) => (
                       <button
                         key={item.name}
