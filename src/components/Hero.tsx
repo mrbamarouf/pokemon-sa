@@ -56,10 +56,10 @@ export const Hero = () => {
         <img
           src={logo}
           alt="Pokémon SA logo"
-          className="mx-auto h-40 md:h-56 w-auto drop-shadow-[0_0_56px_hsl(var(--pk-blue)/0.8)] animate-float"
+          className="mx-auto h-32 w-auto drop-shadow-[0_0_56px_hsl(var(--pk-blue)/0.8)] animate-float sm:h-40 md:h-56"
         />
 
-        <h1 className="mt-6 font-display font-black text-5xl md:text-7xl lg:text-8xl tracking-tight">
+        <h1 className="mt-6 break-words font-display text-4xl font-black tracking-tight sm:text-5xl md:text-7xl lg:text-8xl">
           <span className="text-gradient-gold">{t("brand")}</span>
         </h1>
 
@@ -81,13 +81,13 @@ export const Hero = () => {
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
             href="#cards"
-            className="group relative px-8 h-14 rounded-full bg-gradient-electric text-background font-display font-bold uppercase tracking-wider text-sm grid place-items-center glow-electric hover:scale-105 transition-transform"
+            className="group relative grid h-14 w-full max-w-xs place-items-center rounded-full bg-gradient-electric px-8 font-display text-sm font-bold uppercase tracking-wider text-background glow-electric transition-transform hover:scale-105 sm:w-auto"
           >
             <span>{t("shopTheDrop")}</span>
           </a>
           <a
             href="#cups"
-            className="px-8 h-14 rounded-full border border-pk-yellow/60 text-pk-yellow font-display font-bold uppercase tracking-wider text-sm grid place-items-center hover:bg-pk-yellow hover:text-background transition-colors"
+            className="grid h-14 w-full max-w-xs place-items-center rounded-full border border-pk-yellow/60 px-8 font-display text-sm font-bold uppercase tracking-wider text-pk-yellow transition-colors hover:bg-pk-yellow hover:text-background sm:w-auto"
           >
             {t("customizeCups")}
           </a>

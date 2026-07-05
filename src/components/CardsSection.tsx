@@ -38,17 +38,17 @@ export const CardsSection = () => {
                   </div>
                 </Link>
                 <div className="p-5 space-y-3">
-                  <Link to={`/product/${c.id}`} className="block font-display font-bold text-lg leading-tight hover:text-pk-yellow transition-colors">
+                  <Link to={`/product/${c.id}`} className="flex min-h-11 items-center font-display text-lg font-bold leading-tight transition-colors hover:text-pk-yellow">
                     {c.name[language]}
                   </Link>
-                  <Link to={`/product/${c.id}`} className="text-xs font-bold uppercase tracking-wider text-pk-blue hover:text-pk-yellow transition-colors">
+                  <Link to={`/product/${c.id}`} className="inline-flex min-h-11 items-center text-xs font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
                     {t("viewDetails")}
                   </Link>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <span className="text-2xl font-display font-black text-gradient-gold">{formatPrice(c.price)}</span>
                     <button
                       onClick={() => add({ id: c.id, name: c.name[language], price: c.price, image: c.image })}
-                      className="h-10 px-4 rounded-full bg-pk-blue text-background text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:glow-electric transition-all"
+                      className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-pk-blue px-4 text-xs font-bold uppercase tracking-wider text-background transition-all hover:glow-electric sm:w-auto"
                     >
                       <Plus className="h-4 w-4" /> {t("add")}
                     </button>

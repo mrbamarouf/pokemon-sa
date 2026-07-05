@@ -35,39 +35,39 @@ export const Navbar = () => {
         scrolled ? "bg-background/80 backdrop-blur-xl border-b border-border" : "bg-transparent"
       }`}
     >
-      <nav className="container flex items-center justify-between h-24 md:h-28">
-        <a href="/#top" className="flex items-center gap-3 group">
+      <nav className="container flex h-20 items-center justify-between gap-2 md:h-24 lg:h-28">
+        <a href="/#top" className="flex shrink-0 items-center gap-3 group">
           <img
             src={logo}
             alt="Pokémon SA"
-            className="h-16 w-40 object-cover object-center md:h-20 md:w-52 drop-shadow-[0_0_18px_hsl(var(--pk-blue)/0.7)] transition-transform group-hover:scale-105"
+            className="h-12 w-28 object-cover object-center sm:h-14 sm:w-36 md:h-16 md:w-40 lg:h-20 lg:w-52 drop-shadow-[0_0_18px_hsl(var(--pk-blue)/0.7)] transition-transform group-hover:scale-105"
           />
           <span className="hidden font-display text-lg font-black text-gradient-gold lg:inline">{t("brand")}</span>
         </a>
 
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-4 xl:gap-8">
           {links.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="text-sm font-medium text-foreground/80 hover:text-pk-yellow transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-pk-yellow after:transition-all hover:after:w-full"
+              className="relative flex min-h-11 items-center text-sm font-medium text-foreground/80 transition-colors hover:text-pk-yellow after:content-[''] after:absolute after:left-0 after:bottom-2 after:h-px after:w-0 after:bg-pk-yellow after:transition-all hover:after:w-full"
             >
               {t(l.labelKey)}
             </a>
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <button
             onClick={openAccount}
-            className="hidden h-11 items-center gap-2 rounded-full border border-border bg-muted/60 px-3 text-xs font-bold hover:border-pk-yellow hover:text-pk-yellow md:flex"
+            className="hidden h-11 items-center gap-2 rounded-full border border-border bg-muted/60 px-3 text-xs font-bold hover:border-pk-yellow hover:text-pk-yellow lg:flex"
           >
             <UserRound className="h-4 w-4" />
             {account ? account.name.split(" ")[0] : t("account")}
           </button>
           <button
             onClick={toggleLanguage}
-            className="h-11 px-3 grid place-items-center rounded-full bg-muted/60 border border-border text-xs font-bold hover:border-pk-yellow hover:text-pk-yellow transition-all"
+            className="h-11 px-2 sm:px-3 grid place-items-center rounded-full bg-muted/60 border border-border text-xs font-bold hover:border-pk-yellow hover:text-pk-yellow transition-all"
             aria-label="Toggle language"
           >
             <span className="flex items-center gap-1.5">
@@ -88,7 +88,7 @@ export const Navbar = () => {
             )}
           </button>
           <button
-            className="md:hidden h-11 w-11 grid place-items-center rounded-full bg-muted/60 border border-border"
+            className="grid h-11 w-11 place-items-center rounded-full border border-border bg-muted/60 lg:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label="Menu"
           >
@@ -98,7 +98,7 @@ export const Navbar = () => {
       </nav>
 
       {open && (
-        <div className="md:hidden bg-background/95 backdrop-blur-xl border-t border-border">
+        <div className="bg-background/95 backdrop-blur-xl border-t border-border lg:hidden">
           <div className="container py-4 flex flex-col gap-1">
             <button
               onClick={() => {

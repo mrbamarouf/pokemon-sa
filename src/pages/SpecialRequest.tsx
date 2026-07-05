@@ -100,7 +100,7 @@ const SpecialRequest = () => {
               <span className="h-1.5 w-1.5 rounded-full bg-pk-yellow" />
               <span className="text-[11px] font-medium uppercase tracking-[0.3em] text-pk-yellow">{t("specialOrder")}</span>
             </div>
-            <h1 className="mt-6 font-display text-5xl font-black leading-tight md:text-7xl">
+            <h1 className="mt-6 break-words font-display text-4xl font-black leading-tight sm:text-5xl md:text-7xl">
               <span className="text-gradient-gold">{t("specialTitle")}</span>
               <br />
               <span className="text-gradient-electric">{t("specialSubtitle")}</span>

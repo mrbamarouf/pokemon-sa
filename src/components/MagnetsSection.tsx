@@ -52,13 +52,13 @@ export const MagnetsSection = () => {
                   )}
                   <div className="absolute inset-x-8 bottom-8 h-10 rounded-full bg-black/40 blur-xl" />
                 </Link>
-                <div className="p-5 flex items-center justify-between">
+                <div className="flex items-center justify-between gap-4 p-5">
                   <div>
-                    <Link to={`/product/${m.id}`} className="font-display font-bold text-base hover:text-pk-yellow transition-colors">
+                    <Link to={`/product/${m.id}`} className="flex min-h-11 items-center font-display text-base font-bold leading-tight transition-colors hover:text-pk-yellow">
                       {m.name[language]}
                     </Link>
                     <div>
-                      <Link to={`/product/${m.id}`} className="text-[10px] font-bold uppercase tracking-wider text-pk-blue hover:text-pk-yellow transition-colors">
+                      <Link to={`/product/${m.id}`} className="inline-flex min-h-11 items-center text-[10px] font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
                         {t("viewDetails")}
                       </Link>
                     </div>
@@ -66,7 +66,7 @@ export const MagnetsSection = () => {
                   </div>
                   <button
                     onClick={() => add({ id: m.id, name: m.name[language], price: m.price, image: m.image })}
-                    className="h-10 w-10 rounded-full bg-pk-blue text-background grid place-items-center hover:glow-electric transition-all"
+                    className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-pk-blue text-background transition-all hover:glow-electric"
                     aria-label={t("addToCart")}
                   >
                     <Plus className="h-4 w-4" />

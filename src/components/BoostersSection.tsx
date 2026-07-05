@@ -47,18 +47,18 @@ export const BoostersSection = () => {
                   <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted/80 text-[10px] uppercase tracking-wider text-muted-foreground">
                     <Package className="h-3 w-3" /> {t("sealed")}
                   </div>
-                  <Link to={`/product/${b.id}`} className="block font-display font-bold text-2xl leading-tight hover:text-pk-yellow transition-colors">
+                  <Link to={`/product/${b.id}`} className="flex min-h-11 items-center font-display text-2xl font-bold leading-tight transition-colors hover:text-pk-yellow">
                     {b.name[language]}
                   </Link>
                   <p className="text-sm text-muted-foreground">{b.subtitle[language]}</p>
-                  <Link to={`/product/${b.id}`} className="text-xs font-bold uppercase tracking-wider text-pk-blue hover:text-pk-yellow transition-colors">
+                  <Link to={`/product/${b.id}`} className="inline-flex min-h-11 items-center text-xs font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
                     {t("viewDetails")}
                   </Link>
-                  <div className="flex items-center justify-between pt-2">
+                  <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
                     <span className="text-3xl font-display font-black text-gradient-gold">{formatPrice(b.price)}</span>
                     <button
                       onClick={() => add({ id: b.id, name: b.name[language], price: b.price, image: b.image })}
-                      className="h-11 px-5 rounded-full bg-pk-yellow text-background font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 hover:glow-yellow transition-all"
+                      className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-pk-yellow px-5 text-xs font-bold uppercase tracking-wider text-background transition-all hover:glow-yellow sm:w-auto"
                     >
                       <Plus className="h-4 w-4" /> {t("addToCart")}
                     </button>

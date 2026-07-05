@@ -45,7 +45,7 @@ const ProductDetail = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-pk-blue/10 via-background to-background" />
         <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(hsl(var(--pk-blue)/0.3)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.18)_1px,transparent_1px)] [background-size:64px_64px]" />
         <div className="container relative z-10 pb-24">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-pk-yellow">
+          <Link to="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-pk-yellow">
             <BackIcon className="h-4 w-4" />
             {t("backToShop")}
           </Link>
@@ -78,7 +78,7 @@ const ProductDetail = () => {
 
             <div className="rounded-2xl border border-border bg-card/80 p-5 backdrop-blur-xl md:p-6">
               <div className="text-[11px] font-medium uppercase tracking-[0.3em] text-pk-yellow">{t(product.category)}</div>
-              <h1 className="mt-4 font-display text-4xl font-black leading-tight md:text-5xl">{product.name[language]}</h1>
+              <h1 className="mt-4 break-words font-display text-3xl font-black leading-tight sm:text-4xl md:text-5xl">{product.name[language]}</h1>
               <p className="mt-3 text-lg text-muted-foreground">{product.subtitle[language]}</p>
               <div className="mt-5 text-4xl font-display font-black text-gradient-gold">{formatPrice(product.price)}</div>
               <p className="mt-5 leading-relaxed text-foreground/80">{product.description[language]}</p>
@@ -95,7 +95,7 @@ const ProductDetail = () => {
                           key={item.name.en}
                           onClick={() => setColor(item)}
                           aria-label={item.name[language]}
-                          className={`h-9 w-9 rounded-full border-2 transition ${
+                          className={`h-11 w-11 rounded-full border-2 transition ${
                             color?.name.en === item.name.en ? "border-pk-yellow scale-110" : "border-border hover:border-pk-blue"
                           }`}
                           style={{ background: item.hex }}
@@ -115,7 +115,7 @@ const ProductDetail = () => {
                         <button
                           key={item}
                           onClick={() => setSize(item)}
-                          className={`h-9 min-w-11 rounded-md border px-3 text-xs font-bold transition ${
+                          className={`h-11 min-w-12 rounded-md border px-3 text-xs font-bold transition ${
                             size === item ? "border-pk-yellow bg-pk-yellow text-background" : "border-border text-muted-foreground hover:border-pk-yellow hover:text-pk-yellow"
                           }`}
                         >
@@ -196,7 +196,7 @@ const ProductDetail = () => {
                   {language === "ar" ? "قد يعجبك أيضًا" : "You May Also Like"}
                 </h2>
               </div>
-              <Link to="/#cards" className="text-sm font-bold text-pk-yellow hover:text-pk-blue">
+              <Link to="/#cards" className="inline-flex min-h-11 items-center text-sm font-bold text-pk-yellow hover:text-pk-blue">
                 {t("backToShop")}
               </Link>
             </div>

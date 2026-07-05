@@ -277,9 +277,9 @@ export const RewardGameSection = () => {
     if (active === "wheel") {
       return (
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <div className="relative min-h-[420px] overflow-hidden rounded-2xl border border-border bg-gradient-card p-8">
+          <div className="reward-wheel-card relative min-h-[420px] overflow-hidden rounded-2xl border border-border bg-gradient-card p-8">
             <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(hsl(var(--pk-blue)/0.3)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.2)_1px,transparent_1px)] [background-size:44px_44px]" />
-            <div className="relative mx-auto grid h-80 w-80 place-items-center sm:h-96 sm:w-96">
+            <div className="reward-wheel relative mx-auto grid h-80 w-80 place-items-center sm:h-96 sm:w-96">
               <div className="absolute -top-2 z-20 h-0 w-0 border-x-[18px] border-t-[30px] border-x-transparent border-t-pk-yellow" />
               <div
                 className="relative h-full w-full rounded-full border-[12px] border-background shadow-[0_0_80px_hsl(var(--pk-blue)/0.32)] transition-transform duration-1000 ease-out"
@@ -340,7 +340,7 @@ export const RewardGameSection = () => {
       return (
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="rounded-2xl border border-border bg-gradient-card p-6">
-            <div className="mb-5 flex items-center gap-4 rounded-xl border border-pk-blue/35 bg-pk-blue/10 p-4">
+            <div className="mb-5 flex flex-col items-center gap-4 rounded-xl border border-pk-blue/35 bg-pk-blue/10 p-4 text-center sm:flex-row sm:text-start">
               <img src={typeBattle.image} alt={typeBattle.opponent} className="h-24 w-24 object-contain" />
               <div>
                 <div className="font-display text-2xl font-black text-gradient-gold">{typeBattle.opponent}</div>
@@ -368,12 +368,12 @@ export const RewardGameSection = () => {
     return (
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="rounded-2xl border border-border bg-gradient-card p-6">
-          <div className="mb-5 flex items-center justify-between gap-4">
+          <div className="mb-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="font-display text-3xl font-black text-gradient-gold">{text.quiz}</div>
               <p className="mt-2 text-muted-foreground">{quizStarted ? currentQuiz.question : text.question}</p>
             </div>
-            <div className="grid h-20 w-20 place-items-center rounded-full border border-pk-yellow bg-pk-yellow/10 font-display text-2xl font-black text-pk-yellow">
+            <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-pk-yellow bg-pk-yellow/10 font-display text-xl font-black text-pk-yellow sm:h-20 sm:w-20 sm:text-2xl">
               {quizTime}
             </div>
           </div>
@@ -412,7 +412,7 @@ export const RewardGameSection = () => {
       <h3 className="font-display text-2xl font-black text-gradient-gold">{title}</h3>
       <div className="mt-5 rounded-xl border border-pk-yellow/40 bg-pk-yellow/10 p-4">
         <div className="text-[10px] uppercase tracking-[0.25em] text-pk-yellow">{text.codeReady}</div>
-        <div className="mt-2 font-display text-3xl font-black">{code}</div>
+        <div className="mt-2 break-all font-display text-2xl font-black sm:text-3xl">{code}</div>
         <p className="mt-2 text-sm text-muted-foreground">{text.useCode}</p>
       </div>
       <button
@@ -454,13 +454,13 @@ export const RewardGameSection = () => {
 
         <Reveal delay={120}>
           <div className="mb-4 flex flex-wrap items-center gap-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-pk-blue/35 bg-pk-blue/10 px-3 py-1.5 text-xs font-bold text-pk-blue">
+            <div className="inline-flex min-h-11 items-center gap-2 rounded-full border border-pk-blue/35 bg-pk-blue/10 px-4 py-2 text-xs font-bold text-pk-blue">
               <Clock3 className="h-4 w-4" />
               {text.choose}
             </div>
             <button
               onClick={account ? undefined : openAccount}
-              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold ${
+              className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold ${
                 !account
                   ? "border-pk-yellow/45 bg-pk-yellow/10 text-pk-yellow"
                   : canPlayGame

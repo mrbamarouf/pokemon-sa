@@ -33,7 +33,7 @@ export const CartDrawer = () => {
           <h3 className="font-display font-bold text-xl flex items-center gap-2">
             <ShoppingBag className="h-5 w-5 text-pk-yellow" /> {t("cart")}
           </h3>
-          <button onClick={() => setOpen(false)} className="h-9 w-9 grid place-items-center rounded-full hover:bg-muted">
+          <button onClick={() => setOpen(false)} className="grid h-11 w-11 place-items-center rounded-full hover:bg-muted" aria-label="Close cart">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -57,7 +57,8 @@ export const CartDrawer = () => {
               </div>
               <button
                 onClick={() => remove(keyOf(i))}
-                className="h-8 w-8 grid place-items-center rounded-full hover:bg-destructive/20 hover:text-destructive transition"
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-full transition hover:bg-destructive/20 hover:text-destructive"
+                aria-label="Remove item"
               >
                 <Trash2 className="h-4 w-4" />
               </button>

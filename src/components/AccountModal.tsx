@@ -60,7 +60,7 @@ export const AccountModal = () => {
             <h2 className="mt-4 font-display text-3xl font-black text-gradient-gold">{copy.title}</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{copy.subtitle}</p>
           </div>
-          <button onClick={closeAccount} className="grid h-10 w-10 place-items-center rounded-full border border-border hover:border-pk-yellow">
+          <button onClick={closeAccount} className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-border hover:border-pk-yellow" aria-label="Close account modal">
             <X className="h-5 w-5" />
           </button>
         </div>

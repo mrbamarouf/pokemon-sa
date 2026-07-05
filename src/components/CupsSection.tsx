@@ -98,9 +98,9 @@ export const CupsSection = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(360px,480px)] gap-8 items-start">
           <Reveal>
-            <div className="relative min-h-[560px] rounded-2xl border border-border bg-gradient-card overflow-hidden">
+            <div className="cup-preview-card relative min-h-[560px] rounded-2xl border border-border bg-gradient-card overflow-hidden">
               <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(hsl(var(--pk-blue)/0.3)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.18)_1px,transparent_1px)] [background-size:42px_42px]" />
-              <div className="relative h-full min-h-[560px] grid place-items-center px-6 py-12">
+              <div className="cup-preview-inner relative h-full min-h-[560px] grid place-items-center px-6 py-12">
                 <div className="cup-stage">
                   <div className="cup-shadow" />
                   <div
@@ -174,7 +174,7 @@ export const CupsSection = () => {
                       key={item.name.en}
                       onClick={() => setColor(item)}
                       aria-label={item.name[language]}
-                      className={`h-10 w-10 rounded-full border-2 transition-all ${
+                      className={`h-11 w-11 rounded-full border-2 transition-all ${
                         color.name.en === item.name.en ? "border-pk-yellow scale-110" : "border-border hover:border-pk-blue"
                       }`}
                       style={{ background: item.hex }}
@@ -185,7 +185,7 @@ export const CupsSection = () => {
 
               <div>
                 <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-3">{t("customize")}</div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 gap-2 min-[390px]:grid-cols-3">
                   {printModes.map((item) => {
                     const Icon = item.icon;
                     return (

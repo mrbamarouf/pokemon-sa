@@ -10,7 +10,7 @@ export const Footer = () => {
     <footer className="relative border-t border-border bg-gradient-to-b from-background to-black/60">
       {/* Newsletter */}
       <div className="container py-16">
-        <div className="rounded-3xl border border-pk-blue/30 bg-gradient-to-br from-pk-blue/10 via-background to-pk-yellow/10 p-8 md:p-12 text-center">
+        <div className="rounded-3xl border border-pk-blue/30 bg-gradient-to-br from-pk-blue/10 via-background to-pk-yellow/10 p-5 text-center sm:p-8 md:p-12">
           <h3 className="font-display font-black text-3xl md:text-4xl text-gradient-gold">{t("footerJoin")}</h3>
           <p className="mt-3 text-muted-foreground max-w-lg mx-auto">
             {t("footerJoinCopy")}
@@ -28,7 +28,7 @@ export const Footer = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t("emailPlaceholder")}
-              className="flex-1 h-12 px-5 rounded-full bg-muted border border-border focus:border-pk-yellow outline-none text-sm"
+              className="h-12 w-full rounded-full border border-border bg-muted px-5 text-sm outline-none focus:border-pk-yellow sm:flex-1"
             />
             <button className="h-12 px-6 rounded-full bg-pk-yellow text-background font-bold uppercase tracking-wider text-xs hover:glow-yellow transition-all">
               {t("subscribe")}
@@ -50,12 +50,12 @@ export const Footer = () => {
           <p className="text-sm text-muted-foreground mt-4 max-w-xs">
             {t("footerDescription")}
           </p>
-          <div className="flex gap-3 mt-5">
+          <div className="mt-5 flex flex-wrap gap-3">
             {[Instagram, Twitter, Youtube, Facebook].map((Icon, i) => (
               <a
                 key={i}
                 href="#"
-                className="h-10 w-10 grid place-items-center rounded-full bg-muted border border-border hover:border-pk-yellow hover:text-pk-yellow transition-all"
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-border bg-muted transition-all hover:border-pk-yellow hover:text-pk-yellow"
               >
                 <Icon className="h-4 w-4" />
               </a>
@@ -73,7 +73,7 @@ export const Footer = () => {
             <ul className="mt-4 space-y-2 text-sm">
               {col.links.map((l) => (
                 <li key={l}>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="#" className="-mx-3 inline-flex min-h-11 items-center px-3 text-muted-foreground transition-colors hover:text-foreground">
                     {l}
                   </a>
                 </li>

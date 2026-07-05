@@ -166,10 +166,10 @@ const ApparelCard = ({ item }: { item: Product }) => {
       <div className="p-5 space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <Link to={`/product/${item.id}`} className="block font-display font-bold text-lg leading-tight hover:text-pk-yellow transition-colors">
+            <Link to={`/product/${item.id}`} className="flex min-h-11 items-center font-display text-lg font-bold leading-tight transition-colors hover:text-pk-yellow">
               {item.name[language]}
             </Link>
-            <Link to={`/product/${item.id}`} className="text-[10px] font-bold uppercase tracking-wider text-pk-blue hover:text-pk-yellow transition-colors">
+            <Link to={`/product/${item.id}`} className="inline-flex min-h-11 items-center text-[10px] font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
               {t("viewDetails")}
             </Link>
           </div>
@@ -185,7 +185,7 @@ const ApparelCard = ({ item }: { item: Product }) => {
                 key={c.name.en}
                 onClick={() => setColor(c)}
                 aria-label={c.name[language]}
-                className={`h-7 w-7 rounded-full border-2 transition-all ${
+                className={`h-11 w-11 rounded-full border-2 transition-all ${
                   color?.name.en === c.name.en ? "border-pk-yellow scale-110" : "border-border"
                 }`}
                 style={{ background: c.hex }}
@@ -203,7 +203,7 @@ const ApparelCard = ({ item }: { item: Product }) => {
               <button
                 key={s}
                 onClick={() => setSize(s)}
-                className={`h-8 min-w-9 px-2 rounded-md text-xs font-bold border transition-all ${
+                className={`h-11 min-w-11 rounded-md border px-3 text-xs font-bold transition-all ${
                   size === s
                     ? "bg-pk-yellow text-background border-pk-yellow"
                     : "border-border text-muted-foreground hover:border-pk-yellow hover:text-pk-yellow"
@@ -259,9 +259,9 @@ const CustomApparelStudio = () => {
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(380px,0.95fr)]">
       <Reveal>
-        <div className="relative min-h-[620px] overflow-hidden rounded-2xl border border-border bg-gradient-card">
+        <div className="apparel-preview-card relative min-h-[620px] overflow-hidden rounded-2xl border border-border bg-gradient-card">
           <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(hsl(var(--pk-blue)/0.3)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.18)_1px,transparent_1px)] [background-size:42px_42px]" />
-          <div className="relative grid min-h-[620px] place-items-center p-8">
+          <div className="apparel-preview-inner relative grid min-h-[620px] place-items-center p-8">
             <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-pk-yellow/30 bg-background/55 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-pk-yellow backdrop-blur">
               <Palette className="h-3.5 w-3.5" />
               {copy.preview}
@@ -279,7 +279,7 @@ const CustomApparelStudio = () => {
                 {text.trim() && <div className="apparel-print-text">{text.trim()}</div>}
               </div>
             </div>
-            <div className="absolute bottom-5 left-5 right-5 grid gap-3 rounded-2xl border border-border bg-background/72 p-4 backdrop-blur-xl sm:grid-cols-3">
+            <div className="apparel-preview-summary absolute bottom-5 left-5 right-5 grid gap-3 rounded-2xl border border-border bg-background/72 p-4 backdrop-blur-xl sm:grid-cols-3">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{copy.style}</div>
                 <div className="mt-1 font-display font-bold">{style.name[language]}</div>
@@ -330,12 +330,12 @@ const CustomApparelStudio = () => {
               <div className="mb-3 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                 {copy.size} · {size}
               </div>
-              <div className="grid grid-cols-6 gap-1.5">
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
                 {apparelSizes.map((item) => (
                   <button
                     key={item}
                     onClick={() => setSize(item)}
-                    className={`h-9 rounded-md border text-xs font-bold transition ${
+                    className={`h-11 rounded-md border text-xs font-bold transition ${
                       size === item ? "border-pk-yellow bg-pk-yellow text-background" : "border-border text-muted-foreground hover:border-pk-yellow hover:text-pk-yellow"
                     }`}
                   >
@@ -355,7 +355,7 @@ const CustomApparelStudio = () => {
                     key={item.name.en}
                     onClick={() => setColor(item)}
                     aria-label={item.name[language]}
-                    className={`h-10 w-10 rounded-full border-2 transition ${color.name.en === item.name.en ? "scale-110 border-pk-yellow" : "border-border"}`}
+                    className={`h-11 w-11 rounded-full border-2 transition ${color.name.en === item.name.en ? "scale-110 border-pk-yellow" : "border-border"}`}
                     style={{ background: item.hex }}
                   />
                 ))}
