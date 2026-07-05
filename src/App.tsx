@@ -10,6 +10,8 @@ import ProductDetail from "./pages/ProductDetail.tsx";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { AccountProvider } from "@/context/AccountContext";
 import { AccountModal } from "@/components/AccountModal";
+import { PokeballCursor } from "@/components/PokeballCursor";
+import { PokemonWorldFX } from "@/components/PokemonWorldFX";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,8 @@ const App = () => (
             </Routes>
           </BrowserRouter>
           <AccountModal />
+          <PokemonWorldFX />
+          <PokeballCursor />
         </TooltipProvider>
       </AccountProvider>
     </LanguageProvider>

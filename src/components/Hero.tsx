@@ -18,7 +18,7 @@ export const Hero = () => {
         muted
         loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-70"
+        className="hero-storm-video absolute inset-0 w-full h-full object-cover opacity-70"
         poster={heroBg}
       >
         <source src={heroVideo.url} type="video/mp4" />
@@ -27,6 +27,10 @@ export const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/55 to-background" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,transparent_0%,hsl(var(--background)/0.2)_38%,hsl(var(--background))_82%)]" />
       <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(hsl(var(--pk-blue)/0.32)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.2)_1px,transparent_1px)] [background-size:64px_64px]" />
+      <div className="hero-energy-haze" aria-hidden="true" />
+      <div className="hero-storm-flash" aria-hidden="true" />
+      <div className="hero-lightning hero-lightning-a" aria-hidden="true" />
+      <div className="hero-lightning hero-lightning-b" aria-hidden="true" />
 
       <div className="pointer-events-none absolute inset-0 z-[1]">
         <img
