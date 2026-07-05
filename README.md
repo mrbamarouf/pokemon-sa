@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# Pokémon SA
 
-TODO: Document your project here
+Pokémon SA storefront source code.
