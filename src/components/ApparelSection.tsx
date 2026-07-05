@@ -1,4 +1,4 @@
-import { ChangeEvent, CSSProperties, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "./SectionHeader";
 import { useCart } from "@/store/cart";
@@ -6,6 +6,18 @@ import { Check, Image as ImageIcon, Palette, Plus, Ruler, Sparkles, Type, Upload
 import { Link } from "react-router-dom";
 import { Product, productsByCategory } from "@/data/products";
 import { Language, useLanguage } from "@/context/LanguageContext";
+import teeBlack from "@/assets/custom-tee-black.jpg";
+import teeBlue from "@/assets/custom-tee-blue.jpg";
+import teeClean from "@/assets/custom-tee-clean.jpg";
+import teeRed from "@/assets/custom-tee-red.jpg";
+import teeWhite from "@/assets/custom-tee-white.jpg";
+import teeYellow from "@/assets/custom-tee-yellow.jpg";
+import hoodieBlack from "@/assets/custom-hoodie-black.jpg";
+import hoodieBlue from "@/assets/custom-hoodie-blue.jpg";
+import hoodieClean from "@/assets/custom-hoodie-clean.jpg";
+import hoodieRed from "@/assets/custom-hoodie-red.jpg";
+import hoodieWhite from "@/assets/custom-hoodie-white.jpg";
+import hoodieYellow from "@/assets/custom-hoodie-yellow.jpg";
 
 const apparel = productsByCategory("apparel");
 const tees = apparel.filter((item) => item.id.startsWith("t"));
@@ -22,17 +34,43 @@ const characterArt = [
   { name: "Dragonite", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/149.png" },
 ];
 
-const customStyles = [
-  { id: "tee", name: { en: "Custom T-Shirt", ar: "تيشيرت مخصص" }, price: 499 },
-  { id: "hoodie", name: { en: "Custom Hoodie", ar: "هودي مخصص" }, price: 999 },
+type CustomColorId = "black" | "white" | "blue" | "red" | "yellow";
+type CustomStyleId = "tee" | "hoodie";
+
+type CustomColor = {
+  id: CustomColorId;
+  name: Record<Language, string>;
+  hex: string;
+};
+
+type CustomStyle = {
+  id: CustomStyleId;
+  name: Record<Language, string>;
+  price: number;
+  mockups: Record<CustomColorId | "clean", string>;
+};
+
+const customStyles: CustomStyle[] = [
+  {
+    id: "tee",
+    name: { en: "Custom T-Shirt", ar: "تيشيرت مخصص" },
+    price: 499,
+    mockups: { black: teeBlack, white: teeWhite, blue: teeBlue, red: teeRed, yellow: teeYellow, clean: teeClean },
+  },
+  {
+    id: "hoodie",
+    name: { en: "Custom Hoodie", ar: "هودي مخصص" },
+    price: 999,
+    mockups: { black: hoodieBlack, white: hoodieWhite, blue: hoodieBlue, red: hoodieRed, yellow: hoodieYellow, clean: hoodieClean },
+  },
 ];
 
-const customColors = [
-  { name: { en: "Black", ar: "أسود" }, hex: "#0a0a0a" },
-  { name: { en: "White", ar: "أبيض" }, hex: "#f8fafc" },
-  { name: { en: "Electric Blue", ar: "أزرق كهربائي" }, hex: "#2563eb" },
-  { name: { en: "Trainer Red", ar: "أحمر المدرب" }, hex: "#dc2626" },
-  { name: { en: "Volt Yellow", ar: "أصفر كهربائي" }, hex: "#facc15" },
+const customColors: CustomColor[] = [
+  { id: "black", name: { en: "Black", ar: "أسود" }, hex: "#0a0a0a" },
+  { id: "white", name: { en: "White", ar: "أبيض" }, hex: "#f8fafc" },
+  { id: "blue", name: { en: "Electric Blue", ar: "أزرق كهربائي" }, hex: "#2563eb" },
+  { id: "red", name: { en: "Trainer Red", ar: "أحمر المدرب" }, hex: "#dc2626" },
+  { id: "yellow", name: { en: "Volt Yellow", ar: "أصفر كهربائي" }, hex: "#facc15" },
 ];
 
 const apparelSizes = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -228,11 +266,15 @@ const CustomApparelStudio = () => {
               <Palette className="h-3.5 w-3.5" />
               {copy.preview}
             </div>
-            <div
-              className={`apparel-preview apparel-preview-${style.id}`}
-              style={{ "--apparel-color": color.hex } as CSSProperties}
-            >
-              <div className="apparel-print">
+            <div className={`apparel-mockup-stage apparel-mockup-stage-${style.id}`}>
+              <div className="apparel-mockup-frame">
+                <img
+                  src={style.mockups[color.id] ?? style.mockups.clean}
+                  alt={style.name[language]}
+                  className="apparel-mockup-image"
+                />
+              </div>
+              <div className={`apparel-mockup-print apparel-mockup-print-${style.id}`}>
                 <img src={printImage} alt={uploadName || character.name} className="apparel-print-image" />
                 {text.trim() && <div className="apparel-print-text">{text.trim()}</div>}
               </div>
