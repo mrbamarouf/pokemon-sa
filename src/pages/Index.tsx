@@ -8,7 +8,6 @@ import { CupsSection } from "@/components/CupsSection";
 import { RewardGameSection } from "@/components/RewardGameSection";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
-import { SplashIntro } from "@/components/SplashIntro";
 import { useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -29,7 +28,6 @@ const Index = () => {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <SplashIntro />
       <Navbar />
       <Hero />
       <div className="section-divider" />

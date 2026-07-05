@@ -12,6 +12,7 @@ import { AccountProvider } from "@/context/AccountContext";
 import { AccountModal } from "@/components/AccountModal";
 import { PokeballCursor } from "@/components/PokeballCursor";
 import { PokemonWorldFX } from "@/components/PokemonWorldFX";
+import { SplashIntro } from "@/components/SplashIntro";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <SplashIntro />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />

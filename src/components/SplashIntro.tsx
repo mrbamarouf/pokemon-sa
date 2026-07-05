@@ -4,11 +4,50 @@ import { useLanguage } from "@/context/LanguageContext";
 
 type Phase = "spin" | "open" | "gone";
 
+const INTRO_SKIP_KEY = "pokemon-sa-skip-intro-on-next-load";
+let introPlayedForDocument = false;
+
+const readIntroSkip = () => {
+  try {
+    const shouldSkip = window.sessionStorage.getItem(INTRO_SKIP_KEY) === "true";
+    if (shouldSkip) {
+      window.sessionStorage.removeItem(INTRO_SKIP_KEY);
+    }
+    return shouldSkip;
+  } catch {
+    return false;
+  }
+};
+
+const shouldPlayIntro = () => {
+  if (introPlayedForDocument) return false;
+  if (readIntroSkip()) {
+    introPlayedForDocument = true;
+    return false;
+  }
+  return true;
+};
+
+export const skipSplashIntroOnNextLoad = () => {
+  try {
+    window.sessionStorage.setItem(INTRO_SKIP_KEY, "true");
+    window.setTimeout(() => {
+      window.sessionStorage.removeItem(INTRO_SKIP_KEY);
+    }, 500);
+  } catch {
+    // Ignore storage failures; the app-level mount guard still prevents SPA replays.
+  }
+};
+
 export const SplashIntro = () => {
+  const [shouldPlay] = useState(shouldPlayIntro);
   const [phase, setPhase] = useState<Phase>("spin");
   const { t } = useLanguage();
 
   useEffect(() => {
+    if (!shouldPlay) return;
+
+    introPlayedForDocument = true;
     const openTimer = window.setTimeout(() => setPhase("open"), 1500);
     const doneTimer = window.setTimeout(() => setPhase("gone"), 3300);
     document.body.style.overflow = "hidden";
@@ -18,7 +57,7 @@ export const SplashIntro = () => {
       window.clearTimeout(doneTimer);
       document.body.style.overflow = "";
     };
-  }, []);
+  }, [shouldPlay]);
 
   useEffect(() => {
     if (phase === "gone") {
@@ -26,6 +65,7 @@ export const SplashIntro = () => {
     }
   }, [phase]);
 
+  if (!shouldPlay) return null;
   if (phase === "gone") return null;
 
   return (

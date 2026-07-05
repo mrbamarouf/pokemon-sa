@@ -1,9 +1,10 @@
 import { Globe2, ShoppingCart, Menu, X, UserRound } from "lucide-react";
-import { useState, useEffect } from "react";
+import { type MouseEvent, useState, useEffect } from "react";
 import logo from "@/assets/logo.png";
 import { useCart } from "@/store/cart";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAccount } from "@/context/AccountContext";
+import { skipSplashIntroOnNextLoad } from "@/components/SplashIntro";
 
 const links = [
   { href: "/#cards", labelKey: "cards" },
@@ -22,6 +23,14 @@ export const Navbar = () => {
   const { t, toggleLanguage } = useLanguage();
   const { account, openAccount } = useAccount();
 
+  const markInternalNavigation = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    skipSplashIntroOnNextLoad();
+  };
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
@@ -36,7 +45,7 @@ export const Navbar = () => {
       }`}
     >
       <nav className="container flex h-20 items-center justify-between gap-2 md:h-24 lg:h-28">
-        <a href="/#top" className="flex shrink-0 items-center gap-3 group">
+        <a href="/#top" onClick={markInternalNavigation} className="flex shrink-0 items-center gap-3 group">
           <img
             src={logo}
             alt="Pokémon SA"
@@ -50,6 +59,7 @@ export const Navbar = () => {
             <a
               key={l.href}
               href={l.href}
+              onClick={markInternalNavigation}
               className="relative flex min-h-11 items-center text-sm font-medium text-foreground/80 transition-colors hover:text-pk-yellow after:content-[''] after:absolute after:left-0 after:bottom-2 after:h-px after:w-0 after:bg-pk-yellow after:transition-all hover:after:w-full"
             >
               {t(l.labelKey)}
@@ -113,7 +123,10 @@ export const Navbar = () => {
               <a
                 key={l.href}
                 href={l.href}
-                onClick={() => setOpen(false)}
+                onClick={(event) => {
+                  markInternalNavigation(event);
+                  setOpen(false);
+                }}
                 className="py-3 text-base font-medium hover:text-pk-yellow"
               >
                 {t(l.labelKey)}
