@@ -47,7 +47,7 @@ export const CardsSection = () => {
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <span className="text-2xl font-display font-black text-gradient-gold">{formatPrice(c.price)}</span>
                     <button
-                      onClick={() => add({ id: c.id, name: c.name[language], price: c.price, image: c.image })}
+                      onClick={() => add({ id: c.id, name: c.name[language], nameByLanguage: c.name, price: c.price, image: c.image })}
                       className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-pk-blue px-4 text-xs font-bold uppercase tracking-wider text-background transition-all hover:glow-electric sm:w-auto"
                     >
                       <Plus className="h-4 w-4" /> {t("add")}

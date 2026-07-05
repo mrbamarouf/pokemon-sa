@@ -57,7 +57,7 @@ export const BoostersSection = () => {
                   <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
                     <span className="text-3xl font-display font-black text-gradient-gold">{formatPrice(b.price)}</span>
                     <button
-                      onClick={() => add({ id: b.id, name: b.name[language], price: b.price, image: b.image })}
+                      onClick={() => add({ id: b.id, name: b.name[language], nameByLanguage: b.name, price: b.price, image: b.image })}
                       className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-pk-yellow px-5 text-xs font-bold uppercase tracking-wider text-background transition-all hover:glow-yellow sm:w-auto"
                     >
                       <Plus className="h-4 w-4" /> {t("addToCart")}

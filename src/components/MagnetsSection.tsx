@@ -65,7 +65,7 @@ export const MagnetsSection = () => {
                     <span className="text-xl font-display font-black text-gradient-gold">{formatPrice(m.price)}</span>
                   </div>
                   <button
-                    onClick={() => add({ id: m.id, name: m.name[language], price: m.price, image: m.image })}
+                    onClick={() => add({ id: m.id, name: m.name[language], nameByLanguage: m.name, price: m.price, image: m.image })}
                     className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-pk-blue text-background transition-all hover:glow-electric"
                     aria-label={t("addToCart")}
                   >

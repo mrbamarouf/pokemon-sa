@@ -8,7 +8,7 @@ import logo from "@/assets/logo.png";
 import card1 from "@/assets/card-1.jpg";
 import boosterBox from "@/assets/booster-box.jpg";
 import eliteBox from "@/assets/elite-box.jpg";
-import { useLanguage } from "@/context/LanguageContext";
+import { type Language, translate, useLanguage } from "@/context/LanguageContext";
 
 const featuredArt = [card1, boosterBox, eliteBox];
 
@@ -23,7 +23,7 @@ const conditions = ["any", "nearMint", "lightlyPlayed", "sealedOnly", "graded8",
 
 const SpecialRequest = () => {
   const add = useCart((s) => s.add);
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [requestType, setRequestType] = useState(requestTypes[0].labelKey);
   const [itemName, setItemName] = useState("");
   const [budget, setBudget] = useState("");
@@ -45,14 +45,18 @@ const SpecialRequest = () => {
     m.setAttribute("content", desc);
   }, [t]);
 
-  const requestSummary = useMemo(() => {
-    const name = itemName.trim() || t("specialOrder");
-    const parts = [t(requestType), name, t(condition)];
-    if (budget.trim()) parts.push(`${t("budget")} ${budget.trim()}`);
-    if (contact.trim()) parts.push(`${t("contact")} ${contact.trim()}`);
-    if (referenceName) parts.push(`Reference ${referenceName}`);
+  const requestSummaryForLanguage = (targetLanguage: Language) => {
+    const name = itemName.trim() || translate(targetLanguage, "specialOrder");
+    const parts = [translate(targetLanguage, requestType), name, translate(targetLanguage, condition)];
+    if (budget.trim()) parts.push(`${translate(targetLanguage, "budget")} ${budget.trim()}`);
+    if (contact.trim()) parts.push(`${translate(targetLanguage, "contact")} ${contact.trim()}`);
+    if (referenceName) parts.push(`${targetLanguage === "ar" ? "مرجع" : "Reference"} ${referenceName}`);
     return parts.join(" · ");
-  }, [budget, condition, contact, itemName, referenceName, requestType, t]);
+  };
+
+  const requestSummary = useMemo(() => {
+    return requestSummaryForLanguage(language);
+  }, [budget, condition, contact, itemName, language, referenceName, requestType]);
 
   const handleReference = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -64,9 +68,14 @@ const SpecialRequest = () => {
     add({
       id: `special-${requestType}`,
       name: `${t("specialOrder")} Quote`,
+      nameByLanguage: { en: `${translate("en", "specialOrder")} Quote`, ar: `عرض سعر ${translate("ar", "specialOrder")}` },
       price: 0,
       image: logo,
       variant: notes.trim() ? `${requestSummary} · ${notes.trim()}` : requestSummary,
+      variantByLanguage: {
+        en: notes.trim() ? `${requestSummaryForLanguage("en")} · ${notes.trim()}` : requestSummaryForLanguage("en"),
+        ar: notes.trim() ? `${requestSummaryForLanguage("ar")} · ${notes.trim()}` : requestSummaryForLanguage("ar"),
+      },
     });
     setSubmitted(true);
   };

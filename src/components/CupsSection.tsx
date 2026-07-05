@@ -41,6 +41,12 @@ const printModes: { id: PrintMode; labelKey: string; icon: typeof ImageIcon }[] 
   { id: "both", labelKey: "both", icon: Sparkles },
 ];
 
+const modeLabels: Record<PrintMode, Record<Language, string>> = {
+  character: { en: "Image", ar: "صورة" },
+  text: { en: "Text", ar: "نص" },
+  both: { en: "Both", ar: "الاثنين" },
+};
+
 export const CupsSection = () => {
   const add = useCart((s) => s.add);
   const { language, t, formatPrice } = useLanguage();
@@ -56,12 +62,17 @@ export const CupsSection = () => {
   const showsImage = mode === "character" || mode === "both";
   const showsText = mode === "text" || mode === "both";
 
-  const variant = useMemo(() => {
-    const parts = [style.name[language], color.name[language], mode === "both" ? t("both") : mode === "character" ? t("image") : t("text")];
+  const cupNameForLanguage = (targetLanguage: Language) =>
+    targetLanguage === "ar" ? `كاس مخصص ${style.name[targetLanguage]}` : `Custom ${style.name[targetLanguage]}`;
+
+  const variantForLanguage = (targetLanguage: Language) => {
+    const parts = [style.name[targetLanguage], color.name[targetLanguage], modeLabels[mode][targetLanguage]];
     if (showsImage) parts.push(uploadName || art.name);
     if (showsText && customText.trim()) parts.push(`"${customText.trim()}"`);
     return parts.join(" · ");
-  }, [art.name, color.name, customText, language, mode, showsImage, showsText, style.name, t, uploadName]);
+  };
+
+  const variant = useMemo(() => variantForLanguage(language), [art.name, color.name, customText, language, mode, showsImage, showsText, style.name, uploadName]);
 
   const clearUpload = () => {
     setUploadPreview("");
@@ -79,10 +90,12 @@ export const CupsSection = () => {
   const addCup = () => {
     add({
       id: `cup-${style.id}`,
-      name: language === "ar" ? `كاس مخصص ${style.name[language]}` : `Custom ${style.name[language]}`,
+      name: cupNameForLanguage(language),
+      nameByLanguage: { en: cupNameForLanguage("en"), ar: cupNameForLanguage("ar") },
       price: style.price,
       image: showsImage ? printImage : logo,
       variant,
+      variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
     });
   };
 

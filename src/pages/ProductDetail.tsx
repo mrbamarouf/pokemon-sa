@@ -22,15 +22,21 @@ const ProductDetail = () => {
     setActiveImage(product.gallery[0] || product.image);
     setColor(product.colors?.[0]);
     setSize(product.sizes?.[2] || product.sizes?.[0] || "");
+  }, [product]);
+
+  useEffect(() => {
+    if (!product) return;
     document.title = `${product.name[language]} — Pokémon SA`;
   }, [language, product]);
 
-  const variant = useMemo(() => {
+  const variantForLanguage = (targetLanguage: typeof language) => {
     const parts = [];
-    if (color) parts.push(color.name[language]);
+    if (color) parts.push(color.name[targetLanguage]);
     if (size) parts.push(size);
     return parts.join(" · ") || undefined;
-  }, [color, language, size]);
+  };
+
+  const variant = useMemo(() => variantForLanguage(language), [color, language, size]);
 
   if (!product) return <Navigate to="/" replace />;
 
@@ -132,9 +138,11 @@ const ProductDetail = () => {
                   add({
                     id: product.id,
                     name: product.name[language],
+                    nameByLanguage: product.name,
                     price: product.price,
                     image: product.image,
                     variant,
+                    variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
                   })
                 }
                 className="mt-7 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-gradient-electric font-display text-sm font-bold uppercase tracking-wider text-background glow-electric transition-transform hover:scale-[1.02]"

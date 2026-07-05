@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, startTransition, type ReactNode, useCallback, useContext, useLayoutEffect, useMemo, useState } from "react";
 
 export type Language = "en" | "ar";
 
@@ -272,30 +272,80 @@ const translations: Record<Language, Record<string, string>> = {
 
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
+const normalizeLanguage = (value: string | null): Language => (value === "ar" ? "ar" : "en");
+
+export const translate = (language: Language, key: string) => translations[language][key] || translations.en[key] || key;
+
+let pendingScrollPosition: { x: number; y: number } | null = null;
+
+const captureScrollPosition = () => {
+  if (typeof window === "undefined") return;
+  pendingScrollPosition = { x: window.scrollX, y: window.scrollY };
+};
+
+const restoreScrollPosition = ({ x, y }: { x: number; y: number }) => {
+  const restore = () => window.scrollTo(x, y);
+  restore();
+  window.requestAnimationFrame(() => {
+    restore();
+    window.requestAnimationFrame(restore);
+    window.setTimeout(restore, 120);
+    window.setTimeout(restore, 320);
+    window.setTimeout(restore, 700);
+  });
+};
+
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     if (typeof window === "undefined") return "en";
-    return (window.localStorage.getItem("language") as Language) || "en";
+    return normalizeLanguage(window.localStorage.getItem("language"));
   });
 
   const dir = language === "ar" ? "rtl" : "ltr";
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = dir;
     window.localStorage.setItem("language", language);
+
+    if (pendingScrollPosition) {
+      const position = pendingScrollPosition;
+      pendingScrollPosition = null;
+      restoreScrollPosition(position);
+    }
   }, [dir, language]);
+
+  const setLanguage = useCallback((nextLanguage: Language) => {
+    captureScrollPosition();
+    startTransition(() => {
+      setLanguageState(nextLanguage);
+    });
+  }, []);
+
+  const toggleLanguage = useCallback(() => {
+    captureScrollPosition();
+    startTransition(() => {
+      setLanguageState((current) => (current === "en" ? "ar" : "en"));
+    });
+  }, []);
+
+  const t = useCallback((key: string) => translate(language, key), [language]);
+
+  const formatPrice = useCallback(
+    (price: number) => (language === "ar" ? `${price.toLocaleString()} ر.س` : `SAR ${price.toLocaleString()}`),
+    [language],
+  );
 
   const value = useMemo<LanguageContextValue>(
     () => ({
       language,
       dir,
-      setLanguage: setLanguageState,
-      toggleLanguage: () => setLanguageState((current) => (current === "en" ? "ar" : "en")),
-      t: (key) => translations[language][key] || translations.en[key] || key,
-      formatPrice: (price) => (language === "ar" ? `${price.toLocaleString()} ر.س` : `SAR ${price.toLocaleString()}`),
+      setLanguage,
+      toggleLanguage,
+      t,
+      formatPrice,
     }),
-    [dir, language],
+    [dir, formatPrice, language, setLanguage, t, toggleLanguage],
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;

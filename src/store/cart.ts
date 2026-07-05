@@ -3,9 +3,11 @@ import { create } from "zustand";
 export type CartItem = {
   id: string;
   name: string;
+  nameByLanguage?: { en: string; ar: string };
   price: number;
   image: string;
   variant?: string;
+  variantByLanguage?: { en?: string; ar?: string };
   qty: number;
 };
 

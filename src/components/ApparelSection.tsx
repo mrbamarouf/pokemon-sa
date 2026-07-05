@@ -151,6 +151,11 @@ const ApparelCard = ({ item }: { item: Product }) => {
   const [size, setSize] = useState(item.sizes?.[2] || "M");
   const [color, setColor] = useState(item.colors?.[0]);
   const add = useCart((s) => s.add);
+  const variantByLanguage = {
+    en: `${color?.name.en ?? ""} · ${size}`,
+    ar: `${color?.name.ar ?? ""} · ${size}`,
+  };
+
   return (
     <div className="group relative rounded-2xl overflow-hidden border border-border bg-gradient-card card-hover">
       <Link to={`/product/${item.id}`} className="relative block aspect-square overflow-hidden bg-black">
@@ -218,7 +223,15 @@ const ApparelCard = ({ item }: { item: Product }) => {
 
         <button
           onClick={() =>
-            add({ id: item.id, name: item.name[language], price: item.price, image: item.image, variant: `${color?.name[language] ?? ""} · ${size}` })
+            add({
+              id: item.id,
+              name: item.name[language],
+              nameByLanguage: item.name,
+              price: item.price,
+              image: item.image,
+              variant: variantByLanguage[language],
+              variantByLanguage,
+            })
           }
           className="w-full h-11 rounded-full bg-pk-blue text-background font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 hover:glow-electric transition-all"
         >
@@ -243,11 +256,13 @@ const CustomApparelStudio = () => {
 
   const printImage = uploadPreview || character.image;
 
-  const variant = useMemo(() => {
-    const parts = [style.name[language], size, color.name[language], uploadName || character.name];
+  const variantForLanguage = (targetLanguage: Language) => {
+    const parts = [style.name[targetLanguage], size, color.name[targetLanguage], uploadName || character.name];
     if (text.trim()) parts.push(`"${text.trim()}"`);
     return parts.join(" · ");
-  }, [character.name, color.name, language, size, style.name, text, uploadName]);
+  };
+
+  const variant = useMemo(() => variantForLanguage(language), [character.name, color.name, language, size, style.name, text, uploadName]);
 
   const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -410,9 +425,11 @@ const CustomApparelStudio = () => {
                 add({
                   id: `custom-apparel-${style.id}`,
                   name: style.name[language],
+                  nameByLanguage: style.name,
                   price: style.price,
                   image: printImage,
                   variant,
+                  variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
                 })
               }
               className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-gradient-electric font-display text-sm font-bold uppercase tracking-wider text-background glow-electric transition-transform hover:scale-[1.02]"

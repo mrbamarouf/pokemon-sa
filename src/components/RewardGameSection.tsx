@@ -6,6 +6,8 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useAccount } from "@/context/AccountContext";
 
 type GameKey = "wheel" | "quiz" | "memory" | "type";
+type QuizResult = "" | "win" | "lose" | "incorrect";
+type TypeResult = "" | "win" | "lose";
 
 const art = {
   pikachu: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png",
@@ -88,20 +90,32 @@ const rewards = {
 
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 
-const quizBank = {
-  en: [
-    { question: "Which type has the advantage against Water?", options: ["Grass", "Fire", "Rock", "Ice"], answer: "Grass" },
-    { question: "Which Pokémon evolves from Charmander?", options: ["Charmeleon", "Dragonite", "Flareon", "Moltres"], answer: "Charmeleon" },
-    { question: "Which Pokémon is known as the Genetic Pokémon?", options: ["Mewtwo", "Lucario", "Gengar", "Rayquaza"], answer: "Mewtwo" },
-    { question: "Which item is used to catch wild Pokémon?", options: ["Poké Ball", "Potion", "Rare Candy", "Energy Card"], answer: "Poké Ball" },
-  ],
-  ar: [
-    { question: "أي نوع أقوى ضد النوع المائي؟", options: ["Grass", "Fire", "Rock", "Ice"], answer: "Grass" },
-    { question: "ما هو التطور التالي لـ Charmander؟", options: ["Charmeleon", "Dragonite", "Flareon", "Moltres"], answer: "Charmeleon" },
-    { question: "من هو Pokémon المعروف باسم Genetic Pokémon؟", options: ["Mewtwo", "Lucario", "Gengar", "Rayquaza"], answer: "Mewtwo" },
-    { question: "ما الأداة المستخدمة لالتقاط Pokémon؟", options: ["Poké Ball", "Potion", "Rare Candy", "Energy Card"], answer: "Poké Ball" },
-  ],
-};
+const quizBank = [
+  {
+    id: "water-counter",
+    question: { en: "Which type has the advantage against Water?", ar: "أي نوع أقوى ضد النوع المائي؟" },
+    options: ["Grass", "Fire", "Rock", "Ice"],
+    answer: "Grass",
+  },
+  {
+    id: "charmander-evolution",
+    question: { en: "Which Pokémon evolves from Charmander?", ar: "ما هو التطور التالي لـ Charmander؟" },
+    options: ["Charmeleon", "Dragonite", "Flareon", "Moltres"],
+    answer: "Charmeleon",
+  },
+  {
+    id: "genetic-pokemon",
+    question: { en: "Which Pokémon is known as the Genetic Pokémon?", ar: "من هو Pokémon المعروف باسم Genetic Pokémon؟" },
+    options: ["Mewtwo", "Lucario", "Gengar", "Rayquaza"],
+    answer: "Mewtwo",
+  },
+  {
+    id: "catch-item",
+    question: { en: "Which item is used to catch wild Pokémon?", ar: "ما الأداة المستخدمة لالتقاط Pokémon؟" },
+    options: ["Poké Ball", "Potion", "Rare Candy", "Energy Card"],
+    answer: "Poké Ball",
+  },
+];
 
 const memoryPool = [
   { pair: "pikachu", image: art.pikachu },
@@ -143,10 +157,12 @@ const typeBattles = [
   },
 ];
 
-const createQuiz = (language: "en" | "ar") => {
-  const selected = quizBank[language][Math.floor(Math.random() * quizBank[language].length)];
-  return { ...selected, options: shuffle(selected.options) };
+const createQuiz = () => {
+  const selected = quizBank[Math.floor(Math.random() * quizBank.length)];
+  return { id: selected.id, options: shuffle(selected.options) };
 };
+
+const getQuiz = (id: string) => quizBank.find((question) => question.id === id) || quizBank[0];
 
 const createMemoryDeck = () => {
   const pairs = shuffle(memoryPool).slice(0, 2);
@@ -169,15 +185,27 @@ export const RewardGameSection = () => {
   const [turns, setTurns] = useState(0);
   const [quizTime, setQuizTime] = useState(12);
   const [quizStarted, setQuizStarted] = useState(false);
-  const [currentQuiz, setCurrentQuiz] = useState(() => createQuiz(language));
-  const [quizResult, setQuizResult] = useState("");
+  const [currentQuiz, setCurrentQuiz] = useState(() => createQuiz());
+  const [quizResult, setQuizResult] = useState<QuizResult>("");
   const [memoryDeck, setMemoryDeck] = useState(() => createMemoryDeck());
   const [pickedCards, setPickedCards] = useState<string[]>([]);
   const [memoryWin, setMemoryWin] = useState(false);
   const [typeBattle, setTypeBattle] = useState(() => createTypeBattle());
-  const [typeResult, setTypeResult] = useState("");
+  const [typeResult, setTypeResult] = useState<TypeResult>("");
 
   const currentReward = rewardList[rewardIndex];
+  const currentQuizData = getQuiz(currentQuiz.id);
+  const quizResultText =
+    quizResult === "win"
+      ? text.quizWin
+      : quizResult === "lose"
+        ? text.quizLose
+        : quizResult === "incorrect"
+          ? language === "ar"
+            ? "إجابة غير صحيحة. فرصتك اليومية استُخدمت."
+            : "Incorrect answer. Your daily chance has been used."
+          : "";
+  const typeResultText = typeResult === "win" ? text.typeWin : typeResult === "lose" ? text.typeLose : "";
   const rotation = useMemo(() => turns * 360 + rewardIndex * 90 + 45, [rewardIndex, turns]);
 
   const claimChance = (reward?: string) => {
@@ -202,7 +230,7 @@ export const RewardGameSection = () => {
 
   const startQuiz = () => {
     if (!claimChance("QUIZ10")) return;
-    setCurrentQuiz(createQuiz(language));
+    setCurrentQuiz(createQuiz());
     setQuizStarted(true);
     setQuizResult("");
     setQuizTime(12);
@@ -210,7 +238,7 @@ export const RewardGameSection = () => {
       setQuizTime((time) => {
         if (time <= 1) {
           window.clearInterval(timer);
-          setQuizResult(text.quizLose);
+          setQuizResult("lose");
           return 0;
         }
         return time - 1;
@@ -220,11 +248,11 @@ export const RewardGameSection = () => {
 
   const answerQuiz = (option: string) => {
     if (!quizStarted || quizResult) return;
-    if (option === currentQuiz.answer) {
+    if (option === currentQuizData.answer) {
       setRewardIndex(0);
-      setQuizResult(text.quizWin);
+      setQuizResult("win");
     } else {
-      setQuizResult(language === "ar" ? "إجابة غير صحيحة. فرصتك اليومية استُخدمت." : "Incorrect answer. Your daily chance has been used.");
+      setQuizResult("incorrect");
     }
   };
 
@@ -249,10 +277,10 @@ export const RewardGameSection = () => {
     if (!typeResult && !claimChance(win ? "CASH25" : undefined)) return;
     if (win) {
       setRewardIndex(2);
-      setTypeResult(text.typeWin);
+      setTypeResult("win");
       return;
     }
-    setTypeResult(text.typeLose);
+    setTypeResult("lose");
   };
 
   const resetMemory = () => {
@@ -360,7 +388,7 @@ export const RewardGameSection = () => {
               ))}
             </div>
           </div>
-          <RewardPanel title={typeResult || text.type} code={typeResult === text.typeWin ? "CASH25" : "???"} onClick={resetTypeBattle} button={text.reset} />
+          <RewardPanel title={typeResultText || text.type} code={typeResult === "win" ? "CASH25" : "???"} onClick={resetTypeBattle} button={text.reset} />
         </div>
       );
     }
@@ -371,7 +399,7 @@ export const RewardGameSection = () => {
           <div className="mb-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="font-display text-3xl font-black text-gradient-gold">{text.quiz}</div>
-              <p className="mt-2 text-muted-foreground">{quizStarted ? currentQuiz.question : text.question}</p>
+              <p className="mt-2 text-muted-foreground">{quizStarted ? currentQuizData.question[language] : text.question}</p>
             </div>
             <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-pk-yellow bg-pk-yellow/10 font-display text-xl font-black text-pk-yellow sm:h-20 sm:w-20 sm:text-2xl">
               {quizTime}
@@ -389,9 +417,9 @@ export const RewardGameSection = () => {
               </button>
             ))}
           </div>
-          {quizResult && <div className="mt-5 rounded-xl border border-pk-yellow/35 bg-pk-yellow/10 p-4 text-pk-yellow">{quizResult}</div>}
+          {quizResultText && <div className="mt-5 rounded-xl border border-pk-yellow/35 bg-pk-yellow/10 p-4 text-pk-yellow">{quizResultText}</div>}
         </div>
-        <RewardPanel title={quizResult || text.quizDesc} code={quizResult === text.quizWin ? "QUIZ10" : "???"} onClick={startQuiz} button={text.start} />
+        <RewardPanel title={quizResultText || text.quizDesc} code={quizResult === "win" ? "QUIZ10" : "???"} onClick={startQuiz} button={text.start} />
       </div>
     );
   };

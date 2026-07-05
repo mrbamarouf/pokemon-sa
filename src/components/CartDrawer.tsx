@@ -6,7 +6,7 @@ import { useAccount } from "@/context/AccountContext";
 
 export const CartDrawer = () => {
   const { items, isOpen, setOpen, remove, total } = useCart();
-  const { t, formatPrice, dir } = useLanguage();
+  const { language, t, formatPrice } = useLanguage();
   const { account, openAccount } = useAccount();
 
   useEffect(() => {
@@ -25,8 +25,8 @@ export const CartDrawer = () => {
         onClick={() => setOpen(false)}
       />
       <aside
-        className={`fixed top-0 ${dir === "rtl" ? "left-0 border-r" : "right-0 border-l"} bottom-0 z-[70] w-full max-w-md bg-card border-border flex flex-col transition-transform duration-500 ${
-          isOpen ? "translate-x-0" : dir === "rtl" ? "-translate-x-full" : "translate-x-full"
+        className={`fixed bottom-0 right-0 top-0 z-[70] flex w-full max-w-md flex-col border-l border-border bg-card transition-transform duration-500 ${
+          isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex items-center justify-between p-5 border-b border-border">
@@ -45,25 +45,30 @@ export const CartDrawer = () => {
               {t("emptyCart")}
             </div>
           )}
-          {items.map((i) => (
-            <div key={keyOf(i)} className="flex gap-3 p-3 rounded-xl bg-muted/40 border border-border">
-              <img src={i.image} alt={i.name} className="h-16 w-16 rounded-lg object-cover" />
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-sm truncate">{i.name}</div>
-                {i.variant && <div className="text-xs text-muted-foreground">{i.variant}</div>}
-                <div className="text-sm text-pk-yellow font-bold mt-1">
-                  {formatPrice(i.price)} · ×{i.qty}
+          {items.map((i) => {
+            const itemName = i.nameByLanguage?.[language] || i.name;
+            const itemVariant = i.variantByLanguage?.[language] || i.variant;
+
+            return (
+              <div key={keyOf(i)} className="flex gap-3 p-3 rounded-xl bg-muted/40 border border-border">
+                <img src={i.image} alt={itemName} className="h-16 w-16 rounded-lg object-cover" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm truncate">{itemName}</div>
+                  {itemVariant && <div className="text-xs text-muted-foreground">{itemVariant}</div>}
+                  <div className="text-sm text-pk-yellow font-bold mt-1">
+                    {formatPrice(i.price)} · ×{i.qty}
+                  </div>
                 </div>
+                <button
+                  onClick={() => remove(keyOf(i))}
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-full transition hover:bg-destructive/20 hover:text-destructive"
+                  aria-label="Remove item"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
-              <button
-                onClick={() => remove(keyOf(i))}
-                className="grid h-11 w-11 shrink-0 place-items-center rounded-full transition hover:bg-destructive/20 hover:text-destructive"
-                aria-label="Remove item"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="border-t border-border p-5 space-y-4 bg-background">
