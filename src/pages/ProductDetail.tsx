@@ -19,6 +19,11 @@ const ProductDetail = () => {
 
   useEffect(() => {
     if (!product) return;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [product?.id]);
+
+  useEffect(() => {
+    if (!product) return;
     setActiveImage(product.gallery[0] || product.image);
     setColor(product.colors?.[0]);
     setSize(product.sizes?.[2] || product.sizes?.[0] || "");
