@@ -138,7 +138,7 @@ const mobileCopy: Record<Language, Record<string, string>> = {
     enter: "Enter",
     buy: "Buy",
     openProduct: "Open Product",
-    appIntro: "A fast Pokémon SA shopping app for cards, sealed drops, custom gear, rewards and special hunts.",
+    appIntro: "Enter the Pokémon SA world: rare cards, sealed drops, custom gear, quick games and special hunts.",
     featuredCopy: "Start with the strongest products before choosing a category.",
     collectionCopy: "Singles appear like a collector vault: image, name, price and buy action immediately.",
     sealedCopy: "Sealed products are arranged like a drop board with pack count, price and action first.",
@@ -146,6 +146,8 @@ const mobileCopy: Record<Language, Record<string, string>> = {
     cupWorkshop: "Cup Workshop",
     apparelStudio: "Apparel Studio",
     rewardsCopy: "Play one quick challenge, unlock a code, then finish the order.",
+    gameArenaTitle: "Trainer Mini Game",
+    gameArenaCopy: "Choose a challenge, play your daily round, then reveal the prize code.",
     checkoutCopy: "Review the cart, create an account, or ask us to hunt a rare item.",
     concierge: "Concierge",
     trainerAccount: "Trainer Account",
@@ -167,7 +169,7 @@ const mobileCopy: Record<Language, Record<string, string>> = {
     enter: "ادخل",
     buy: "شراء",
     openProduct: "فتح المنتج",
-    appIntro: "تجربة متجر Pokémon SA سريعة للكروت، المنتجات المختومة، التخصيص، المكافآت والطلبات النادرة.",
+    appIntro: "ادخل عالم Pokémon SA: كروت نادرة، منتجات مختومة، تخصيص سريع، ألعاب قصيرة وطلبات خاصة.",
     featuredCopy: "ابدأ بأقوى المنتجات قبل اختيار المنطقة المناسبة.",
     collectionCopy: "الكروت تظهر كخزنة جامعين: صورة، اسم، سعر، وزر شراء مباشرة.",
     sealedCopy: "المنتجات المختومة مرتبة كإصدارات جاهزة مع السعر والإجراء أولًا.",
@@ -175,6 +177,8 @@ const mobileCopy: Record<Language, Record<string, string>> = {
     cupWorkshop: "ورشة الكاسات",
     apparelStudio: "استوديو الملابس",
     rewardsCopy: "العب تحديًا سريعًا، افتح كودًا، ثم أكمل الطلب.",
+    gameArenaTitle: "لعبة المدرب السريعة",
+    gameArenaCopy: "اختر تحديًا، العب جولتك اليومية، ثم اكشف كود الجائزة.",
     checkoutCopy: "راجع السلة، أنشئ حسابك، أو اطلب منا البحث عن قطعة نادرة.",
     concierge: "كونسيرج",
     trainerAccount: "حساب المدرب",
@@ -192,9 +196,27 @@ const cupModeLabels: Record<CupMode, Record<Language, string>> = {
 };
 
 const rewards = [
-  { code: "QUIZ10", title: { en: "10% Off", ar: "خصم 10%" }, icon: Zap },
-  { code: "GIFT-SA", title: { en: "Free Gift", ar: "هدية مجانية" }, icon: Gift },
-  { code: "CASH25", title: { en: "SAR 25 Cashback", ar: "استرداد 25 ر.س" }, icon: Trophy },
+  {
+    code: "QUIZ10",
+    title: { en: "10% Off", ar: "خصم 10%" },
+    mission: { en: "Volt Quiz", ar: "اختبار البرق" },
+    prompt: { en: "Answer fast", ar: "أجب بسرعة" },
+    icon: Zap,
+  },
+  {
+    code: "GIFT-SA",
+    title: { en: "Free Gift", ar: "هدية مجانية" },
+    mission: { en: "Gift Catch", ar: "اصطياد الهدية" },
+    prompt: { en: "Catch the prize", ar: "التقط الجائزة" },
+    icon: Gift,
+  },
+  {
+    code: "CASH25",
+    title: { en: "SAR 25 Cashback", ar: "استرداد 25 ر.س" },
+    mission: { en: "Final Battle", ar: "المعركة الأخيرة" },
+    prompt: { en: "Win the round", ar: "اكسب الجولة" },
+    icon: Trophy,
+  },
 ];
 
 const MobileProductAction = ({ product, compact = false }: { product: Product; compact?: boolean }) => {
@@ -424,6 +446,11 @@ export const MobileStoreApp = () => {
           <img src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png" alt="" />
           <img src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/384.png" alt="" />
           <img src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png" alt="" />
+        </div>
+        <div className="mobile-native-hero-portal" aria-hidden="true">
+          <span />
+          <span />
+          <span />
         </div>
         <div className="mobile-native-hero-panel">
           <img src={logo} alt="Pokémon SA" />
@@ -677,13 +704,26 @@ export const MobileStoreApp = () => {
       </section>
 
       <section id="game" className="mobile-native-chapter mobile-native-rewards">
-        <ChapterHeading icon={Gamepad2} eyebrow={c.rewards} title={t("gameTitle")} description={c.rewardsCopy} />
+        <ChapterHeading icon={Gamepad2} eyebrow={c.rewards} title={c.gameArenaTitle} description={c.gameArenaCopy} />
         <div className="mobile-native-arcade">
           <div className="mobile-native-arcade-screen">
-            <Trophy className="h-8 w-8" />
-            <strong>{unlockedReward.title[language]}</strong>
-            <code>{unlockedReward.code}</code>
-            <p>{account ? (canPlayGame ? c.readyToPlay : `${c.locked} · ${remainingGameLock}`) : t("checkoutNeedsAccount")}</p>
+            <div className="mobile-native-game-scene" aria-hidden="true">
+              <img src={pokemonArt[0].image} alt="" />
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="mobile-native-game-status">
+              <Gamepad2 className="h-5 w-5" />
+              <span>{account ? (canPlayGame ? c.readyToPlay : `${c.locked} · ${remainingGameLock}`) : c.trainerAccount}</span>
+            </div>
+            <strong>{unlockedReward.mission[language]}</strong>
+            <p>{unlockedReward.prompt[language]}</p>
+            <div className="mobile-native-prize-chip">
+              <Trophy className="h-4 w-4" />
+              <span>{unlockedReward.title[language]}</span>
+              <code>{unlockedReward.code}</code>
+            </div>
           </div>
           <div className="mobile-native-reward-grid">
             {rewards.map((reward) => {
@@ -691,8 +731,8 @@ export const MobileStoreApp = () => {
               return (
                 <button key={reward.code} type="button" onClick={() => unlockReward(reward)}>
                   <Icon className="h-5 w-5" />
-                  <span>{reward.title[language]}</span>
-                  <small>{reward.code}</small>
+                  <span>{reward.mission[language]}</span>
+                  <small>{reward.prompt[language]}</small>
                 </button>
               );
             })}

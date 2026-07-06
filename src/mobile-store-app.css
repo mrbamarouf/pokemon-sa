@@ -204,44 +204,90 @@
     position: relative;
     display: grid;
     min-height: 100svh;
-    align-content: center;
-    gap: 0.86rem;
+    align-content: end;
+    gap: 0.64rem;
     overflow: hidden;
     scroll-margin-top: 5rem;
-    padding: calc(5.25rem + env(safe-area-inset-top)) var(--mobile-pad) 2.4rem;
+    padding: calc(4.9rem + env(safe-area-inset-top)) var(--mobile-pad) calc(6.05rem + env(safe-area-inset-bottom));
     background:
-      radial-gradient(circle at 50% 7%, hsl(var(--pk-blue) / 0.34), transparent 17rem),
-      radial-gradient(circle at 10% 52%, hsl(var(--pk-red) / 0.13), transparent 12rem),
-      linear-gradient(180deg, hsl(var(--background) / 0.18), hsl(var(--background) / 0.94) 85%);
+      radial-gradient(circle at 50% 25%, hsl(var(--pk-blue) / 0.42), transparent 18rem),
+      radial-gradient(circle at 80% 32%, hsl(var(--pk-yellow) / 0.18), transparent 10rem),
+      radial-gradient(circle at 9% 54%, hsl(var(--pk-red) / 0.14), transparent 11rem),
+      linear-gradient(180deg, hsl(211 83% 16% / 0.88), hsl(var(--background) / 0.94) 76%, hsl(var(--background)) 100%);
   }
 
   .mobile-native-hero::before {
     pointer-events: none;
     content: "";
     position: absolute;
-    inset: 4.2rem -4.5rem auto;
-    height: 28rem;
-    opacity: 0.86;
+    left: 50%;
+    top: 9.3svh;
+    width: min(26rem, 94vw);
+    height: min(26rem, 94vw);
+    opacity: 0.92;
     background:
-      radial-gradient(circle at 50% 50%, hsl(var(--pk-yellow) / 0.2), transparent 8.8rem),
-      conic-gradient(from 30deg, transparent, hsl(var(--pk-blue) / 0.34), transparent, hsl(var(--pk-yellow) / 0.22), transparent);
-    filter: blur(10px);
-    animation: mobileHeroVortex 13s linear infinite;
+      radial-gradient(circle at 50% 50%, hsl(var(--pk-yellow) / 0.24), transparent 28%),
+      conic-gradient(from 28deg, transparent, hsl(var(--pk-blue) / 0.48), transparent 38%, hsl(var(--pk-yellow) / 0.28), transparent 68%);
+    border-radius: 999px;
+    filter: blur(8px);
+    transform: translateX(-50%);
+    animation: mobileHeroVortex 16s linear infinite;
   }
 
   .mobile-native-hero-panel::before {
     pointer-events: none;
     content: "";
     position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    opacity: 0.9;
+    left: 50%;
+    top: -4.5rem;
+    z-index: -1;
+    width: min(20rem, 82vw);
+    height: min(20rem, 82vw);
+    border: 1px solid hsl(var(--pk-blue) / 0.42);
+    border-radius: 999px;
     background:
-      linear-gradient(135deg, hsl(var(--pk-yellow) / 0.28), transparent 31%, hsl(var(--pk-blue) / 0.22)),
-      linear-gradient(180deg, transparent, hsl(0 0% 100% / 0.05));
-    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    padding: 1px;
+      radial-gradient(circle at 50% 50%, hsl(var(--background) / 0.4), transparent 43%),
+      linear-gradient(180deg, hsl(var(--pk-yellow) / 0.16), transparent 54%);
+    box-shadow: inset 0 0 2.8rem hsl(var(--pk-blue) / 0.24), 0 0 3.5rem hsl(var(--pk-blue) / 0.18);
+    transform: translateX(-50%) rotate(-8deg);
+  }
+
+  .mobile-native-hero-portal {
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+    top: 15svh;
+    z-index: 1;
+    width: min(18rem, 72vw);
+    height: min(18rem, 72vw);
+    transform: translateX(-50%);
+  }
+
+  .mobile-native-hero-portal span {
+    position: absolute;
+    border-radius: 999px;
+  }
+
+  .mobile-native-hero-portal span:nth-child(1) {
+    inset: 0;
+    border: 1px solid hsl(var(--pk-blue) / 0.46);
+    box-shadow: 0 0 2.2rem hsl(var(--pk-blue) / 0.2), inset 0 0 2rem hsl(var(--pk-yellow) / 0.08);
+  }
+
+  .mobile-native-hero-portal span:nth-child(2) {
+    inset: 14%;
+    background: radial-gradient(circle, hsl(var(--pk-blue) / 0.2), transparent 62%);
+    border: 1px solid hsl(var(--pk-yellow) / 0.16);
+  }
+
+  .mobile-native-hero-portal span:nth-child(3) {
+    left: 50%;
+    top: 50%;
+    width: 1.1rem;
+    height: 1.1rem;
+    background: hsl(var(--pk-yellow));
+    box-shadow: 0 0 1.7rem hsl(var(--pk-yellow) / 0.7);
+    transform: translate(-50%, -50%);
   }
 
   .mobile-native-hero-sky {
@@ -260,26 +306,27 @@
   }
 
   .mobile-native-hero-sky img:nth-child(1) {
-    top: 11.5svh;
-    right: -1.2rem;
-    height: clamp(9rem, 39vw, 13rem);
+    top: 12.8svh;
+    right: -1.35rem;
+    height: clamp(9.5rem, 42vw, 13.8rem);
     transform: rotate(6deg);
     animation: mobileFloatOne 5.8s ease-in-out infinite;
   }
 
   .mobile-native-hero-sky img:nth-child(2) {
-    top: 16svh;
-    left: -3.7rem;
-    height: clamp(10.4rem, 45vw, 14.2rem);
-    opacity: 0.86;
+    top: 21svh;
+    left: -3.4rem;
+    height: clamp(10.6rem, 46vw, 14.8rem);
+    opacity: 0.9;
     transform: rotate(-10deg);
     animation: mobileFloatTwo 6.6s ease-in-out infinite;
   }
 
   .mobile-native-hero-sky img:nth-child(3) {
-    top: 31svh;
+    top: 27svh;
     left: 50%;
-    height: clamp(7.7rem, 34vw, 11.2rem);
+    z-index: 1;
+    height: clamp(8.8rem, 38vw, 12.4rem);
     transform: translateX(-48%) rotate(-5deg);
     animation: mobileFloatThree 5.2s ease-in-out infinite;
   }
@@ -291,50 +338,52 @@
     justify-items: center;
     width: min(100%, var(--mobile-shell));
     margin-inline: auto;
-    border: 1px solid hsl(var(--border) / 0.7);
-    border-radius: 1.65rem;
-    padding: clamp(1.05rem, 4vw, 1.32rem);
-    background:
-      linear-gradient(180deg, hsl(var(--card) / 0.76), hsl(var(--background) / 0.72)),
-      radial-gradient(circle at 50% 0%, hsl(var(--pk-yellow) / 0.13), transparent 13rem);
-    box-shadow: 0 1.3rem 3.2rem hsl(0 0% 0% / 0.42), inset 0 1px hsl(0 0% 100% / 0.1);
+    padding: 0 0.2rem;
     text-align: center;
-    backdrop-filter: blur(20px);
   }
 
   .mobile-native-hero-panel > img {
-    width: min(12.2rem, 66vw);
+    width: min(10.4rem, 54vw);
     max-width: 100%;
     height: auto;
     object-fit: contain;
-    filter: drop-shadow(0 0 1.6rem hsl(var(--pk-yellow) / 0.26));
+    filter: drop-shadow(0 0 1.6rem hsl(var(--pk-yellow) / 0.34));
   }
 
   .mobile-native-hero-panel h1 {
-    margin: 0.55rem 0 0;
+    margin: 0.35rem 0 0;
     font-family: var(--font-display, inherit);
-    font-size: clamp(2rem, 10vw, 3.5rem);
+    font-size: clamp(2.55rem, 12vw, 4.2rem);
     font-weight: 950;
-    line-height: 0.92;
+    line-height: 0.88;
     letter-spacing: 0;
     color: hsl(var(--foreground));
+    text-shadow: 0 0.7rem 2.2rem hsl(0 0% 0% / 0.62), 0 0 2.2rem hsl(var(--pk-blue) / 0.28);
     text-wrap: balance;
   }
 
   .mobile-native-hero-panel p {
-    width: min(100%, 25rem);
-    margin: 0.65rem 0 0;
-    color: hsl(var(--muted-foreground));
-    font-size: clamp(0.88rem, 3.6vw, 1rem);
-    line-height: 1.48;
+    width: min(100%, 23rem);
+    margin: 0.5rem 0 0;
+    color: hsl(226 34% 84% / 0.92);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-shadow: 0 0.4rem 1.4rem hsl(0 0% 0% / 0.75);
   }
 
   .mobile-native-hero-actions {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
-    gap: 0.52rem;
+    gap: 0.42rem;
     width: 100%;
-    margin-top: 1.05rem;
+    max-width: 25rem;
+    margin-top: 0.95rem;
+    border: 1px solid hsl(var(--border) / 0.66);
+    border-radius: 999px;
+    padding: 0.32rem;
+    background: hsl(var(--background) / 0.62);
+    box-shadow: 0 1rem 2.4rem hsl(0 0% 0% / 0.34), inset 0 1px hsl(0 0% 100% / 0.08);
+    backdrop-filter: blur(18px);
   }
 
   .mobile-native-hero-actions a,
@@ -380,21 +429,21 @@
     z-index: 2;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.48rem;
+    gap: 0.42rem;
     width: min(100%, var(--mobile-shell));
     margin-inline: auto;
   }
 
   .mobile-native-map a {
     display: grid;
-    min-height: 4.7rem;
+    min-height: 4.1rem;
     align-content: center;
     justify-items: center;
-    gap: 0.38rem;
+    gap: 0.3rem;
     border: 1px solid hsl(var(--border) / 0.68);
-    border-radius: 1.08rem;
-    padding: 0.64rem 0.34rem;
-    background: hsl(var(--card) / 0.58);
+    border-radius: 1rem;
+    padding: 0.56rem 0.34rem;
+    background: hsl(var(--background) / 0.5);
     color: hsl(var(--foreground));
     font-size: 0.7rem;
     font-weight: 900;
@@ -1209,57 +1258,160 @@
   }
 
   .mobile-native-arcade {
+    position: relative;
     display: grid;
-    gap: 0.72rem;
-    border: 1px solid hsl(var(--pk-yellow) / 0.28);
-    border-radius: 1.6rem;
-    padding: 0.82rem;
+    gap: 0.68rem;
+    overflow: hidden;
+    border: 1px solid hsl(var(--pk-blue) / 0.38);
+    border-radius: 1.28rem;
+    padding: 0.72rem;
     background:
-      radial-gradient(circle at 50% 0%, hsl(var(--pk-yellow) / 0.18), transparent 10rem),
-      hsl(var(--card) / 0.8);
-    box-shadow: 0 1.1rem 2.2rem hsl(0 0% 0% / 0.32), inset 0 1px hsl(0 0% 100% / 0.08);
+      radial-gradient(circle at 76% 0%, hsl(var(--pk-yellow) / 0.2), transparent 9rem),
+      radial-gradient(circle at 18% 20%, hsl(var(--pk-blue) / 0.2), transparent 8rem),
+      linear-gradient(180deg, hsl(var(--card) / 0.9), hsl(220 64% 6% / 0.92));
+    box-shadow: 0 0.8rem 1.8rem hsl(0 0% 0% / 0.32), inset 0 1px hsl(0 0% 100% / 0.08);
   }
 
   .mobile-native-arcade-screen {
+    position: relative;
     display: grid;
-    justify-items: center;
-    gap: 0.42rem;
-    min-height: 10.8rem;
-    border: 1px solid hsl(var(--pk-blue) / 0.3);
-    border-radius: 1.18rem;
-    padding: 1rem;
+    min-height: 17rem;
+    align-content: end;
+    justify-items: start;
+    gap: 0.34rem;
+    overflow: hidden;
+    border: 1px solid hsl(var(--pk-blue) / 0.42);
+    border-radius: 1rem;
+    padding: 0.78rem;
     background:
-      linear-gradient(180deg, hsl(var(--pk-blue) / 0.18), hsl(0 0% 0% / 0.32)),
-      repeating-linear-gradient(0deg, hsl(0 0% 100% / 0.06) 0 1px, transparent 1px 5px);
+      radial-gradient(circle at 60% 21%, hsl(var(--pk-yellow) / 0.18), transparent 5.8rem),
+      radial-gradient(circle at 22% 25%, hsl(var(--pk-blue) / 0.32), transparent 8rem),
+      linear-gradient(180deg, hsl(209 75% 18% / 0.78), hsl(224 72% 5% / 0.86));
     color: hsl(var(--foreground));
-    text-align: center;
+    text-align: start;
   }
 
-  .mobile-native-arcade-screen svg {
+  .mobile-native-game-scene {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+  }
+
+  .mobile-native-game-scene img {
+    position: absolute;
+    right: 4%;
+    top: 0.55rem;
+    width: min(10.5rem, 45vw);
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 1rem 1.4rem hsl(0 0% 0% / 0.48));
+    animation: mobileGameAvatar 4.2s ease-in-out infinite;
+  }
+
+  .mobile-native-game-scene span {
+    position: absolute;
+    border-radius: 999px;
+  }
+
+  .mobile-native-game-scene span:nth-of-type(1) {
+    left: 0.9rem;
+    top: 1rem;
+    width: 5.2rem;
+    height: 5.2rem;
+    border: 1px solid hsl(var(--pk-blue) / 0.45);
+    box-shadow: inset 0 0 1.6rem hsl(var(--pk-blue) / 0.16);
+  }
+
+  .mobile-native-game-scene span:nth-of-type(2) {
+    left: 2.4rem;
+    top: 5rem;
+    width: 0.72rem;
+    height: 0.72rem;
+    background: hsl(var(--pk-yellow));
+    box-shadow: 0 0 1rem hsl(var(--pk-yellow) / 0.62);
+  }
+
+  .mobile-native-game-scene span:nth-of-type(3) {
+    right: -2.3rem;
+    top: 5.9rem;
+    width: 8rem;
+    height: 8rem;
+    border: 1px solid hsl(var(--pk-yellow) / 0.22);
+  }
+
+  .mobile-native-game-status {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid hsl(var(--pk-yellow) / 0.35);
+    border-radius: 999px;
+    padding: 0.34rem 0.58rem;
+    background: hsl(var(--background) / 0.54);
     color: hsl(var(--pk-yellow));
-    filter: drop-shadow(0 0 1rem hsl(var(--pk-yellow) / 0.25));
+    font-size: 0.7rem;
+    font-weight: 900;
+    line-height: 1.1;
+    backdrop-filter: blur(14px);
   }
 
   .mobile-native-arcade-screen strong {
+    position: relative;
+    z-index: 1;
     font-family: var(--font-display, inherit);
-    font-size: 1.55rem;
+    font-size: 1.8rem;
     font-weight: 950;
-    line-height: 0.98;
-  }
-
-  .mobile-native-arcade-screen code {
-    border: 1px dashed hsl(var(--pk-yellow) / 0.45);
-    border-radius: 999px;
-    padding: 0.42rem 0.72rem;
-    color: hsl(var(--pk-yellow));
-    font-size: 0.9rem;
-    font-weight: 950;
+    line-height: 0.95;
+    text-shadow: 0 0.45rem 1.2rem hsl(0 0% 0% / 0.5);
   }
 
   .mobile-native-arcade-screen p {
+    position: relative;
+    z-index: 1;
     margin: 0;
-    color: hsl(var(--muted-foreground));
+    color: hsl(226 34% 84% / 0.9);
     font-size: 0.82rem;
+    line-height: 1.35;
+  }
+
+  .mobile-native-prize-chip {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.42rem;
+    width: 100%;
+    margin-top: 0.34rem;
+    border: 1px solid hsl(var(--pk-yellow) / 0.36);
+    border-radius: 0.92rem;
+    padding: 0.52rem 0.62rem;
+    background: hsl(var(--background) / 0.62);
+    color: hsl(var(--foreground));
+  }
+
+  .mobile-native-prize-chip svg {
+    color: hsl(var(--pk-yellow));
+  }
+
+  .mobile-native-prize-chip span {
+    overflow: hidden;
+    font-size: 0.82rem;
+    font-weight: 950;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-native-prize-chip code {
+    border-radius: 999px;
+    padding: 0.28rem 0.5rem;
+    background: hsl(var(--pk-yellow) / 0.12);
+    color: hsl(var(--pk-yellow));
+    font-size: 0.68rem;
+    font-weight: 950;
   }
 
   .mobile-native-reward-grid {
@@ -1269,33 +1421,48 @@
   }
 
   .mobile-native-reward-grid button {
+    position: relative;
     display: grid;
-    min-height: 6.4rem;
-    place-items: center;
-    gap: 0.24rem;
+    min-height: 6.85rem;
+    align-content: center;
+    justify-items: center;
+    gap: 0.3rem;
+    overflow: hidden;
     border: 1px solid hsl(var(--border) / 0.68);
     border-radius: 1rem;
-    padding: 0.5rem 0.34rem;
-    background: hsl(var(--background) / 0.5);
+    padding: 0.54rem 0.36rem;
+    background:
+      radial-gradient(circle at 50% 0%, hsl(var(--pk-blue) / 0.16), transparent 4.4rem),
+      hsl(var(--background) / 0.58);
     color: hsl(var(--foreground));
     text-align: center;
     touch-action: manipulation;
   }
 
+  .mobile-native-reward-grid button::before {
+    content: "";
+    width: 2.5rem;
+    height: 0.2rem;
+    border-radius: 999px;
+    background: hsl(var(--pk-yellow) / 0.45);
+  }
+
   .mobile-native-reward-grid svg {
     color: hsl(var(--pk-blue));
+    filter: drop-shadow(0 0 0.8rem hsl(var(--pk-blue) / 0.32));
   }
 
   .mobile-native-reward-grid span {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     font-weight: 950;
-    line-height: 1.02;
+    line-height: 1.06;
   }
 
   .mobile-native-reward-grid small {
-    color: hsl(var(--pk-yellow));
+    color: hsl(var(--muted-foreground));
     font-size: 0.62rem;
-    font-weight: 950;
+    font-weight: 850;
+    line-height: 1.12;
   }
 
   .mobile-native-checkout-card {
@@ -1697,6 +1864,127 @@
     direction: rtl;
   }
 
+  [dir="rtl"] .mobile-store-app,
+  [dir="rtl"] .product-page,
+  [dir="rtl"] .special-request-page {
+    font-family: "SF Arabic", "Geeza Pro", "Tahoma", "Arial", system-ui, sans-serif;
+    text-rendering: geometricPrecision;
+  }
+
+  [dir="rtl"] .mobile-native-heading {
+    grid-template-columns: minmax(0, 1fr) auto;
+    direction: rtl;
+    text-align: right;
+  }
+
+  [dir="rtl"] .mobile-native-heading-orb {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  [dir="rtl"] .mobile-native-heading > div:last-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  [dir="rtl"] .mobile-native-heading span,
+  [dir="rtl"] .mobile-native-checkout-card span,
+  [dir="rtl"] .mobile-native-field span,
+  [dir="rtl"] .special-request-page label,
+  [dir="rtl"] .product-page .product-info-card > .text-\[11px\] {
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+  }
+
+  [dir="rtl"] .mobile-native-heading h2 {
+    font-family: "SF Arabic", "Geeza Pro", "Tahoma", "Arial", system-ui, sans-serif;
+    font-size: clamp(1.42rem, 6.3vw, 2.05rem);
+    font-weight: 900;
+    line-height: 1.18;
+    text-wrap: balance;
+  }
+
+  [dir="rtl"] .mobile-native-heading p,
+  [dir="rtl"] .mobile-native-hero-panel p,
+  [dir="rtl"] .mobile-native-concierge p,
+  [dir="rtl"] .mobile-native-footer p,
+  [dir="rtl"] .special-request-page p,
+  [dir="rtl"] .product-page .product-info-card p,
+  [dir="rtl"] .product-page .product-info-panels p,
+  [dir="rtl"] .product-page .product-info-panels li {
+    line-height: 1.72 !important;
+  }
+
+  [dir="rtl"] .mobile-native-hero-panel h1 {
+    font-family: "SF Arabic", "Geeza Pro", "Tahoma", "Arial", system-ui, sans-serif;
+    font-size: clamp(2.12rem, 10.6vw, 3.35rem);
+    font-weight: 900;
+    line-height: 1.08;
+  }
+
+  [dir="rtl"] .mobile-native-hero-actions a,
+  [dir="rtl"] .mobile-native-primary-action,
+  [dir="rtl"] .mobile-native-product-row button,
+  [dir="rtl"] .mobile-native-sticker button,
+  [dir="rtl"] .mobile-native-segment button,
+  [dir="rtl"] .mobile-native-mode-grid button,
+  [dir="rtl"] .mobile-native-size-grid button,
+  [dir="rtl"] .mobile-native-reward-grid button,
+  [dir="rtl"] .cart-drawer button {
+    font-family: "SF Arabic", "Geeza Pro", "Tahoma", "Arial", system-ui, sans-serif;
+    font-weight: 850;
+    line-height: 1.2;
+  }
+
+  [dir="rtl"] .mobile-native-product-title,
+  [dir="rtl"] .mobile-native-feature-card strong,
+  [dir="rtl"] .mobile-native-sticker strong,
+  [dir="rtl"] .mobile-native-cup-summary strong,
+  [dir="rtl"] .mobile-native-apparel-summary strong,
+  [dir="rtl"] .mobile-native-arcade-screen strong,
+  [dir="rtl"] .mobile-native-checkout-card strong,
+  [dir="rtl"] .mobile-native-concierge strong,
+  [dir="rtl"] .product-page .product-info-card h1,
+  [dir="rtl"] .product-page .product-info-panels h2,
+  [dir="rtl"] .special-request-page h1,
+  [dir="rtl"] .special-request-page h2 {
+    font-family: "SF Arabic", "Geeza Pro", "Tahoma", "Arial", system-ui, sans-serif;
+    font-weight: 900;
+    line-height: 1.22;
+    unicode-bidi: plaintext;
+  }
+
+  [dir="rtl"] .mobile-native-product-kicker,
+  [dir="rtl"] .mobile-native-feature-card small,
+  [dir="rtl"] .mobile-native-tabbar span,
+  [dir="rtl"] .mobile-native-map a,
+  [dir="rtl"] .mobile-native-reward-grid small,
+  [dir="rtl"] .mobile-native-game-status {
+    line-height: 1.25;
+  }
+
+  [dir="rtl"] .mobile-native-feature-card,
+  [dir="rtl"] .mobile-native-product,
+  [dir="rtl"] .mobile-native-sticker,
+  [dir="rtl"] .mobile-native-cup-summary,
+  [dir="rtl"] .mobile-native-apparel-summary,
+  [dir="rtl"] .mobile-native-concierge,
+  [dir="rtl"] .mobile-native-arcade-screen,
+  [dir="rtl"] .cart-drawer,
+  [dir="rtl"] .product-page,
+  [dir="rtl"] .special-request-page {
+    text-align: right;
+  }
+
+  [dir="rtl"] .mobile-native-prize-chip {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    direction: rtl;
+  }
+
+  [dir="rtl"] .mobile-native-prize-chip code {
+    direction: ltr;
+  }
+
   [dir="rtl"] .mobile-native-product-row {
     grid-template-columns: auto minmax(0, 1fr);
   }
@@ -1732,19 +2020,19 @@
   }
 
   .mobile-native-hero {
-    padding-top: calc(5rem + env(safe-area-inset-top));
+    padding-top: calc(4.8rem + env(safe-area-inset-top));
   }
 
   .mobile-native-hero-panel {
-    padding: 0.94rem;
+    padding: 0 0.1rem;
   }
 
   .mobile-native-hero-sky img:nth-child(1) {
-    right: -2.6rem;
+    right: -2rem;
   }
 
   .mobile-native-hero-sky img:nth-child(2) {
-    left: -4.2rem;
+    left: -3.9rem;
   }
 
   .mobile-native-map {
@@ -1816,11 +2104,20 @@
   }
 }
 
+@media (max-width: 768px) {
+  [dir="rtl"] .mobile-native-tabbar span {
+    font-size: clamp(0.5rem, 2vw, 0.64rem) !important;
+    font-weight: 850;
+    line-height: 1.18 !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mobile-store-app *,
   .mobile-store-app::after,
   .mobile-native-hero::before,
-  .mobile-native-hero-sky img {
+  .mobile-native-hero-sky img,
+  .mobile-native-game-scene img {
     animation: none !important;
     transition-duration: 0.01ms !important;
   }
@@ -1875,5 +2172,16 @@
 
   50% {
     transform: translate3d(-51%, -0.55rem, 0) rotate(-1deg);
+  }
+}
+
+@keyframes mobileGameAvatar {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-4deg);
+  }
+
+  50% {
+    transform: translate3d(-0.16rem, -0.45rem, 0) rotate(2deg);
   }
 }
