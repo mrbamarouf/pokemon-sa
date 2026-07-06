@@ -28,7 +28,7 @@ const Index = () => {
   }, [t]);
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="has-mobile-shop-dock min-h-screen bg-background text-foreground">
       <Navbar />
       <Hero />
       <MobileShopDock />

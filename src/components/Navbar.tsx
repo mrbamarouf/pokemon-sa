@@ -45,7 +45,7 @@ export const Navbar = () => {
       }`}
     >
       <nav className="site-nav container flex h-20 items-center justify-between gap-2 md:h-24 lg:h-28">
-        <a href="/#top" onClick={markInternalNavigation} className="flex shrink-0 items-center gap-3 group">
+        <a href="/#top" onClick={markInternalNavigation} className="nav-logo-link flex shrink-0 items-center gap-3 group">
           <img
             src={logo}
             alt="Pokémon SA"
@@ -67,17 +67,17 @@ export const Navbar = () => {
           ))}
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="nav-action-cluster flex shrink-0 items-center gap-2 sm:gap-3">
           <button
             onClick={openAccount}
-            className="hidden h-11 items-center gap-2 rounded-full border border-border bg-muted/60 px-3 text-xs font-bold hover:border-pk-yellow hover:text-pk-yellow lg:flex"
+            className="nav-account-button hidden h-11 items-center gap-2 rounded-full border border-border bg-muted/60 px-3 text-xs font-bold hover:border-pk-yellow hover:text-pk-yellow lg:flex"
           >
             <UserRound className="h-4 w-4" />
             {account ? account.name.split(" ")[0] : t("account")}
           </button>
           <button
             onClick={toggleLanguage}
-            className="h-11 px-2 sm:px-3 grid place-items-center rounded-full bg-muted/60 border border-border text-xs font-bold hover:border-pk-yellow hover:text-pk-yellow transition-all"
+            className="nav-language-button h-11 px-2 sm:px-3 grid place-items-center rounded-full bg-muted/60 border border-border text-xs font-bold hover:border-pk-yellow hover:text-pk-yellow transition-all"
             aria-label="Toggle language"
           >
             <span className="flex items-center gap-1.5">
@@ -87,7 +87,7 @@ export const Navbar = () => {
           </button>
           <button
             onClick={() => setCartOpen(true)}
-            className="relative h-11 w-11 grid place-items-center rounded-full bg-muted/60 border border-border hover:border-pk-yellow hover:glow-yellow transition-all"
+            className="nav-cart-button relative h-11 w-11 grid place-items-center rounded-full bg-muted/60 border border-border hover:border-pk-yellow hover:glow-yellow transition-all"
             aria-label={t("cart")}
           >
             <ShoppingCart className="h-5 w-5" />
@@ -98,7 +98,7 @@ export const Navbar = () => {
             )}
           </button>
           <button
-            className="grid h-11 w-11 place-items-center rounded-full border border-border bg-muted/60 lg:hidden"
+            className="nav-menu-button grid h-11 w-11 place-items-center rounded-full border border-border bg-muted/60 lg:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label="Menu"
           >
