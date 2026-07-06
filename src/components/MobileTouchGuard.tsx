@@ -8,6 +8,11 @@ const railSelector = [
   ".reward-choice-grid",
   ".apparel-character-grid",
   ".mobile-shop-dock-track",
+  ".mobile-native-feature-stack",
+  ".mobile-native-drop-board",
+  ".mobile-native-character-strip",
+  ".mobile-native-apparel-products",
+  ".mobile-native-tabbar",
   ".mobile-apparel-card .mobile-card-options .flex",
 ].join(",");
 

@@ -27,7 +27,7 @@ const App = () => (
           <Sonner />
           <SplashIntro />
           <MobileTouchGuard />
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <RouteScrollManager />
             <Routes>
               <Route path="/" element={<Index />} />

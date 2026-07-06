@@ -9,11 +9,29 @@ import { RewardGameSection } from "@/components/RewardGameSection";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 import { MobileShopDock } from "@/components/MobileShopDock";
-import { useEffect } from "react";
+import { MobileStoreApp } from "@/components/MobileStoreApp";
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
+
+const useMobileStoreExperience = () => {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window === "undefined" ? false : window.matchMedia("(max-width: 768px)").matches,
+  );
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 768px)");
+    const update = () => setIsMobile(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  return isMobile;
+};
 
 const Index = () => {
   const { t } = useLanguage();
+  const isMobileStoreExperience = useMobileStoreExperience();
 
   useEffect(() => {
     document.title = t("homeTitle");
@@ -28,18 +46,24 @@ const Index = () => {
   }, [t]);
 
   return (
-    <main className="mobile-app-home has-mobile-shop-dock min-h-screen bg-background text-foreground">
-      <Navbar />
-      <Hero />
-      <MobileShopDock />
-      <div className="section-divider" />
-      <CardsSection />
-      <BoostersSection />
-      <MagnetsSection />
-      <CupsSection />
-      <ApparelSection />
-      <RewardGameSection />
-      <Footer />
+    <main className={`${isMobileStoreExperience ? "mobile-native-root" : "mobile-app-home has-mobile-shop-dock"} min-h-screen bg-background text-foreground`}>
+      {isMobileStoreExperience ? (
+        <MobileStoreApp />
+      ) : (
+        <>
+          <Navbar />
+          <Hero />
+          <MobileShopDock />
+          <div className="section-divider" />
+          <CardsSection />
+          <BoostersSection />
+          <MagnetsSection />
+          <CupsSection />
+          <ApparelSection />
+          <RewardGameSection />
+          <Footer />
+        </>
+      )}
       <CartDrawer />
     </main>
   );
