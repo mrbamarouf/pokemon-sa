@@ -467,6 +467,7 @@ export const RewardGameSection = () => {
                 <button
                   key={game.key}
                   onClick={() => setActive(game.key)}
+                  aria-pressed={active === game.key}
                   className={`mobile-game-tab rounded-2xl border p-4 text-start transition ${
                     active === game.key ? "border-pk-yellow bg-pk-yellow/10" : "border-border bg-card/55 hover:border-pk-blue"
                   }`}
@@ -481,7 +482,7 @@ export const RewardGameSection = () => {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div className="mobile-game-control-bar mb-4 flex flex-wrap items-center gap-3">
             <div className="inline-flex min-h-11 items-center gap-2 rounded-full border border-pk-blue/35 bg-pk-blue/10 px-4 py-2 text-xs font-bold text-pk-blue">
               <Clock3 className="h-4 w-4" />
               {text.choose}
@@ -516,8 +517,8 @@ export const RewardGameSection = () => {
               )}
             </button>
           </div>
-          {!account && <p className="mb-4 rounded-xl border border-pk-yellow/30 bg-pk-yellow/10 p-3 text-sm text-pk-yellow">{text.accountRequired}</p>}
-          {account && !canPlayGame && <p className="mb-4 rounded-xl border border-pk-yellow/30 bg-pk-yellow/10 p-3 text-sm text-pk-yellow">{text.locked} {text.nextChance} {remainingGameLock}.</p>}
+          {!account && <p className="mobile-game-account-note mb-4 rounded-xl border border-pk-yellow/30 bg-pk-yellow/10 p-3 text-sm text-pk-yellow">{text.accountRequired}</p>}
+          {account && !canPlayGame && <p className="mobile-game-account-note mb-4 rounded-xl border border-pk-yellow/30 bg-pk-yellow/10 p-3 text-sm text-pk-yellow">{text.locked} {text.nextChance} {remainingGameLock}.</p>}
           {renderGame()}
         </Reveal>
       </div>

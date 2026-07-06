@@ -7550,3 +7550,515 @@
     animation: none !important;
   }
 }
+
+@keyframes psa-mobile-logo-centered-float {
+  0%,
+  100% {
+    translate: -50% 0;
+  }
+  50% {
+    translate: -50% -6px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-app-home .mobile-hero-logo {
+    inset-inline-start: auto !important;
+    inset-inline-end: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    translate: -50% 0;
+    transform: none !important;
+    animation: psa-mobile-logo-centered-float 6s ease-in-out infinite !important;
+  }
+
+  .mobile-app-home .site-nav > .nav-logo-link {
+    min-width: 5.45rem;
+    min-height: 2.62rem;
+    display: grid;
+    place-items: center;
+  }
+
+  .mobile-app-home .nav-menu-button,
+  .mobile-app-home .nav-language-button,
+  .mobile-app-home .nav-cart-button {
+    width: 2.62rem !important;
+    min-width: 2.62rem !important;
+    height: 2.62rem !important;
+    min-height: 2.62rem !important;
+  }
+
+  .mobile-app-home .section-header {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .mobile-app-home .section-header-title,
+  .mobile-app-home .section-header-copy {
+    max-width: 100%;
+  }
+
+  .mobile-app-home #cards .mobile-product-rail {
+    display: grid !important;
+    grid-auto-flow: row;
+    grid-auto-columns: initial;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.54rem;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    margin-inline: 0;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+    touch-action: pan-y;
+  }
+
+  .mobile-app-home #cards .mobile-product-rail > .mobile-snap-item {
+    min-width: 0;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  .mobile-app-home #cards .mobile-product-rail > .mobile-snap-item:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .mobile-app-home #cards .mobile-product-rail > .mobile-snap-item:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .mobile-app-home #cards .mobile-product-card {
+    min-height: 7.6rem;
+    grid-template-columns: minmax(0, 1fr) minmax(4.7rem, 36%);
+  }
+
+  .mobile-app-home #cards .mobile-product-rail > .mobile-snap-item:first-child .mobile-product-card {
+    min-height: 8.05rem;
+    grid-template-columns: minmax(0, 1fr) minmax(6rem, 34%);
+    background:
+      radial-gradient(circle at 88% 0%, hsl(var(--pk-yellow) / 0.18), transparent 8rem),
+      radial-gradient(circle at 10% 100%, hsl(var(--pk-blue) / 0.16), transparent 8rem),
+      linear-gradient(145deg, hsl(230 34% 12% / 0.98), hsl(230 38% 5% / 0.98));
+  }
+
+  .mobile-app-home #cards .mobile-product-rail > .mobile-snap-item:last-child .mobile-product-card {
+    min-height: 7.55rem;
+    grid-template-columns: minmax(0, 1fr) minmax(5.7rem, 32%);
+  }
+
+  .mobile-app-home #cards .mobile-card-body {
+    gap: 0.34rem;
+  }
+
+  .mobile-app-home #cards .mobile-card-title {
+    -webkit-line-clamp: 2;
+    font-size: clamp(0.68rem, 2.8vw, 0.86rem) !important;
+  }
+
+  .mobile-app-home #cards .mobile-card-price {
+    font-size: clamp(0.88rem, 3.35vw, 1.08rem) !important;
+  }
+
+  .mobile-app-home #cards .mobile-card-cta {
+    width: 100% !important;
+    min-height: 2.16rem !important;
+    height: 2.16rem !important;
+  }
+
+  .mobile-app-home #cards .mobile-card-media img {
+    max-height: 7.15rem;
+    padding: 0.26rem !important;
+  }
+
+  .mobile-app-home #cards .mobile-product-rail > .mobile-snap-item:first-child .mobile-card-media img {
+    max-height: 7.8rem;
+  }
+
+  .mobile-app-home #game {
+    background:
+      radial-gradient(circle at 16% 8%, hsl(var(--pk-yellow) / 0.18), transparent 10rem),
+      radial-gradient(circle at 82% 42%, hsl(var(--pk-blue) / 0.18), transparent 14rem),
+      linear-gradient(180deg, hsl(230 36% 5%), hsl(224 54% 7% / 0.94) 48%, hsl(230 36% 5%));
+  }
+
+  .mobile-app-home #game > .container {
+    gap: 0.58rem;
+  }
+
+  .mobile-app-home #game .section-header {
+    margin-bottom: 0.34rem !important;
+    border-color: hsl(var(--pk-yellow) / 0.3);
+    background:
+      radial-gradient(circle at 82% 0%, hsl(var(--pk-yellow) / 0.14), transparent 8rem),
+      linear-gradient(145deg, hsl(var(--background) / 0.78), hsl(224 54% 8% / 0.78));
+  }
+
+  .mobile-app-home #game .mobile-game-tabs {
+    display: grid !important;
+    grid-auto-flow: row;
+    grid-auto-columns: initial;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.46rem;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    margin-inline: 0;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+    touch-action: pan-y;
+  }
+
+  .mobile-app-home #game .mobile-game-tab {
+    display: grid;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 3.18rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.44rem;
+    border-radius: 0.78rem;
+    padding: 0.46rem 0.54rem;
+    text-align: start;
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.06);
+  }
+
+  .mobile-app-home #game .mobile-game-tab[aria-pressed="true"] {
+    background:
+      radial-gradient(circle at 92% 0%, hsl(var(--pk-yellow) / 0.2), transparent 5rem),
+      hsl(var(--pk-blue) / 0.14);
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.1), 0 0 18px hsl(var(--pk-blue) / 0.16);
+  }
+
+  .mobile-app-home #game .mobile-game-tab svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0;
+  }
+
+  .mobile-app-home #game .mobile-game-tab .font-display {
+    min-width: 0;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1.08;
+  }
+
+  .mobile-app-home #game .mobile-game-tab p {
+    display: none;
+  }
+
+  .mobile-app-home #game .mobile-game-control-bar {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 0.46rem;
+    margin-bottom: 0.46rem;
+  }
+
+  .mobile-app-home #game .mobile-game-control-bar > * {
+    width: 100%;
+    min-height: 2.55rem;
+    justify-content: center;
+    border-radius: 0.76rem;
+    padding: 0.42rem 0.52rem;
+    font-size: 0.66rem;
+    line-height: 1.15;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .mobile-app-home #game .mobile-game-account-note {
+    margin-bottom: 0.48rem;
+    border-radius: 0.78rem;
+    padding: 0.52rem 0.62rem;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-app-home #game .reward-game-layout {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 0.52rem;
+  }
+
+  .mobile-app-home #game .reward-game-arena,
+  .mobile-app-home #game .reward-wheel-card,
+  .mobile-app-home #game .reward-panel {
+    position: relative;
+    overflow: hidden;
+    border-color: hsl(var(--pk-yellow) / 0.22);
+    border-radius: 0.9rem;
+    background:
+      radial-gradient(circle at 16% 0%, hsl(var(--pk-blue) / 0.18), transparent 8rem),
+      radial-gradient(circle at 88% 100%, hsl(var(--pk-yellow) / 0.13), transparent 8rem),
+      linear-gradient(180deg, hsl(230 34% 10% / 0.95), hsl(230 38% 5% / 0.96));
+    padding: 0.62rem;
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.07), 0 16px 34px hsl(0 0% 0% / 0.32);
+  }
+
+  .mobile-app-home #game .reward-game-arena::before,
+  .mobile-app-home #game .reward-wheel-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(hsl(var(--pk-blue) / 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--pk-yellow) / 0.08) 1px, transparent 1px);
+    background-size: 36px 36px;
+    opacity: 0.34;
+  }
+
+  .mobile-app-home #game .reward-game-arena > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .mobile-app-home #game .reward-game-arena > .mb-5 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.56rem;
+    margin-bottom: 0.56rem;
+  }
+
+  .mobile-app-home #game .reward-game-arena .font-display.text-3xl {
+    font-size: 1.3rem;
+    line-height: 1.05;
+  }
+
+  .mobile-app-home #game .reward-game-arena p,
+  .mobile-app-home #game .reward-panel p {
+    font-size: 0.74rem;
+    line-height: 1.32;
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-app-home #game .reward-game-arena .h-16 {
+    width: 3.18rem;
+    height: 3.18rem;
+    font-size: 1.05rem;
+  }
+
+  .mobile-app-home #game .reward-game-arena > .grid.gap-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.42rem;
+  }
+
+  .mobile-app-home #game .reward-game-arena button {
+    min-height: 2.7rem;
+    border-radius: 0.72rem;
+    padding: 0.45rem 0.52rem;
+    font-size: 0.86rem;
+    line-height: 1.1;
+  }
+
+  .mobile-app-home #game .reward-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(6.8rem, 34%);
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .mobile-app-home #game .reward-panel > svg {
+    display: none;
+  }
+
+  .mobile-app-home #game .reward-panel h3 {
+    grid-column: 1 / -1;
+    font-size: 1rem;
+    line-height: 1.1;
+  }
+
+  .mobile-app-home #game .reward-panel > div {
+    margin-top: 0 !important;
+    border-radius: 0.72rem;
+    padding: 0.5rem;
+  }
+
+  .mobile-app-home #game .reward-panel > div .text-\[10px\],
+  .mobile-app-home #game .reward-panel > div p {
+    display: none;
+  }
+
+  .mobile-app-home #game .reward-panel > div .font-display {
+    margin-top: 0;
+    font-size: 1.05rem;
+    line-height: 1.05;
+  }
+
+  .mobile-app-home #game .reward-panel > button {
+    height: auto;
+    min-height: 3.2rem;
+    margin-top: 0;
+    border-radius: 0.78rem;
+    padding: 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0;
+  }
+
+  .mobile-app-home #game .reward-wheel-card {
+    min-height: 232px;
+  }
+
+  .mobile-app-home #game .reward-wheel {
+    width: min(48vw, 12rem) !important;
+    height: min(48vw, 12rem) !important;
+  }
+
+  .mobile-app-home #game .reward-game-arena.grid-cols-2 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 0.38rem;
+  }
+
+  .mobile-app-home #game .reward-choice-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.42rem;
+  }
+
+  .mobile-app-home #game .reward-choice-grid button {
+    min-height: 6.4rem;
+    padding: 0.42rem;
+  }
+
+  .mobile-app-home #game .reward-choice-grid img {
+    width: 4.1rem;
+    height: 4.1rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .mobile-app-home .mobile-shop-dock {
+    left: max(0.48rem, env(safe-area-inset-left));
+    right: max(0.48rem, env(safe-area-inset-right));
+    padding: 0.38rem;
+  }
+
+  .mobile-app-home .mobile-shop-dock-track {
+    display: grid !important;
+    width: 100%;
+    grid-auto-flow: row;
+    grid-auto-columns: initial;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.16rem;
+    overflow: visible;
+    scroll-snap-type: none;
+    touch-action: manipulation;
+  }
+
+  .mobile-app-home .mobile-shop-dock-item {
+    min-width: 0;
+    min-height: 2.82rem;
+    gap: 0.08rem;
+    border-radius: 0.66rem;
+    padding: 0.24rem 0.06rem;
+  }
+
+  .mobile-app-home .mobile-shop-dock-icon {
+    width: 1.32rem;
+    height: 1.32rem;
+    border-radius: 0.52rem;
+  }
+
+  .mobile-app-home .mobile-shop-dock-label {
+    display: -webkit-box;
+    overflow: hidden;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: clamp(0.42rem, 1.58vw, 0.52rem);
+    line-height: 0.92;
+    text-align: center;
+    text-overflow: clip;
+  }
+
+  .mobile-app-home .mobile-shop-dock-count {
+    right: 0.06rem;
+    top: 0.05rem;
+    min-width: 0.88rem;
+    height: 0.88rem;
+    padding-inline: 0.15rem;
+    font-size: 0.45rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .mobile-app-home #cards .mobile-product-card {
+    grid-template-columns: minmax(0, 1fr) minmax(4.25rem, 34%);
+  }
+
+  .mobile-app-home #cards .mobile-product-rail > .mobile-snap-item:first-child .mobile-product-card {
+    grid-template-columns: minmax(0, 1fr) minmax(5.4rem, 34%);
+  }
+
+  .mobile-app-home #game .mobile-game-control-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-app-home #game .reward-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-app-home .site-nav > .nav-logo-link {
+    height: 2.62rem !important;
+    min-height: 2.62rem !important;
+  }
+
+  .mobile-app-home .mobile-hero-actions a {
+    min-height: 3rem !important;
+    height: auto !important;
+  }
+
+  .mobile-app-home .section-header {
+    width: min(100%, calc(100vw - (var(--app-gutter) * 2))) !important;
+    max-width: calc(100vw - (var(--app-gutter) * 2)) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+  }
+
+  .mobile-app-home .section-header-title,
+  .mobile-app-home .section-header-copy {
+    max-width: 100% !important;
+  }
+
+  .mobile-app-home #apparel > .container > div > .section-header {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-self: stretch !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .mobile-app-home #apparel > .container > div {
+    grid-template-columns: minmax(0, 1fr) !important;
+    overflow: hidden;
+  }
+
+  .site-nav > .nav-logo-link {
+    height: 2.62rem !important;
+    min-height: 2.62rem !important;
+  }
+
+  .nav-menu-button,
+  .nav-language-button,
+  .nav-cart-button {
+    width: 2.62rem !important;
+    min-width: 2.62rem !important;
+    height: 2.62rem !important;
+    min-height: 2.62rem !important;
+  }
+
+  .product-page .product-detail-hero .container > a:first-child,
+  .product-page .product-mobile-buybar button {
+    min-height: 3rem !important;
+  }
+}
