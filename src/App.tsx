@@ -13,6 +13,8 @@ import { AccountModal } from "@/components/AccountModal";
 import { PokeballCursor } from "@/components/PokeballCursor";
 import { PokemonWorldFX } from "@/components/PokemonWorldFX";
 import { SplashIntro } from "@/components/SplashIntro";
+import { MobileTouchGuard } from "@/components/MobileTouchGuard";
+import { RouteScrollManager } from "@/components/RouteScrollManager";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +26,9 @@ const App = () => (
           <Toaster />
           <Sonner />
           <SplashIntro />
+          <MobileTouchGuard />
           <BrowserRouter>
+            <RouteScrollManager />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/product/:id" element={<ProductDetail />} />

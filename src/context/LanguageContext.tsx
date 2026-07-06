@@ -277,10 +277,24 @@ const normalizeLanguage = (value: string | null): Language => (value === "ar" ? 
 export const translate = (language: Language, key: string) => translations[language][key] || translations.en[key] || key;
 
 let pendingScrollPosition: { x: number; y: number } | null = null;
+let lockedScrollPosition: { x: number; y: number } | null = null;
+let clearScrollLockTimer: number | null = null;
 
 const captureScrollPosition = () => {
   if (typeof window === "undefined") return;
-  pendingScrollPosition = { x: window.scrollX, y: window.scrollY };
+  if (!lockedScrollPosition) {
+    lockedScrollPosition = { x: window.scrollX, y: window.scrollY };
+  }
+  pendingScrollPosition = lockedScrollPosition;
+
+  if (clearScrollLockTimer) {
+    window.clearTimeout(clearScrollLockTimer);
+  }
+
+  clearScrollLockTimer = window.setTimeout(() => {
+    lockedScrollPosition = null;
+    clearScrollLockTimer = null;
+  }, 900);
 };
 
 const restoreScrollPosition = ({ x, y }: { x: number; y: number }) => {

@@ -8,6 +8,7 @@ import { CupsSection } from "@/components/CupsSection";
 import { RewardGameSection } from "@/components/RewardGameSection";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
+import { MobileShopDock } from "@/components/MobileShopDock";
 import { useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -30,6 +31,7 @@ const Index = () => {
     <main className="min-h-screen bg-background text-foreground">
       <Navbar />
       <Hero />
+      <MobileShopDock />
       <div className="section-divider" />
       <CardsSection />
       <BoostersSection />
