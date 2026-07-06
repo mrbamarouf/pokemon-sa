@@ -5465,3 +5465,752 @@
     animation: none !important;
   }
 }
+
+@keyframes mobile-premium-glint {
+  0% {
+    transform: translateX(-115%) skewX(-12deg);
+    opacity: 0;
+  }
+  18%,
+  44% {
+    opacity: 0.34;
+  }
+  72%,
+  100% {
+    transform: translateX(115%) skewX(-12deg);
+    opacity: 0;
+  }
+}
+
+@keyframes mobile-orbit-focus {
+  0%,
+  100% {
+    transform: translate(-50%, 0) scale(0.98);
+    opacity: 0.58;
+  }
+  50% {
+    transform: translate(-50%, -2%) scale(1.04);
+    opacity: 0.9;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    scroll-padding-top: 4.6rem;
+  }
+
+  body {
+    touch-action: pan-y;
+  }
+
+  .site-header {
+    box-shadow: 0 10px 28px hsl(0 0% 0% / 0.34), 0 0 22px hsl(var(--pk-blue) / 0.1);
+  }
+
+  .site-nav {
+    height: 3.5rem !important;
+  }
+
+  .site-nav > .nav-logo-link img {
+    width: 5.55rem !important;
+    height: 2.3rem !important;
+  }
+
+  .nav-menu-button,
+  .nav-language-button,
+  .nav-cart-button {
+    width: 2.36rem !important;
+    min-width: 2.36rem !important;
+    height: 2.36rem !important;
+    min-height: 2.36rem !important;
+  }
+
+  .mobile-nav-panel {
+    top: calc(max(0.38rem, env(safe-area-inset-top)) + 3.85rem);
+    border-radius: 0.95rem;
+  }
+
+  .mobile-nav-link {
+    min-height: 3.05rem;
+    border-radius: 0.78rem;
+    padding-block: 0.72rem;
+  }
+
+  .mobile-shop-dock {
+    border-radius: 0.86rem;
+    padding: 0.34rem;
+  }
+
+  .mobile-shop-dock-track {
+    justify-content: space-between;
+    gap: 0.26rem;
+  }
+
+  .mobile-shop-dock-item {
+    min-width: 0;
+    flex: 1 1 0;
+    min-height: 2.48rem;
+    padding: 0.28rem 0.2rem;
+  }
+
+  .mobile-shop-dock-icon {
+    height: 1.52rem;
+    width: 1.52rem;
+  }
+
+  .mobile-shop-dock-label {
+    font-size: 0.55rem;
+    letter-spacing: 0;
+  }
+
+  .mobile-hero {
+    min-height: 90svh;
+    height: 90svh;
+    max-height: 52rem;
+  }
+
+  .mobile-hero > img,
+  .mobile-hero > video {
+    object-position: 50% 4%;
+    transform: scale(1.02);
+  }
+
+  .mobile-hero::before {
+    top: 8%;
+    width: min(96vw, 25.25rem);
+    opacity: 0.95;
+    animation: mobile-orbit-focus 7.2s ease-in-out infinite;
+  }
+
+  .mobile-hero-cinematic::before {
+    top: 7.3%;
+    width: min(88vw, 23rem);
+  }
+
+  .mobile-hero-cinematic::after {
+    top: 23%;
+    height: 10rem;
+    opacity: 0.96;
+  }
+
+  .mobile-hero-charizard {
+    top: 8.2%;
+    right: -0.85rem;
+    width: min(64vw, 17.25rem);
+  }
+
+  .mobile-hero-rayquaza {
+    top: 28%;
+    left: -1.65rem;
+    width: min(67vw, 18rem);
+    opacity: 0.9;
+  }
+
+  .mobile-hero-pikachu {
+    right: 9%;
+    bottom: 30%;
+    width: min(28vw, 7.1rem);
+  }
+
+  .mobile-hero-content {
+    justify-content: flex-end;
+    padding-top: 4.65rem;
+    padding-bottom: max(5.85rem, calc(env(safe-area-inset-bottom) + 5.1rem));
+  }
+
+  .mobile-hero-content::before {
+    bottom: max(4.25rem, calc(env(safe-area-inset-bottom) + 3.35rem));
+    height: 24%;
+    border-radius: 0.92rem;
+  }
+
+  .mobile-hero-content::after {
+    bottom: 27%;
+    height: 1.15rem;
+    filter: blur(6px);
+  }
+
+  .mobile-hero-title {
+    font-size: clamp(1.82rem, 8vw, 3rem);
+  }
+
+  .mobile-hero-copy {
+    max-width: 19.6rem;
+    font-size: clamp(0.74rem, 2.82vw, 0.86rem);
+    line-height: 1.38;
+  }
+
+  .mobile-hero-badges {
+    margin-top: 0.42rem;
+  }
+
+  .mobile-hero-badges > div {
+    min-height: 1.98rem;
+    border-radius: 999px;
+    padding: 0.34rem 0.48rem;
+    font-size: 0.58rem;
+  }
+
+  .mobile-hero-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 22rem);
+    margin-inline: auto;
+    margin-top: 0.48rem;
+    gap: 0.5rem;
+  }
+
+  .mobile-hero-actions a {
+    width: 100%;
+    min-height: 2.74rem;
+    padding: 0.68rem 0.55rem;
+    font-size: 0.63rem;
+    line-height: 1.18;
+  }
+
+  .mobile-hero-scroll {
+    bottom: max(4.75rem, calc(env(safe-area-inset-bottom) + 4rem));
+  }
+
+  main > section:not(#top) {
+    padding-top: clamp(1.85rem, 6vw, 3.15rem);
+    padding-bottom: clamp(2rem, 6.4vw, 3.35rem);
+  }
+
+  .section-header {
+    margin-bottom: 0.52rem;
+  }
+
+  .section-header-badge {
+    padding: 0.24rem 0.52rem;
+  }
+
+  .section-header-title {
+    margin-top: 0.5rem;
+    font-size: clamp(1.28rem, 5.7vw, 2rem);
+    line-height: 1.03;
+  }
+
+  .section-header-copy {
+    margin-top: 0.38rem;
+    font-size: 0.78rem;
+    line-height: 1.34;
+  }
+
+  .mobile-showcase-section::after,
+  .mobile-configurator-section::after,
+  .mobile-game-section::after {
+    height: 8.5rem;
+    opacity: 0.55;
+  }
+
+  .mobile-product-rail {
+    gap: 0.46rem;
+    padding-top: 0;
+    padding-bottom: 0.46rem;
+  }
+
+  .mobile-product-card {
+    position: relative;
+    min-height: 7.65rem;
+    border-radius: 0.78rem;
+    overflow: hidden;
+  }
+
+  .mobile-product-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(100deg, transparent 18%, hsl(0 0% 100% / 0.065) 36%, transparent 52%);
+    animation: mobile-premium-glint 5.8s ease-in-out infinite;
+  }
+
+  .mobile-card-media {
+    min-height: 100%;
+  }
+
+  .mobile-card-media::after {
+    content: "";
+    position: absolute;
+    left: 14%;
+    right: 14%;
+    bottom: 0.45rem;
+    height: 0.7rem;
+    border-radius: 999px;
+    background: hsl(0 0% 0% / 0.48);
+    filter: blur(9px);
+  }
+
+  .mobile-card-media img {
+    position: relative;
+    z-index: 1;
+    max-height: 7.15rem;
+  }
+
+  .mobile-card-body {
+    align-content: center;
+    min-width: 0;
+    padding: 0.4rem !important;
+  }
+
+  .mobile-card-title {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: clamp(0.66rem, 2.55vw, 0.8rem) !important;
+  }
+
+  .mobile-card-price {
+    font-size: clamp(0.84rem, 3.1vw, 1rem) !important;
+  }
+
+  .mobile-card-action-row {
+    margin-top: 0.18rem;
+  }
+
+  .mobile-card-cta {
+    min-height: 2.18rem !important;
+    height: 2.18rem !important;
+    border-radius: 999px;
+    font-size: 0.53rem !important;
+    letter-spacing: 0;
+  }
+
+  #cards .mobile-product-rail > .mobile-snap-item {
+    flex-basis: min(62vw, 15rem);
+  }
+
+  #cards .mobile-product-card {
+    grid-template-columns: minmax(0, 1fr) minmax(4.8rem, 35%);
+    min-height: 7.4rem;
+  }
+
+  #cards .mobile-card-media {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  #cards .mobile-card-body {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #cards .mobile-card-media img {
+    max-height: 6.85rem;
+  }
+
+  #boosters .mobile-product-rail,
+  #magnets .mobile-product-rail {
+    display: grid !important;
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  #boosters .mobile-product-rail {
+    grid-template-columns: 1fr !important;
+    gap: 0.54rem;
+  }
+
+  #boosters .mobile-product-rail > .mobile-snap-item,
+  #magnets .mobile-product-rail > .mobile-snap-item {
+    min-width: 0;
+    flex: initial;
+  }
+
+  #boosters .mobile-product-card {
+    min-height: 7.85rem;
+    grid-template-columns: minmax(5.1rem, 30%) minmax(0, 1fr);
+  }
+
+  #boosters .mobile-card-media {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #boosters .mobile-card-body {
+    grid-column: 2;
+    grid-row: 1;
+    padding-inline: 0.58rem !important;
+  }
+
+  #boosters .mobile-card-media img {
+    max-height: 7.2rem;
+    padding: 0.3rem !important;
+  }
+
+  #magnets .mobile-product-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.48rem;
+  }
+
+  #magnets .mobile-product-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 9.35rem;
+  }
+
+  #magnets .mobile-product-card .mobile-card-media {
+    min-height: 5.2rem !important;
+    height: 5.2rem !important;
+  }
+
+  #magnets .mobile-card-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 0.3rem;
+  }
+
+  #magnets .mobile-card-price {
+    display: block;
+    margin-top: 0.1rem;
+  }
+
+  #magnets .mobile-card-cta {
+    width: 2.05rem !important;
+    min-width: 2.05rem !important;
+    height: 2.05rem !important;
+    min-height: 2.05rem !important;
+  }
+
+  #cups .mobile-configurator-grid,
+  #apparel .custom-apparel-studio-grid {
+    gap: 0.62rem;
+  }
+
+  #cups .cup-preview-card {
+    min-height: clamp(188px, 49vw, 238px) !important;
+  }
+
+  #cups .cup-preview-inner {
+    min-height: clamp(188px, 49vw, 238px) !important;
+    padding: 2.18rem 0.58rem 0.42rem !important;
+  }
+
+  #cups .cup-stage {
+    width: min(39vw, 164px) !important;
+    height: min(48vw, 198px) !important;
+  }
+
+  #cups .cup-controls-card,
+  #apparel .apparel-controls-card {
+    gap: 0.5rem;
+    padding: 0.58rem !important;
+  }
+
+  #cups .cup-controls-card > div:first-child button,
+  #apparel .apparel-controls-card > .space-y-5 > div:nth-child(1) button {
+    min-height: 2.75rem !important;
+  }
+
+  #cups .cup-controls-card input,
+  #apparel .apparel-controls-card input {
+    height: 2.62rem;
+  }
+
+  #apparel .apparel-preview-card {
+    min-height: clamp(214px, 54vw, 268px) !important;
+  }
+
+  #apparel .apparel-preview-inner {
+    min-height: clamp(214px, 54vw, 268px) !important;
+    padding-top: 2.35rem !important;
+    padding-bottom: 3.35rem !important;
+  }
+
+  #apparel .apparel-mockup-stage {
+    width: min(38vw, 168px) !important;
+  }
+
+  #apparel .apparel-preview-summary {
+    gap: 0.36rem;
+    padding: 0.48rem;
+  }
+
+  #apparel .apparel-preview-summary .font-display {
+    font-size: 0.72rem;
+  }
+
+  #apparel .mobile-apparel-card {
+    min-height: 9.15rem;
+  }
+
+  #apparel .mobile-apparel-card .mobile-card-options {
+    margin-top: 0.16rem !important;
+  }
+
+  #game .mobile-game-tabs > .mobile-game-tab {
+    flex-basis: min(47vw, 10.8rem);
+    min-height: 4.35rem;
+    padding: 0.54rem;
+  }
+
+  #game .mobile-game-tab svg {
+    margin-bottom: 0.24rem;
+  }
+
+  #game .mobile-game-tab .font-display {
+    font-size: 0.82rem;
+    line-height: 1.1;
+  }
+
+  #game .mobile-game-tab p {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  #game .reward-game-arena,
+  #game .reward-wheel-card,
+  #game .reward-panel {
+    padding: 0.62rem;
+  }
+
+  #game .reward-wheel-card {
+    min-height: 250px;
+  }
+
+  #game .reward-wheel {
+    width: min(54vw, 13.5rem) !important;
+    height: min(54vw, 13.5rem) !important;
+  }
+
+  .product-detail-hero {
+    padding-top: 4.35rem !important;
+  }
+
+  .product-detail-hero .container {
+    padding-bottom: 2.05rem;
+  }
+
+  .product-detail-hero .container > .mt-8 {
+    max-width: 23.5rem;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .product-detail-hero .container > a {
+    min-height: 2.2rem;
+  }
+
+  .product-gallery-card,
+  .product-info-card,
+  .product-info-panels > section {
+    border-radius: 0.82rem;
+    padding: 0.58rem;
+  }
+
+  .product-hero-image {
+    aspect-ratio: 1.5 / 1;
+  }
+
+  .product-thumbnail-grid > button {
+    flex-basis: 3.5rem;
+  }
+
+  .product-info-card h1 {
+    font-size: clamp(1.22rem, 5.8vw, 1.9rem);
+  }
+
+  .product-info-card h1 + p {
+    font-size: 0.82rem;
+  }
+
+  .product-info-card .text-4xl {
+    font-size: 1.46rem;
+  }
+
+  .product-info-card .space-y-5 button {
+    height: 2.28rem !important;
+    min-width: 2.28rem !important;
+  }
+
+  .product-info-card > button {
+    height: 2.72rem;
+  }
+
+  .product-trust-grid {
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: 0.42rem;
+    overflow-x: auto;
+    margin-inline: -0.58rem;
+    padding-inline: 0.58rem;
+    padding-bottom: 0.18rem;
+    scrollbar-width: none;
+  }
+
+  .product-trust-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-trust-grid > div {
+    flex: 0 0 min(46vw, 10rem);
+    min-height: 3.15rem;
+  }
+
+  .product-mobile-buybar {
+    border-radius: 0.78rem;
+    padding: 0.42rem;
+  }
+
+  .product-mobile-buybar button {
+    min-height: 2.48rem;
+  }
+
+  .cart-drawer {
+    height: min(66svh, 31rem);
+  }
+
+  .cart-drawer > div:first-child {
+    padding: 0.72rem 0.82rem 0.56rem;
+  }
+
+  .cart-drawer .flex-1 {
+    padding: 0.56rem;
+  }
+
+  .cart-drawer .flex-1 > .flex {
+    padding: 0.42rem;
+  }
+
+  .cart-drawer .border-t {
+    padding: 0.62rem;
+    padding-bottom: max(0.74rem, env(safe-area-inset-bottom));
+  }
+
+  .cart-drawer .border-t button:last-child {
+    height: 2.72rem;
+  }
+
+  .special-request-hero {
+    padding-top: 4.3rem !important;
+  }
+
+  .special-request-layout {
+    gap: 0.58rem;
+    padding-bottom: 2rem;
+  }
+
+  .special-request-layout h1 {
+    font-size: clamp(1.38rem, 6.4vw, 2.16rem) !important;
+  }
+
+  .special-request-proof-grid {
+    gap: 0.36rem;
+  }
+
+  .special-request-proof-card {
+    border-radius: 0.72rem;
+    padding: 0.48rem !important;
+    font-size: 0.6rem;
+  }
+
+  .special-request-form {
+    padding: 0.62rem !important;
+  }
+
+  .special-request-form .space-y-5 {
+    gap: 0.46rem;
+  }
+
+  .special-request-type-grid button {
+    min-height: 2.42rem !important;
+    padding-inline: 0.52rem;
+  }
+
+  .special-request-form input,
+  .special-request-form select {
+    height: 2.58rem !important;
+  }
+
+  .special-request-form textarea {
+    min-height: 4.85rem !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .site-nav > .nav-logo-link img {
+    width: 5.22rem !important;
+  }
+
+  .mobile-hero-charizard {
+    right: -1.4rem;
+  }
+
+  .mobile-hero-rayquaza {
+    left: -2.45rem;
+  }
+
+  #cards .mobile-product-rail > .mobile-snap-item {
+    flex-basis: min(66vw, 14.6rem);
+  }
+
+  #magnets .mobile-product-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  #boosters .mobile-product-card {
+    grid-template-columns: minmax(4.9rem, 31%) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 360px) {
+  .site-nav > .nav-logo-link img {
+    width: 4.92rem !important;
+  }
+
+  .mobile-shop-dock-icon {
+    height: 1.42rem;
+    width: 1.42rem;
+  }
+
+  .mobile-shop-dock-label {
+    font-size: 0.5rem;
+  }
+
+  .mobile-hero-actions {
+    gap: 0.42rem;
+  }
+
+  .mobile-hero-actions a {
+    font-size: 0.56rem;
+    min-height: 2.58rem;
+  }
+
+  #cards .mobile-product-rail > .mobile-snap-item {
+    flex-basis: min(70vw, 14rem);
+  }
+
+  #magnets .mobile-product-rail {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mobile-product-card,
+  #cards .mobile-product-card {
+    min-height: 7.2rem;
+  }
+
+  .mobile-card-title {
+    font-size: 0.64rem !important;
+  }
+
+  .mobile-card-cta {
+    min-height: 2.1rem !important;
+    height: 2.1rem !important;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .mobile-product-card::before,
+  .mobile-hero::before {
+    animation: none !important;
+  }
+}
