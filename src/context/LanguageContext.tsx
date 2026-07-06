@@ -294,19 +294,21 @@ const captureScrollPosition = () => {
   clearScrollLockTimer = window.setTimeout(() => {
     lockedScrollPosition = null;
     clearScrollLockTimer = null;
-  }, 900);
+  }, 1800);
 };
 
 const restoreScrollPosition = ({ x, y }: { x: number; y: number }) => {
   const restore = () => window.scrollTo(x, y);
   restore();
-  window.requestAnimationFrame(() => {
-    restore();
-    window.requestAnimationFrame(restore);
-    window.setTimeout(restore, 120);
-    window.setTimeout(restore, 320);
-    window.setTimeout(restore, 700);
-  });
+    window.requestAnimationFrame(() => {
+      restore();
+      window.requestAnimationFrame(restore);
+      window.setTimeout(restore, 120);
+      window.setTimeout(restore, 320);
+      window.setTimeout(restore, 700);
+      window.setTimeout(restore, 1200);
+      window.setTimeout(restore, 1700);
+    });
 };
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {

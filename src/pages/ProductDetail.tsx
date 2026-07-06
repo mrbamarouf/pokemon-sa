@@ -48,6 +48,16 @@ const ProductDetail = () => {
   const BackIcon = language === "ar" ? ArrowRight : ArrowLeft;
   const related = products.filter((item) => item.id !== product.id && item.category === product.category).slice(0, 3);
   const fallbackRelated = related.length ? related : products.filter((item) => item.id !== product.id).slice(0, 3);
+  const addProductToCart = () =>
+    add({
+      id: product.id,
+      name: product.name[language],
+      nameByLanguage: product.name,
+      price: product.price,
+      image: product.image,
+      variant,
+      variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
+    });
 
   return (
     <main className="product-page min-h-screen bg-background text-foreground">
@@ -139,17 +149,7 @@ const ProductDetail = () => {
               </div>
 
               <button
-                onClick={() =>
-                  add({
-                    id: product.id,
-                    name: product.name[language],
-                    nameByLanguage: product.name,
-                    price: product.price,
-                    image: product.image,
-                    variant,
-                    variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
-                  })
-                }
+                onClick={addProductToCart}
                 className="mt-7 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-gradient-electric font-display text-sm font-bold uppercase tracking-wider text-background glow-electric transition-transform hover:scale-[1.02]"
               >
                 <Plus className="h-4 w-4" />
@@ -235,6 +235,16 @@ const ProductDetail = () => {
       </section>
       <Footer />
       <CartDrawer />
+      <div className="product-mobile-buybar" aria-label={product.name[language]}>
+        <div className="product-mobile-buybar-info">
+          <span>{product.name[language]}</span>
+          <strong>{formatPrice(product.price)}</strong>
+        </div>
+        <button type="button" onClick={addProductToCart}>
+          <Plus className="h-4 w-4" />
+          {t("addToCart")}
+        </button>
+      </div>
     </main>
   );
 };
