@@ -23,7 +23,7 @@ export const CardsSection = () => {
           {cards.map((c, i) => (
             <Reveal key={c.id} delay={i * 80} className="mobile-snap-item">
                 <div className="mobile-product-card group card-hover relative rounded-2xl bg-gradient-card border border-border overflow-hidden">
-                  <Link to={`/product/${c.id}`} className="relative block aspect-[3/4] overflow-hidden bg-black">
+                  <Link to={`/product/${c.id}`} className="mobile-card-media relative block aspect-[3/4] overflow-hidden bg-black">
                     <img
                       src={c.image}
                       alt={c.name[language]}
@@ -37,18 +37,18 @@ export const CardsSection = () => {
                     <Sparkles className="h-3 w-3" /> {c.badge?.[language]}
                   </div>
                 </Link>
-                <div className="p-5 space-y-3">
-                  <Link to={`/product/${c.id}`} className="flex min-h-11 items-center font-display text-lg font-bold leading-tight transition-colors hover:text-pk-yellow">
+                <div className="mobile-card-body p-5 space-y-3">
+                  <Link to={`/product/${c.id}`} className="mobile-card-title flex min-h-11 items-center font-display text-lg font-bold leading-tight transition-colors hover:text-pk-yellow">
                     {c.name[language]}
                   </Link>
-                  <Link to={`/product/${c.id}`} className="inline-flex min-h-11 items-center text-xs font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
+                  <Link to={`/product/${c.id}`} className="mobile-card-details inline-flex min-h-11 items-center text-xs font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
                     {t("viewDetails")}
                   </Link>
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <span className="text-2xl font-display font-black text-gradient-gold">{formatPrice(c.price)}</span>
+                  <div className="mobile-card-action-row flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="mobile-card-price text-2xl font-display font-black text-gradient-gold">{formatPrice(c.price)}</span>
                     <button
                       onClick={() => add({ id: c.id, name: c.name[language], nameByLanguage: c.name, price: c.price, image: c.image })}
-                      className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-pk-blue px-4 text-xs font-bold uppercase tracking-wider text-background transition-all hover:glow-electric sm:w-auto"
+                      className="mobile-card-cta flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-pk-blue px-4 text-xs font-bold uppercase tracking-wider text-background transition-all hover:glow-electric sm:w-auto"
                     >
                       <Plus className="h-4 w-4" /> {t("add")}
                     </button>

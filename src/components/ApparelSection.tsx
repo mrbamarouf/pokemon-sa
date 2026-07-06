@@ -158,7 +158,7 @@ const ApparelCard = ({ item }: { item: Product }) => {
 
   return (
     <div className="mobile-product-card mobile-apparel-card group relative rounded-2xl overflow-hidden border border-border bg-gradient-card card-hover">
-      <Link to={`/product/${item.id}`} className="relative block aspect-square overflow-hidden bg-black">
+      <Link to={`/product/${item.id}`} className="mobile-card-media relative block aspect-square overflow-hidden bg-black">
         <img
           src={item.image}
           alt={item.name[language]}
@@ -168,21 +168,21 @@ const ApparelCard = ({ item }: { item: Product }) => {
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
       </Link>
-      <div className="p-5 space-y-4">
-        <div className="flex items-start justify-between gap-3">
+      <div className="mobile-card-body p-5 space-y-4">
+        <div className="mobile-card-heading flex items-start justify-between gap-3">
           <div>
-            <Link to={`/product/${item.id}`} className="flex min-h-11 items-center font-display text-lg font-bold leading-tight transition-colors hover:text-pk-yellow">
+            <Link to={`/product/${item.id}`} className="mobile-card-title flex min-h-11 items-center font-display text-lg font-bold leading-tight transition-colors hover:text-pk-yellow">
               {item.name[language]}
             </Link>
-            <Link to={`/product/${item.id}`} className="inline-flex min-h-11 items-center text-[10px] font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
+            <Link to={`/product/${item.id}`} className="mobile-card-details inline-flex min-h-11 items-center text-[10px] font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
               {t("viewDetails")}
             </Link>
           </div>
-          <span className="text-xl font-display font-black text-gradient-gold whitespace-nowrap">{formatPrice(item.price)}</span>
+          <span className="mobile-card-price text-xl font-display font-black text-gradient-gold whitespace-nowrap">{formatPrice(item.price)}</span>
         </div>
 
         {item.colors && (
-        <div>
+        <div className="mobile-card-options">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">{t("color")} · {color?.name[language]}</div>
           <div className="flex gap-2">
             {item.colors.map((c) => (
@@ -201,7 +201,7 @@ const ApparelCard = ({ item }: { item: Product }) => {
         )}
 
         {item.sizes && (
-        <div>
+        <div className="mobile-card-options">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">{t("size")} · {size}</div>
           <div className="flex flex-wrap gap-1.5">
             {item.sizes.map((s) => (
@@ -233,7 +233,7 @@ const ApparelCard = ({ item }: { item: Product }) => {
               variantByLanguage,
             })
           }
-          className="w-full h-11 rounded-full bg-pk-blue text-background font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 hover:glow-electric transition-all"
+          className="mobile-card-cta w-full h-11 rounded-full bg-pk-blue text-background font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 hover:glow-electric transition-all"
         >
           <Plus className="h-4 w-4" /> {t("addToCart")}
         </button>

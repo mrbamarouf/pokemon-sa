@@ -24,7 +24,7 @@ export const MagnetsSection = () => {
           {magnets.map((m, i) => (
             <Reveal key={m.id} delay={i * 100} className="mobile-snap-item">
               <div className="mobile-product-card group relative rounded-2xl overflow-hidden border border-border bg-gradient-card card-hover">
-                <Link to={`/product/${m.id}`} className={`relative block aspect-[4/5] overflow-hidden bg-gradient-to-br ${tones[i]}`}>
+                <Link to={`/product/${m.id}`} className={`mobile-card-media relative block aspect-[4/5] overflow-hidden bg-gradient-to-br ${tones[i]}`}>
                   <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(hsl(var(--pk-blue)/0.35)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pk-yellow)/0.22)_1px,transparent_1px)] [background-size:36px_36px]" />
                   {m.gallery.length > 2 ? (
                     <div className="relative z-10 grid h-full grid-cols-2 place-items-center gap-2 p-8">
@@ -52,21 +52,21 @@ export const MagnetsSection = () => {
                   )}
                   <div className="absolute inset-x-8 bottom-8 h-10 rounded-full bg-black/40 blur-xl" />
                 </Link>
-                <div className="flex items-center justify-between gap-4 p-5">
+                <div className="mobile-card-body flex items-center justify-between gap-4 p-5">
                   <div>
-                    <Link to={`/product/${m.id}`} className="flex min-h-11 items-center font-display text-base font-bold leading-tight transition-colors hover:text-pk-yellow">
+                    <Link to={`/product/${m.id}`} className="mobile-card-title flex min-h-11 items-center font-display text-base font-bold leading-tight transition-colors hover:text-pk-yellow">
                       {m.name[language]}
                     </Link>
                     <div>
-                      <Link to={`/product/${m.id}`} className="inline-flex min-h-11 items-center text-[10px] font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
+                      <Link to={`/product/${m.id}`} className="mobile-card-details inline-flex min-h-11 items-center text-[10px] font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
                         {t("viewDetails")}
                       </Link>
                     </div>
-                    <span className="text-xl font-display font-black text-gradient-gold">{formatPrice(m.price)}</span>
+                    <span className="mobile-card-price text-xl font-display font-black text-gradient-gold">{formatPrice(m.price)}</span>
                   </div>
                   <button
                     onClick={() => add({ id: m.id, name: m.name[language], nameByLanguage: m.name, price: m.price, image: m.image })}
-                    className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-pk-blue text-background transition-all hover:glow-electric"
+                    className="mobile-card-cta grid h-11 w-11 shrink-0 place-items-center rounded-full bg-pk-blue text-background transition-all hover:glow-electric"
                     aria-label={t("addToCart")}
                   >
                     <Plus className="h-4 w-4" />

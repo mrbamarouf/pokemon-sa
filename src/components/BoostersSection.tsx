@@ -32,7 +32,7 @@ export const BoostersSection = () => {
                     {t("bestValue")}
                   </div>
                 )}
-                <Link to={`/product/${b.id}`} className="relative block aspect-square bg-black overflow-hidden">
+                <Link to={`/product/${b.id}`} className="mobile-card-media relative block aspect-square bg-black overflow-hidden">
                   <img
                     src={b.image}
                     alt={b.name[language]}
@@ -43,22 +43,22 @@ export const BoostersSection = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-80" />
                 </Link>
-                <div className="p-6 space-y-4 -mt-12 relative">
+                <div className="mobile-card-body p-6 space-y-4 -mt-12 relative">
                   <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted/80 text-[10px] uppercase tracking-wider text-muted-foreground">
                     <Package className="h-3 w-3" /> {t("sealed")}
                   </div>
-                  <Link to={`/product/${b.id}`} className="flex min-h-11 items-center font-display text-2xl font-bold leading-tight transition-colors hover:text-pk-yellow">
+                  <Link to={`/product/${b.id}`} className="mobile-card-title flex min-h-11 items-center font-display text-2xl font-bold leading-tight transition-colors hover:text-pk-yellow">
                     {b.name[language]}
                   </Link>
-                  <p className="text-sm text-muted-foreground">{b.subtitle[language]}</p>
-                  <Link to={`/product/${b.id}`} className="inline-flex min-h-11 items-center text-xs font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
+                  <p className="mobile-card-subtitle text-sm text-muted-foreground">{b.subtitle[language]}</p>
+                  <Link to={`/product/${b.id}`} className="mobile-card-details inline-flex min-h-11 items-center text-xs font-bold uppercase tracking-wider text-pk-blue transition-colors hover:text-pk-yellow">
                     {t("viewDetails")}
                   </Link>
-                  <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
-                    <span className="text-3xl font-display font-black text-gradient-gold">{formatPrice(b.price)}</span>
+                  <div className="mobile-card-action-row flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="mobile-card-price text-3xl font-display font-black text-gradient-gold">{formatPrice(b.price)}</span>
                     <button
                       onClick={() => add({ id: b.id, name: b.name[language], nameByLanguage: b.name, price: b.price, image: b.image })}
-                      className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-pk-yellow px-5 text-xs font-bold uppercase tracking-wider text-background transition-all hover:glow-yellow sm:w-auto"
+                      className="mobile-card-cta flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-pk-yellow px-5 text-xs font-bold uppercase tracking-wider text-background transition-all hover:glow-yellow sm:w-auto"
                     >
                       <Plus className="h-4 w-4" /> {t("addToCart")}
                     </button>

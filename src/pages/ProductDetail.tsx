@@ -215,12 +215,12 @@ const ProductDetail = () => {
                   to={`/product/${item.id}`}
                   className="mobile-snap-item mobile-product-card group overflow-hidden rounded-2xl border border-border bg-gradient-card transition hover:-translate-y-1 hover:border-pk-yellow"
                 >
-                  <div className="aspect-[4/3] bg-black/55">
+                  <div className="mobile-card-media aspect-[4/3] bg-black/55">
                     <img src={item.image} alt={item.name[language]} className="h-full w-full object-contain p-5 transition duration-500 group-hover:scale-105" />
                   </div>
-                  <div className="p-5">
-                    <div className="font-display text-lg font-bold group-hover:text-pk-yellow">{item.name[language]}</div>
-                    <div className="mt-2 text-xl font-display font-black text-gradient-gold">{formatPrice(item.price)}</div>
+                  <div className="mobile-card-body p-5">
+                    <div className="mobile-card-title font-display text-lg font-bold group-hover:text-pk-yellow">{item.name[language]}</div>
+                    <div className="mobile-card-price mt-2 text-xl font-display font-black text-gradient-gold">{formatPrice(item.price)}</div>
                   </div>
                 </Link>
               ))}
