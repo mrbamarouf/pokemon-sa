@@ -13,6 +13,11 @@ const railSelector = [
   ".mobile-native-character-strip",
   ".mobile-native-apparel-products",
   ".mobile-native-tabbar",
+  ".mobile-app-destination-rail",
+  ".mobile-app-category-tabs",
+  ".mobile-app-horizontal-rail",
+  ".mobile-app-character-strip",
+  ".mobile-app-detail-thumbs",
   ".mobile-apparel-card .mobile-card-options .flex",
 ].join(",");
 
