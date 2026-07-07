@@ -1,29 +1,40 @@
 import { ChangeEvent, CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  ArrowLeft,
+  ArrowRight,
   BadgeCheck,
+  CheckCircle2,
   ChevronRight,
+  CreditCard,
   CupSoda,
   Gamepad2,
   Gift,
   Globe2,
+  Grid2X2,
+  Heart,
   Home,
   Image as ImageIcon,
   type LucideIcon,
   Magnet,
+  MapPin,
   MessageSquare,
   Minus,
   Package,
   Plus,
   Search,
+  ShieldCheck,
   Shirt,
   ShoppingBag,
   Sparkles,
   Star,
+  Trash2,
   Trophy,
+  Truck,
   Type,
   Upload,
   UserRound,
+  WalletCards,
   Zap,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
@@ -44,39 +55,43 @@ import hoodieRed from "@/assets/custom-hoodie-red.jpg";
 import hoodieWhite from "@/assets/custom-hoodie-white.jpg";
 import hoodieYellow from "@/assets/custom-hoodie-yellow.jpg";
 
-type MobileScreen = "home" | "featured" | "cards" | "boosters" | "magnets" | "cups" | "apparel" | "rewards" | "cart";
+type MobileScreen = "home" | "categories" | "products" | "detail" | "cart" | "games" | "account" | "cup" | "apparel" | "checkout";
+type ShopCategoryId = "all" | Product["category"];
+type ProductOptionColor = NonNullable<Product["colors"]>[number];
 type CustomColorId = "black" | "white" | "blue" | "red" | "yellow";
 type GarmentId = "tee" | "hoodie";
 type CupMode = "character" | "text" | "both";
 
+type LocalizedText = Record<Language, string>;
+
 type CustomColor = {
   id: CustomColorId;
-  name: Record<Language, string>;
+  name: LocalizedText;
   hex: string;
 };
 
 type GarmentStyle = {
   id: GarmentId;
-  name: Record<Language, string>;
+  name: LocalizedText;
   price: number;
   mockups: Record<CustomColorId | "clean", string>;
 };
 
 type CupStyle = {
   id: string;
-  name: Record<Language, string>;
+  name: LocalizedText;
   price: number;
-  finish: Record<Language, string>;
+  finish: LocalizedText;
 };
 
-const screenIds: MobileScreen[] = ["home", "featured", "cards", "boosters", "magnets", "cups", "apparel", "rewards", "cart"];
+const screenIds: MobileScreen[] = ["home", "categories", "products", "detail", "cart", "games", "account", "cup", "apparel", "checkout"];
+const destinationScreens: MobileScreen[] = ["home", "categories", "products", "cup", "apparel", "cart", "checkout", "games", "account"];
+const bottomScreens: MobileScreen[] = ["home", "categories", "cart", "games", "account"];
 
 const cards = productsByCategory("cards");
 const boosters = productsByCategory("boosters");
 const magnets = productsByCategory("magnets");
-const apparel = productsByCategory("apparel");
-const tees = apparel.filter((item) => item.id.startsWith("t"));
-const hoodies = apparel.filter((item) => item.id.startsWith("h"));
+const apparelProducts = productsByCategory("apparel");
 
 const pokemonArt = [
   { name: "Pikachu", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png" },
@@ -128,104 +143,197 @@ const cupColors = [
   { name: { en: "Midnight", ar: "ليلي" }, hex: "#111827", shadow: "#020617" },
 ];
 
-const copy: Record<Language, Record<string, string>> = {
-  en: {
-    home: "Home",
-    featured: "Featured",
-    cards: "Cards",
-    boosters: "Boosters",
-    magnets: "Magnets",
-    cups: "Cups",
-    apparel: "Apparel",
-    rewards: "Game",
-    cart: "Cart",
-    shop: "Shop",
-    buy: "Buy",
-    open: "Open",
-    homeTitle: "Pokémon shopping, made clear",
-    homeLead: "Rare cards, sealed boxes, custom cups, apparel, magnets and daily rewards in one clean mobile store.",
-    primaryCta: "Shop featured",
-    secondaryCta: "Customize",
-    quickCategories: "Quick categories",
-    featuredTitle: "Featured products",
-    featuredLead: "Start with the items worth checking first.",
-    cardsTitle: "Cards",
-    cardsLead: "Collector singles with image, price and add action up front.",
-    boostersTitle: "Boosters and sealed products",
-    boostersLead: "Sealed bundles and boxes arranged for quick comparison.",
-    magnetsTitle: "Magnets",
-    magnetsLead: "Clean collectible gifts with fast add-to-cart actions.",
-    cupsTitle: "Custom cups",
-    cupsLead: "Preview the cup first, then adjust style, color, image and text.",
-    apparelTitle: "Custom apparel",
-    apparelLead: "Choose the garment, color, size and print before adding to cart.",
-    rewardsTitle: "Trainer game",
-    rewardsLead: "Pick a challenge, play once per day, and reveal a store reward.",
-    cartTitle: "Cart",
-    cartLead: "Review items, open checkout, or request a rare find.",
-    accountReady: "Account ready",
-    accountNeeded: "Account needed",
-    createAccount: "Create account",
-    readyToPlay: "Ready to play",
-    gameUsed: "Daily game used",
-    chooseChallenge: "Choose challenge",
-    playReward: "Play and reveal",
-    activeReward: "Reward",
-    emptyCart: "Your cart is empty.",
-    startShopping: "Start shopping",
-    rareConcierge: "Special request",
-    languageLabel: "Language",
-  },
-  ar: {
-    home: "الرئيسية",
-    featured: "المميز",
-    cards: "الكروت",
-    boosters: "المختوم",
-    magnets: "المغناطيس",
-    cups: "الكاسات",
-    apparel: "الملابس",
-    rewards: "اللعبة",
-    cart: "السلة",
-    shop: "المتجر",
-    buy: "شراء",
-    open: "فتح",
-    homeTitle: "تسوق Pokémon بوضوح",
-    homeLead: "كروت نادرة، بوكسات مختومة، كاسات مخصصة، ملابس، مغناطيس ومكافآت يومية داخل متجر جوال مرتب.",
-    primaryCta: "تسوق المميز",
-    secondaryCta: "خصص منتجك",
-    quickCategories: "الأقسام السريعة",
-    featuredTitle: "المنتجات المميزة",
-    featuredLead: "ابدأ بالمنتجات الأهم قبل الدخول للأقسام.",
-    cardsTitle: "الكروت",
-    cardsLead: "كروت جامعين مع الصورة والسعر وزر الإضافة بوضوح.",
-    boostersTitle: "البوكسات والمنتجات المختومة",
-    boostersLead: "منتجات مختومة مرتبة للمقارنة والشراء بسرعة.",
-    magnetsTitle: "المغناطيس",
-    magnetsLead: "هدايا قابلة للتجميع مع أزرار إضافة واضحة.",
-    cupsTitle: "الكاسات المخصصة",
-    cupsLead: "شاهد المعاينة أولًا، ثم اختر النوع واللون والصورة والنص.",
-    apparelTitle: "الملابس المخصصة",
-    apparelLead: "اختر القطعة واللون والمقاس والطباعة قبل الإضافة للسلة.",
-    rewardsTitle: "لعبة المدرب",
-    rewardsLead: "اختر تحديًا، العب مرة يوميًا، وافتح مكافأة للمتجر.",
-    cartTitle: "السلة",
-    cartLead: "راجع المنتجات، افتح الدفع، أو اطلب قطعة نادرة.",
-    accountReady: "الحساب جاهز",
-    accountNeeded: "الحساب مطلوب",
-    createAccount: "إنشاء حساب",
-    readyToPlay: "جاهز للعب",
-    gameUsed: "تم استخدام لعبة اليوم",
-    chooseChallenge: "اختر التحدي",
-    playReward: "العب واكشف",
-    activeReward: "المكافأة",
-    emptyCart: "السلة فارغة الآن.",
-    startShopping: "ابدأ التسوق",
-    rareConcierge: "طلب خاص",
-    languageLabel: "اللغة",
-  },
+const categoryLabels: Record<ShopCategoryId, LocalizedText> = {
+  all: { en: "All products", ar: "كل المنتجات" },
+  cards: { en: "Cards", ar: "البطاقات" },
+  boosters: { en: "Boosters", ar: "البوكسات" },
+  magnets: { en: "Magnets", ar: "المغناطيس" },
+  apparel: { en: "Ready apparel", ar: "ملابس جاهزة" },
 };
 
-const cupModeLabels: Record<CupMode, Record<Language, string>> = {
+const screenMeta: Record<MobileScreen, { label: LocalizedText; icon: LucideIcon; accent: string; theme: string }> = {
+  home: { label: { en: "Home", ar: "الرئيسية" }, icon: Home, accent: "#facc15", theme: "home" },
+  categories: { label: { en: "Categories", ar: "الأقسام" }, icon: Grid2X2, accent: "#60a5fa", theme: "categories" },
+  products: { label: { en: "Products", ar: "المنتجات" }, icon: Package, accent: "#facc15", theme: "products" },
+  detail: { label: { en: "Product Detail", ar: "تفاصيل المنتج" }, icon: Sparkles, accent: "#facc15", theme: "detail" },
+  cart: { label: { en: "Cart", ar: "السلة" }, icon: ShoppingBag, accent: "#facc15", theme: "cart" },
+  games: { label: { en: "Games", ar: "الألعاب" }, icon: Gamepad2, accent: "#fb7185", theme: "games" },
+  account: { label: { en: "Account", ar: "الحساب" }, icon: UserRound, accent: "#93c5fd", theme: "account" },
+  cup: { label: { en: "Custom Cup", ar: "تصميم كوب" }, icon: CupSoda, accent: "#38bdf8", theme: "cup" },
+  apparel: { label: { en: "Custom Apparel", ar: "تصميم ملابس" }, icon: Shirt, accent: "#c084fc", theme: "apparel" },
+  checkout: { label: { en: "Checkout", ar: "إتمام الطلب" }, icon: CreditCard, accent: "#34d399", theme: "checkout" },
+};
+
+const mobileCopy = {
+  en: {
+    homeEyebrow: "Mobile app experience",
+    homeTitle: "Pokémon SA Store",
+    homeLead: "Shop cards, sealed products, magnets, custom cups, apparel and daily trainer games from clear mobile screens.",
+    shopNow: "Shop products",
+    browseCategories: "Browse categories",
+    featuredProducts: "Featured products",
+    popularServices: "Services",
+    categoriesTitle: "Clear store sections",
+    categoriesLead: "Choose one section, then browse a focused product screen with price and add action visible.",
+    productsTitle: "Products",
+    productsLead: "Browse by category, open details, or add quickly to your cart.",
+    detailLead: "Inspect the image, price, options and collector notes before adding to cart.",
+    cartTitle: "Cart",
+    cartLead: "Review your items before checkout.",
+    gamesTitle: "Trainer games",
+    gamesLead: "Play once per day and reveal a store reward.",
+    accountTitle: "Account",
+    accountLead: "Your trainer profile, language, rewards and support links.",
+    cupTitle: "Custom cup",
+    cupLead: "Choose the cup, color, image and text from one clear studio screen.",
+    apparelTitle: "Custom apparel",
+    apparelLead: "Pick garment, size, color, character and printed text.",
+    checkoutTitle: "Checkout",
+    checkoutLead: "Confirm address, shipping, payment and total.",
+    all: "All",
+    open: "Open",
+    viewDetails: "View details",
+    add: "Add",
+    addToCart: "Add to cart",
+    buyNow: "Buy now",
+    checkout: "Checkout",
+    payNow: "Pay now",
+    emptyCartTitle: "Cart is empty",
+    emptyCartCopy: "Start from products or a custom studio.",
+    continueShopping: "Continue shopping",
+    accountReady: "Account ready",
+    accountMissing: "Account needed",
+    createAccount: "Create account",
+    quickAccess: "Quick access",
+    categoryCount: "items",
+    customCupService: "Cup design",
+    customCupDesc: "Upload image, add text and preview the cup.",
+    customApparelService: "Apparel design",
+    customApparelDesc: "Build a T-shirt or hoodie with character print.",
+    specialRequest: "Special request",
+    specialRequestDesc: "Ask us to find a rare product.",
+    recommended: "Recommended",
+    specifications: "Specifications",
+    trusted: "Authentic product presentation",
+    packaging: "Collector-safe packaging",
+    delivery: "Saudi delivery",
+    quantity: "Quantity",
+    chooseCategory: "Choose category",
+    cupStyle: "Cup style",
+    printedText: "Printed text",
+    uploadImage: "Upload image",
+    chooseGame: "Choose game",
+    readyToPlay: "Ready to play",
+    locked: "Daily game used",
+    activeReward: "Reward",
+    playReveal: "Play and reveal",
+    language: "Language",
+    orders: "My orders",
+    addresses: "Addresses",
+    payments: "Payment methods",
+    favorites: "Favorites",
+    coupons: "Coupons",
+    settings: "Settings",
+    logout: "Log out",
+    subtotal: "Subtotal",
+    shipping: "Shipping",
+    free: "Free",
+    total: "Total",
+    shippingAddress: "Shipping address",
+    shippingMethod: "Shipping method",
+    paymentMethod: "Payment method",
+    expressShipping: "Express shipping, 2 to 3 days",
+    madaVisa: "Mada / Visa",
+    orderReady: "Ready to place order",
+    orderReadyCopy: "All checkout steps are visible before payment.",
+    startCheckout: "Start checkout",
+  },
+  ar: {
+    homeEyebrow: "تجربة تطبيق جوال",
+    homeTitle: "متجر Pokémon SA",
+    homeLead: "تسوق البطاقات، المنتجات المختومة، المغناطيس، الكاسات المخصصة، الملابس، وألعاب المدربين من شاشات واضحة.",
+    shopNow: "تسوق المنتجات",
+    browseCategories: "تصفح الأقسام",
+    featuredProducts: "منتجات مميزة",
+    popularServices: "الخدمات",
+    categoriesTitle: "أقسام المتجر بوضوح",
+    categoriesLead: "اختر القسم، ثم انتقل لشاشة منتجات مركزة فيها السعر وزر الإضافة واضحين.",
+    productsTitle: "المنتجات",
+    productsLead: "تصفح حسب القسم، افتح التفاصيل، أو أضف المنتج للسلة بسرعة.",
+    detailLead: "راجع الصورة والسعر والخيارات وملاحظات التجميع قبل الإضافة للسلة.",
+    cartTitle: "السلة",
+    cartLead: "راجع المنتجات قبل إتمام الطلب.",
+    gamesTitle: "ألعاب المدرب",
+    gamesLead: "العب مرة يوميًا واكشف مكافأة للمتجر.",
+    accountTitle: "الحساب",
+    accountLead: "ملف المدرب، اللغة، المكافآت وروابط الدعم.",
+    cupTitle: "تصميم كوب خاص",
+    cupLead: "اختر نوع الكوب واللون والصورة والنص من شاشة استوديو واضحة.",
+    apparelTitle: "تصميم ملابس خاصة",
+    apparelLead: "اختر القطعة والمقاس واللون والشخصية والنص المطبوع.",
+    checkoutTitle: "إتمام الطلب",
+    checkoutLead: "أكد العنوان والشحن والدفع والإجمالي.",
+    all: "الكل",
+    open: "فتح",
+    viewDetails: "عرض التفاصيل",
+    add: "إضافة",
+    addToCart: "أضف إلى السلة",
+    buyNow: "اشتر الآن",
+    checkout: "إتمام الطلب",
+    payNow: "ادفع الآن",
+    emptyCartTitle: "السلة فارغة",
+    emptyCartCopy: "ابدأ من المنتجات أو من إحدى شاشات التخصيص.",
+    continueShopping: "متابعة التسوق",
+    accountReady: "الحساب جاهز",
+    accountMissing: "الحساب مطلوب",
+    createAccount: "إنشاء حساب",
+    quickAccess: "وصول سريع",
+    categoryCount: "منتجات",
+    customCupService: "تصميم الكوب",
+    customCupDesc: "ارفع صورة، أضف نصًا، وشاهد المعاينة.",
+    customApparelService: "تصميم الملابس",
+    customApparelDesc: "صمم تيشيرت أو هودي بطباعة شخصية.",
+    specialRequest: "طلب خاص",
+    specialRequestDesc: "نبحث لك عن منتج نادر.",
+    recommended: "مقترح لك",
+    specifications: "المواصفات",
+    trusted: "عرض منتج موثوق",
+    packaging: "تغليف مناسب للجامعين",
+    delivery: "توصيل داخل السعودية",
+    quantity: "الكمية",
+    chooseCategory: "اختر القسم",
+    cupStyle: "نوع الكوب",
+    printedText: "النص المطبوع",
+    uploadImage: "رفع صورة",
+    chooseGame: "اختر اللعبة",
+    readyToPlay: "جاهز للعب",
+    locked: "تم استخدام لعبة اليوم",
+    activeReward: "المكافأة",
+    playReveal: "العب واكشف",
+    language: "اللغة",
+    orders: "طلباتي",
+    addresses: "العناوين",
+    payments: "طرق الدفع",
+    favorites: "المفضلة",
+    coupons: "الكوبونات",
+    settings: "الإعدادات",
+    logout: "تسجيل الخروج",
+    subtotal: "المجموع الفرعي",
+    shipping: "الشحن",
+    free: "مجاني",
+    total: "الإجمالي",
+    shippingAddress: "عنوان الشحن",
+    shippingMethod: "طريقة الشحن",
+    paymentMethod: "طريقة الدفع",
+    expressShipping: "شحن سريع خلال 2 إلى 3 أيام",
+    madaVisa: "مدى / فيزا",
+    orderReady: "جاهز لإرسال الطلب",
+    orderReadyCopy: "كل خطوات الدفع واضحة قبل التأكيد.",
+    startCheckout: "ابدأ الدفع",
+  },
+} as const;
+
+const cupModeLabels: Record<CupMode, LocalizedText> = {
   character: { en: "Image", ar: "صورة" },
   text: { en: "Text", ar: "نص" },
   both: { en: "Both", ar: "الاثنين" },
@@ -235,95 +343,82 @@ const rewards = [
   {
     code: "QUIZ10",
     title: { en: "10% Off", ar: "خصم 10%" },
-    mission: { en: "Volt Quiz", ar: "اختبار البرق" },
-    prompt: { en: "Answer before the meter ends", ar: "أجب قبل انتهاء العداد" },
+    mission: { en: "Volt Quiz", ar: "تحدي الإجابة" },
+    prompt: { en: "Answer before the meter runs out", ar: "أجب قبل انتهاء عداد الطاقة" },
     icon: Zap,
     character: pokemonArt[0],
   },
   {
     code: "GIFT-SA",
     title: { en: "Free Gift", ar: "هدية مجانية" },
-    mission: { en: "Gift Catch", ar: "اصطياد الهدية" },
-    prompt: { en: "Catch the prize", ar: "التقط الجائزة" },
+    mission: { en: "Lucky Draw", ar: "سحب الحظ" },
+    prompt: { en: "Catch the falling prize", ar: "التقط الجائزة وهي تسقط" },
     icon: Gift,
     character: pokemonArt[4],
   },
   {
     code: "CASH25",
     title: { en: "SAR 25 Cashback", ar: "استرداد 25 ر.س" },
-    mission: { en: "Final Battle", ar: "المعركة الأخيرة" },
-    prompt: { en: "Win the round", ar: "اكسب الجولة" },
+    mission: { en: "Speed Battle", ar: "تحدي السرعة" },
+    prompt: { en: "Win the trainer round", ar: "اكسب جولة المدرب" },
     icon: Trophy,
     character: pokemonArt[1],
   },
 ];
 
-const screenToHash = (screen: MobileScreen) => (screen === "home" ? "#top" : screen === "rewards" ? "#game" : `#${screen}`);
-
 const hashToScreen = (hash: string): MobileScreen => {
   const value = hash.replace("#", "");
   if (!value || value === "top") return "home";
-  if (value === "game") return "rewards";
+  if (value === "cards" || value === "boosters" || value === "magnets") return "products";
+  if (value === "cups") return "cup";
+  if (value === "rewards" || value === "game") return "games";
+  if (value === "profile") return "account";
   return screenIds.includes(value as MobileScreen) ? (value as MobileScreen) : "home";
 };
 
-const ScreenTitle = ({
+const screenToHash = (screen: MobileScreen) => (screen === "home" ? "#top" : screen === "games" ? "#game" : `#${screen}`);
+
+const categoryFromHash = (hash: string): ShopCategoryId => {
+  const value = hash.replace("#", "");
+  return value === "cards" || value === "boosters" || value === "magnets" ? value : "all";
+};
+
+const parentScreenFor = (screen: MobileScreen): MobileScreen => {
+  if (screen === "detail") return "products";
+  if (screen === "checkout") return "cart";
+  if (screen === "cup" || screen === "apparel" || screen === "products") return "categories";
+  return "home";
+};
+
+const isBottomActive = (tab: MobileScreen, screen: MobileScreen) => {
+  if (tab === screen) return true;
+  if (tab === "categories") return screen === "products" || screen === "detail" || screen === "cup" || screen === "apparel";
+  if (tab === "cart") return screen === "checkout";
+  return false;
+};
+
+const ScreenIntro = ({
   icon: Icon,
+  eyebrow,
   title,
   description,
 }: {
   icon: LucideIcon;
+  eyebrow: string;
   title: string;
   description: string;
 }) => (
-  <div className="clean-screen-title">
-    <div className="clean-screen-icon">
+  <div className="mobile-app-screen-intro">
+    <div className="mobile-app-screen-icon">
       <Icon className="h-5 w-5" />
     </div>
     <div>
+      <span>{eyebrow}</span>
       <h1>{title}</h1>
       <p>{description}</p>
     </div>
   </div>
 );
-
-const ProductRow = ({ product, compact = false }: { product: Product; compact?: boolean }) => {
-  const add = useCart((state) => state.add);
-  const { language, t, formatPrice } = useLanguage();
-
-  return (
-    <article className={`clean-product-row ${compact ? "is-compact" : ""}`}>
-      <Link to={`/product/${product.id}`} className="clean-product-media" aria-label={product.name[language]}>
-        {product.badge && <span>{product.badge[language]}</span>}
-        <img src={product.image} alt={product.name[language]} loading="lazy" />
-      </Link>
-      <div className="clean-product-content">
-        <small>{product.subtitle[language]}</small>
-        <Link to={`/product/${product.id}`} className="clean-product-title">
-          {product.name[language]}
-        </Link>
-        <div className="clean-product-action">
-          <strong>{formatPrice(product.price)}</strong>
-          <button
-            type="button"
-            onClick={() =>
-              add({
-                id: product.id,
-                name: product.name[language],
-                nameByLanguage: product.name,
-                price: product.price,
-                image: product.image,
-              })
-            }
-          >
-            <Plus className="h-4 w-4" />
-            {t("add")}
-          </button>
-        </div>
-      </div>
-    </article>
-  );
-};
 
 export const MobileStoreApp = () => {
   const { language, t, formatPrice, toggleLanguage } = useLanguage();
@@ -331,9 +426,15 @@ export const MobileStoreApp = () => {
   const remove = useCart((state) => state.remove);
   const cartItems = useCart((state) => state.items);
   const setCartOpen = useCart((state) => state.setOpen);
-  const { account, openAccount, canPlayGame, remainingGameLock, consumeGameChance } = useAccount();
-  const c = copy[language];
+  const { account, openAccount, canPlayGame, remainingGameLock, consumeGameChance, logout } = useAccount();
+  const copy = mobileCopy[language];
   const [activeScreen, setActiveScreen] = useState<MobileScreen>(() => (typeof window === "undefined" ? "home" : hashToScreen(window.location.hash)));
+  const [selectedCategory, setSelectedCategory] = useState<ShopCategoryId>(() => (typeof window === "undefined" ? "all" : categoryFromHash(window.location.hash)));
+  const [selectedProduct, setSelectedProduct] = useState<Product>(() => products[0]);
+  const [detailImage, setDetailImage] = useState(products[0].gallery[0] || products[0].image);
+  const [detailColor, setDetailColor] = useState<ProductOptionColor | undefined>(products[0].colors?.[0]);
+  const [detailSize, setDetailSize] = useState(products[0].sizes?.[2] || products[0].sizes?.[0] || "");
+  const [detailQty, setDetailQty] = useState(1);
   const [garmentStyle, setGarmentStyle] = useState(garmentStyles[0]);
   const [garmentColor, setGarmentColor] = useState(garmentColors[0]);
   const [garmentSize, setGarmentSize] = useState("M");
@@ -349,55 +450,131 @@ export const MobileStoreApp = () => {
   const [selectedReward, setSelectedReward] = useState(rewards[0]);
   const [unlockedReward, setUnlockedReward] = useState(rewards[0]);
   const viewportRef = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
 
+  const currentMeta = screenMeta[activeScreen];
+  const BackIcon = language === "ar" ? ArrowRight : ArrowLeft;
   const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
   const cartTotal = cartItems.reduce((sum, item) => sum + item.qty * item.price, 0);
+  const shippingTotal = cartTotal > 0 ? 0 : 0;
+  const orderTotal = cartTotal + shippingTotal;
   const garmentPrintImage = garmentUpload || garmentCharacter.image;
   const cupPrintImage = cupUpload || cupArt.image;
   const showsCupImage = cupMode === "character" || cupMode === "both";
   const showsCupText = cupMode === "text" || cupMode === "both";
 
   const featured = useMemo(() => {
-    const selected = [products.find((item) => item.featured), cards[0], boosters[0], magnets[0], apparel[0]].filter(Boolean);
+    const selected = [products.find((item) => item.featured), cards[0], boosters[0], magnets[0], apparelProducts[0]].filter(Boolean);
     return selected as Product[];
   }, []);
 
-  const navItems = useMemo(
+  const filteredProducts = useMemo(
+    () => (selectedCategory === "all" ? products : products.filter((product) => product.category === selectedCategory)),
+    [selectedCategory],
+  );
+
+  const categories = useMemo(
     () => [
-      { id: "home" as const, label: c.home, icon: Home },
-      { id: "featured" as const, label: c.featured, icon: Star },
-      { id: "cards" as const, label: c.cards, icon: Sparkles },
-      { id: "boosters" as const, label: c.boosters, icon: Package },
-      { id: "magnets" as const, label: c.magnets, icon: Magnet },
-      { id: "cups" as const, label: c.cups, icon: CupSoda },
-      { id: "apparel" as const, label: c.apparel, icon: Shirt },
-      { id: "rewards" as const, label: c.rewards, icon: Gamepad2 },
-      { id: "cart" as const, label: c.cart, icon: ShoppingBag },
+      { id: "all" as const, icon: Package, image: featured[0]?.image ?? products[0].image, count: products.length, accent: "#facc15" },
+      { id: "cards" as const, icon: Sparkles, image: cards[0]?.image ?? products[0].image, count: cards.length, accent: "#60a5fa" },
+      { id: "boosters" as const, icon: Package, image: boosters[0]?.image ?? products[0].image, count: boosters.length, accent: "#f87171" },
+      { id: "magnets" as const, icon: Magnet, image: magnets[0]?.image ?? products[0].image, count: magnets.length, accent: "#34d399" },
+      { id: "apparel" as const, icon: Shirt, image: apparelProducts[0]?.image ?? products[0].image, count: apparelProducts.length, accent: "#c084fc" },
     ],
-    [c],
+    [featured],
   );
 
   const navigateTo = useCallback((screen: MobileScreen) => {
     setActiveScreen(screen);
-    const hash = screenToHash(screen);
-    if (typeof window !== "undefined" && window.location.hash !== hash) {
-      window.history.pushState(null, "", hash);
+    const nextHash = screenToHash(screen);
+    if (typeof window !== "undefined" && window.location.hash !== nextHash) {
+      window.history.pushState(null, "", nextHash);
     }
   }, []);
 
+  const openProducts = useCallback(
+    (category: ShopCategoryId) => {
+      setSelectedCategory(category);
+      navigateTo("products");
+    },
+    [navigateTo],
+  );
+
+  const openProductDetail = useCallback(
+    (product: Product) => {
+      setSelectedProduct(product);
+      setDetailImage(product.gallery[0] || product.image);
+      setDetailColor(product.colors?.[0]);
+      setDetailSize(product.sizes?.[2] || product.sizes?.[0] || "");
+      setDetailQty(1);
+      navigateTo("detail");
+    },
+    [navigateTo],
+  );
+
   useEffect(() => {
-    const syncScreen = () => setActiveScreen(hashToScreen(window.location.hash));
-    window.addEventListener("hashchange", syncScreen);
-    window.addEventListener("popstate", syncScreen);
+    const syncFromHash = () => {
+      setActiveScreen(hashToScreen(window.location.hash));
+      const hashCategory = categoryFromHash(window.location.hash);
+      if (hashCategory !== "all") setSelectedCategory(hashCategory);
+    };
+    window.addEventListener("hashchange", syncFromHash);
+    window.addEventListener("popstate", syncFromHash);
     return () => {
-      window.removeEventListener("hashchange", syncScreen);
-      window.removeEventListener("popstate", syncScreen);
+      window.removeEventListener("hashchange", syncFromHash);
+      window.removeEventListener("popstate", syncFromHash);
     };
   }, []);
 
   useEffect(() => {
-    viewportRef.current?.scrollTo({ top: 0, behavior: "auto" });
+    window.requestAnimationFrame(() => {
+      viewportRef.current?.scrollTo({ top: 0, behavior: "auto" });
+      railRef.current?.querySelector(`[data-screen="${activeScreen}"]`)?.scrollIntoView({ block: "nearest", inline: "center" });
+    });
   }, [activeScreen]);
+
+  const addProductToCart = (product: Product, variant?: string, variantByLanguage?: { en?: string; ar?: string }, image = product.image) => {
+    add({
+      id: product.id,
+      name: product.name[language],
+      nameByLanguage: product.name,
+      price: product.price,
+      image,
+      variant,
+      variantByLanguage,
+    });
+    setCartOpen(false);
+  };
+
+  const detailVariantFor = (targetLanguage: Language) => {
+    const parts = [];
+    if (detailColor) parts.push(detailColor.name[targetLanguage]);
+    if (detailSize) parts.push(detailSize);
+    return parts.join(" · ") || undefined;
+  };
+
+  const addDetailProduct = (nextScreen: MobileScreen = "cart") => {
+    for (let index = 0; index < detailQty; index += 1) {
+      addProductToCart(selectedProduct, detailVariantFor(language), { en: detailVariantFor("en"), ar: detailVariantFor("ar") });
+    }
+    navigateTo(nextScreen);
+  };
+
+  const garmentVariantFor = (targetLanguage: Language) => {
+    const parts = [garmentStyle.name[targetLanguage], garmentSize, garmentColor.name[targetLanguage], garmentUpload ? "Custom image" : garmentCharacter.name];
+    if (garmentText.trim()) parts.push(`"${garmentText.trim()}"`);
+    return parts.join(" · ");
+  };
+
+  const cupNameFor = (targetLanguage: Language) =>
+    targetLanguage === "ar" ? `كوب مخصص ${cupStyle.name[targetLanguage]}` : `Custom ${cupStyle.name[targetLanguage]}`;
+
+  const cupVariantFor = (targetLanguage: Language) => {
+    const parts = [cupStyle.name[targetLanguage], cupColor.name[targetLanguage], cupModeLabels[cupMode][targetLanguage]];
+    if (showsCupImage) parts.push(cupUpload ? "Custom image" : cupArt.name);
+    if (showsCupText && cupText.trim()) parts.push(`"${cupText.trim()}"`);
+    return parts.join(" · ");
+  };
 
   const uploadGarment = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -411,22 +588,6 @@ export const MobileStoreApp = () => {
     if (cupMode === "text") setCupMode("both");
   };
 
-  const garmentVariantFor = (targetLanguage: Language) => {
-    const parts = [garmentStyle.name[targetLanguage], garmentSize, garmentColor.name[targetLanguage], garmentUpload ? "Custom image" : garmentCharacter.name];
-    if (garmentText.trim()) parts.push(`"${garmentText.trim()}"`);
-    return parts.join(" · ");
-  };
-
-  const cupNameFor = (targetLanguage: Language) =>
-    targetLanguage === "ar" ? `كاس مخصص ${cupStyle.name[targetLanguage]}` : `Custom ${cupStyle.name[targetLanguage]}`;
-
-  const cupVariantFor = (targetLanguage: Language) => {
-    const parts = [cupStyle.name[targetLanguage], cupColor.name[targetLanguage], cupModeLabels[cupMode][targetLanguage]];
-    if (showsCupImage) parts.push(cupUpload ? "Custom image" : cupArt.name);
-    if (showsCupText && cupText.trim()) parts.push(`"${cupText.trim()}"`);
-    return parts.join(" · ");
-  };
-
   const addCustomGarment = () => {
     add({
       id: `custom-apparel-${garmentStyle.id}`,
@@ -437,6 +598,8 @@ export const MobileStoreApp = () => {
       variant: garmentVariantFor(language),
       variantByLanguage: { en: garmentVariantFor("en"), ar: garmentVariantFor("ar") },
     });
+    setCartOpen(false);
+    navigateTo("cart");
   };
 
   const addCustomCup = () => {
@@ -449,6 +612,8 @@ export const MobileStoreApp = () => {
       variant: cupVariantFor(language),
       variantByLanguage: { en: cupVariantFor("en"), ar: cupVariantFor("ar") },
     });
+    setCartOpen(false);
+    navigateTo("cart");
   };
 
   const playReward = (reward = selectedReward) => {
@@ -460,133 +625,331 @@ export const MobileStoreApp = () => {
     if (consumeGameChance(reward.code)) setUnlockedReward(reward);
   };
 
+  const renderProductCard = (product: Product, variant: "standard" | "binder" | "drop" | "sticker" = "standard") => (
+    <article key={product.id} className={`mobile-app-product-card mobile-app-product-card--${variant}`}>
+      <button type="button" className="mobile-app-product-media" onClick={() => openProductDetail(product)} aria-label={product.name[language]}>
+        {product.badge && <span>{product.badge[language]}</span>}
+        <img src={product.image} alt={product.name[language]} loading="lazy" />
+      </button>
+      <div className="mobile-app-product-info">
+        <small>{product.subtitle[language]}</small>
+        <button type="button" className="mobile-app-product-title-button" onClick={() => openProductDetail(product)}>
+          {product.name[language]}
+        </button>
+        <div className="mobile-app-product-buy">
+          <strong>{formatPrice(product.price)}</strong>
+          <button type="button" onClick={() => addProductToCart(product)}>
+            <Plus className="h-4 w-4" />
+            {copy.add}
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+
   const renderHome = () => (
-    <section className="clean-screen clean-home-screen">
-      <div className="clean-hero-card">
-        <div className="clean-hero-copy">
-          <img src={logo} alt="Pokémon SA" />
-          <h1>{c.homeTitle}</h1>
-          <p>{c.homeLead}</p>
-        </div>
-        <div className="clean-hero-character" aria-hidden="true">
+    <section className="mobile-app-screen mobile-app-home-screen" aria-label={copy.homeTitle}>
+      <div className="mobile-app-hero">
+        <div className="mobile-app-hero-world" aria-hidden="true">
+          <img src={pokemonArt[1].image} alt="" />
+          <img src={pokemonArt[3].image} alt="" />
           <img src={pokemonArt[0].image} alt="" />
+          <span />
+          <span />
         </div>
-        <div className="clean-hero-actions">
-          <button type="button" onClick={() => navigateTo("featured")}>
-            <Star className="h-4 w-4" />
-            {c.primaryCta}
+        <div className="mobile-app-hero-copy">
+          <img src={logo} alt="Pokémon SA" />
+          <span>{copy.homeEyebrow}</span>
+          <h1>{copy.homeTitle}</h1>
+          <p>{copy.homeLead}</p>
+        </div>
+        <div className="mobile-app-hero-actions">
+          <button type="button" onClick={() => openProducts("all")}>
+            <Zap className="h-4 w-4" />
+            {copy.shopNow}
           </button>
-          <button type="button" onClick={() => navigateTo("cups")}>
-            <CupSoda className="h-4 w-4" />
-            {c.secondaryCta}
+          <button type="button" onClick={() => navigateTo("categories")}>
+            <Grid2X2 className="h-4 w-4" />
+            {copy.browseCategories}
           </button>
         </div>
       </div>
 
-      <div className="clean-home-summary">
+      <div className="mobile-app-status-grid">
         <button type="button" onClick={() => navigateTo("cart")}>
-          <ShoppingBag className="h-4 w-4" />
-          <span>{cartCount}</span>
-          <strong>{formatPrice(cartTotal)}</strong>
+          <small>{screenMeta.cart.label[language]}</small>
+          <strong>{cartCount > 0 ? `${cartCount} ${t("quantity")}` : copy.emptyCartTitle}</strong>
+          <span>{formatPrice(cartTotal)}</span>
         </button>
-        <button type="button" onClick={openAccount}>
-          <UserRound className="h-4 w-4" />
-          <span>{account ? c.accountReady : c.accountNeeded}</span>
-          <strong>{account ? account.name : c.createAccount}</strong>
+        <button type="button" onClick={() => navigateTo("account")}>
+          <small>{copy.accountTitle}</small>
+          <strong>{account ? copy.accountReady : copy.accountMissing}</strong>
+          <span>{account ? account.name : copy.createAccount}</span>
         </button>
       </div>
 
-      <div className="clean-section-block">
-        <div className="clean-block-heading">
-          <h2>{c.quickCategories}</h2>
+      <div className="mobile-app-section">
+        <div className="mobile-app-section-heading">
+          <span>{copy.featuredProducts}</span>
+          <button type="button" onClick={() => openProducts("all")}>{copy.open}</button>
         </div>
-        <div className="clean-category-grid">
-          {navItems
-            .filter((item) => item.id !== "home" && item.id !== "cart")
-            .map((item) => {
-              const Icon = item.icon;
-              return (
-                <button key={item.id} type="button" onClick={() => navigateTo(item.id)}>
-                  <Icon className="h-5 w-5" />
-                  <span>{item.label}</span>
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              );
-            })}
-          <Link to="/special-request">
+        <div className="mobile-app-horizontal-rail">
+          {featured.map((product) => renderProductCard(product, product.category === "magnets" ? "sticker" : "standard"))}
+        </div>
+      </div>
+
+      <div className="mobile-app-map">
+        <div className="mobile-app-map-title">
+          <span>{copy.popularServices}</span>
+          <ChevronRight className="h-4 w-4" />
+        </div>
+        <div className="mobile-app-map-grid">
+          <button type="button" onClick={() => navigateTo("cup")} className="mobile-app-map-card mobile-app-map-card--cup">
+            <CupSoda className="h-5 w-5" />
+            <strong>{copy.customCupService}</strong>
+            <span>{copy.customCupDesc}</span>
+          </button>
+          <button type="button" onClick={() => navigateTo("apparel")} className="mobile-app-map-card mobile-app-map-card--apparel">
+            <Shirt className="h-5 w-5" />
+            <strong>{copy.customApparelService}</strong>
+            <span>{copy.customApparelDesc}</span>
+          </button>
+          <button type="button" onClick={() => navigateTo("games")} className="mobile-app-map-card mobile-app-map-card--games">
+            <Gamepad2 className="h-5 w-5" />
+            <strong>{copy.gamesTitle}</strong>
+            <span>{copy.gamesLead}</span>
+          </button>
+          <Link to="/special-request" className="mobile-app-map-card mobile-app-map-card--request">
             <Search className="h-5 w-5" />
-            <span>{c.rareConcierge}</span>
-            <ChevronRight className="h-4 w-4" />
+            <strong>{copy.specialRequest}</strong>
+            <span>{copy.specialRequestDesc}</span>
           </Link>
         </div>
       </div>
+    </section>
+  );
 
-      <div className="clean-section-block">
-        <div className="clean-block-heading">
-          <h2>{c.featuredTitle}</h2>
-          <button type="button" onClick={() => navigateTo("featured")}>{c.open}</button>
-        </div>
-        <div className="clean-list">
-          {featured.slice(0, 2).map((product) => (
-            <ProductRow key={product.id} product={product} compact />
-          ))}
-        </div>
+  const renderCategories = () => (
+    <section className="mobile-app-screen mobile-app-categories-screen">
+      <ScreenIntro icon={Grid2X2} eyebrow={copy.quickAccess} title={copy.categoriesTitle} description={copy.categoriesLead} />
+      <div className="mobile-app-category-list">
+        {categories.map((category) => {
+          const Icon = category.icon;
+          return (
+            <button
+              key={category.id}
+              type="button"
+              className="mobile-app-category-card"
+              style={{ "--category-accent": category.accent } as CSSProperties}
+              onClick={() => openProducts(category.id)}
+            >
+              <div>
+                <Icon className="h-5 w-5" />
+                <strong>{categoryLabels[category.id][language]}</strong>
+                <span>{category.count} {copy.categoryCount}</span>
+              </div>
+              <img src={category.image} alt="" aria-hidden="true" loading="lazy" />
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          );
+        })}
+      </div>
+      <div className="mobile-app-service-grid">
+        <button type="button" onClick={() => navigateTo("cup")}>
+          <CupSoda className="h-5 w-5" />
+          <strong>{copy.customCupService}</strong>
+          <span>{copy.customCupDesc}</span>
+        </button>
+        <button type="button" onClick={() => navigateTo("apparel")}>
+          <Shirt className="h-5 w-5" />
+          <strong>{copy.customApparelService}</strong>
+          <span>{copy.customApparelDesc}</span>
+        </button>
       </div>
     </section>
   );
 
-  const renderProductScreen = (screen: MobileScreen, icon: LucideIcon, title: string, lead: string, items: Product[], compact = false) => (
-    <section className={`clean-screen clean-products-screen clean-products-${screen}`}>
-      <ScreenTitle icon={icon} title={title} description={lead} />
-      <div className={screen === "magnets" ? "clean-magnet-grid" : "clean-list"}>
-        {items.map((product) => (
-          <ProductRow key={product.id} product={product} compact={compact || screen === "magnets"} />
+  const renderProducts = () => (
+    <section className="mobile-app-screen mobile-app-products-screen">
+      <ScreenIntro icon={Package} eyebrow={categoryLabels[selectedCategory][language]} title={copy.productsTitle} description={copy.productsLead} />
+      <div className="mobile-app-category-tabs" aria-label={copy.chooseCategory}>
+        {categories.map((category) => (
+          <button key={category.id} type="button" onClick={() => setSelectedCategory(category.id)} aria-pressed={selectedCategory === category.id}>
+            {categoryLabels[category.id][language]}
+          </button>
         ))}
       </div>
+      <div className={selectedCategory === "magnets" ? "mobile-app-sticker-wall" : "mobile-app-product-list"}>
+        {filteredProducts.map((product) => renderProductCard(product, selectedCategory === "magnets" ? "sticker" : product.category === "cards" ? "binder" : "standard"))}
+      </div>
     </section>
   );
 
-  const renderCups = () => (
-    <section className="clean-screen clean-studio-screen">
-      <ScreenTitle icon={CupSoda} title={c.cupsTitle} description={c.cupsLead} />
-      <div className="clean-studio-card">
-        <div className="clean-cup-preview">
+  const renderDetail = () => {
+    const related = products.filter((item) => item.id !== selectedProduct.id && item.category === selectedProduct.category).slice(0, 4);
+    return (
+      <section className="mobile-app-screen mobile-app-detail-screen">
+        <ScreenIntro icon={Sparkles} eyebrow={screenMeta.detail.label[language]} title={selectedProduct.name[language]} description={copy.detailLead} />
+        <div className="mobile-app-detail-panel">
+          <div className="mobile-app-detail-gallery">
+            <div className="mobile-app-detail-media">
+              {selectedProduct.badge && <span>{selectedProduct.badge[language]}</span>}
+              <img src={detailImage} alt={selectedProduct.name[language]} />
+              <button type="button" aria-label={copy.favorites}>
+                <Heart className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="mobile-app-detail-thumbs">
+              {selectedProduct.gallery.map((image) => (
+                <button key={image} type="button" onClick={() => setDetailImage(image)} aria-pressed={detailImage === image}>
+                  <img src={image} alt="" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mobile-app-detail-card">
+            <small>{t(selectedProduct.category)}</small>
+            <h2>{selectedProduct.name[language]}</h2>
+            <p>{selectedProduct.subtitle[language]}</p>
+            <strong>{formatPrice(selectedProduct.price)}</strong>
+            {selectedProduct.colors && (
+              <div className="mobile-app-option-block">
+                <span>{t("color")} · {detailColor?.name[language]}</span>
+                <div className="mobile-app-swatches">
+                  {selectedProduct.colors.map((item) => (
+                    <button
+                      key={item.name.en}
+                      type="button"
+                      onClick={() => setDetailColor(item)}
+                      aria-label={item.name[language]}
+                      aria-pressed={detailColor?.name.en === item.name.en}
+                      style={{ background: item.hex }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+            {selectedProduct.sizes && (
+              <div className="mobile-app-option-block">
+                <span>{t("size")} · {detailSize}</span>
+                <div className="mobile-app-size-grid">
+                  {selectedProduct.sizes.map((item) => (
+                    <button key={item} type="button" onClick={() => setDetailSize(item)} aria-pressed={detailSize === item}>
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="mobile-app-quantity-row">
+              <span>{copy.quantity}</span>
+              <div className="mobile-app-quantity-stepper">
+                <button type="button" onClick={() => setDetailQty((value) => Math.max(1, value - 1))}>
+                  <Minus className="h-4 w-4" />
+                </button>
+                <strong>{detailQty}</strong>
+                <button type="button" onClick={() => setDetailQty((value) => Math.min(9, value + 1))}>
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            <div className="mobile-app-detail-actions">
+              <button type="button" className="mobile-app-primary-action" onClick={() => addDetailProduct("cart")}>
+                <ShoppingBag className="h-4 w-4" />
+                {copy.addToCart}
+              </button>
+              <button type="button" onClick={() => addDetailProduct("checkout")}>
+                <CreditCard className="h-4 w-4" />
+                {copy.buyNow}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="mobile-app-trust-grid">
+          <div>
+            <ShieldCheck className="h-5 w-5" />
+            <span>{copy.trusted}</span>
+          </div>
+          <div>
+            <Truck className="h-5 w-5" />
+            <span>{copy.delivery}</span>
+          </div>
+          <div>
+            <CheckCircle2 className="h-5 w-5" />
+            <span>{copy.packaging}</span>
+          </div>
+        </div>
+
+        <div className="mobile-app-detail-specs">
+          <h2>{copy.specifications}</h2>
+          <ul>
+            {selectedProduct.specs[language].map((item) => (
+              <li key={item}>
+                <CheckCircle2 className="h-4 w-4" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {related.length > 0 && (
+          <div className="mobile-app-section">
+            <div className="mobile-app-section-heading">
+              <span>{copy.recommended}</span>
+            </div>
+            <div className="mobile-app-horizontal-rail">
+              {related.map((product) => renderProductCard(product, product.category === "cards" ? "binder" : "standard"))}
+            </div>
+          </div>
+        )}
+      </section>
+    );
+  };
+
+  const renderCup = () => (
+    <section className="mobile-app-screen mobile-app-cups-screen">
+      <ScreenIntro icon={CupSoda} eyebrow={screenMeta.cup.label[language]} title={copy.cupTitle} description={copy.cupLead} />
+      <div className="mobile-app-studio mobile-app-cup-studio">
+        <div className="mobile-app-cup-stage">
           <div
-            className={`clean-cup clean-cup-${cupStyle.id}`}
+            className={`mobile-app-cup mobile-app-cup-${cupStyle.id}`}
             style={{ "--cup-color": cupColor.hex, "--cup-shadow": cupColor.shadow } as CSSProperties}
           >
-            <div className="clean-cup-print">
+            <div className="mobile-app-cup-print">
               {showsCupImage && <img src={cupPrintImage} alt={cupUpload || cupArt.name} />}
               {showsCupText && cupText.trim() && <span>{cupText.trim()}</span>}
             </div>
           </div>
-          <div className="clean-preview-meta">
+          <div className="mobile-app-studio-summary">
             <strong>{cupStyle.name[language]}</strong>
             <span>{cupColor.name[language]} · {formatPrice(cupStyle.price)}</span>
           </div>
         </div>
-        <div className="clean-controls">
-          <div className="clean-choice-grid">
-            {cupStyles.map((style) => (
-              <button key={style.id} type="button" onClick={() => setCupStyle(style)} aria-pressed={cupStyle.id === style.id}>
-                <strong>{style.name[language]}</strong>
-                <span>{style.finish[language]}</span>
+
+        <div className="mobile-app-control-panel">
+          <div className="mobile-app-choice-row">
+            {cupStyles.map((item) => (
+              <button key={item.id} type="button" onClick={() => setCupStyle(item)} aria-pressed={cupStyle.id === item.id}>
+                <strong>{item.name[language]}</strong>
+                <span>{item.finish[language]}</span>
               </button>
             ))}
           </div>
-          <div className="clean-swatch-row">
-            {cupColors.map((color) => (
+          <div className="mobile-app-swatches">
+            {cupColors.map((item) => (
               <button
-                key={color.name.en}
+                key={item.name.en}
                 type="button"
-                onClick={() => setCupColor(color)}
-                aria-label={color.name[language]}
-                aria-pressed={cupColor.name.en === color.name.en}
-                style={{ background: color.hex }}
+                onClick={() => setCupColor(item)}
+                aria-label={item.name[language]}
+                aria-pressed={cupColor.name.en === item.name.en}
+                style={{ background: item.hex }}
               />
             ))}
           </div>
-          <div className="clean-mode-grid">
+          <div className="mobile-app-mode-grid">
             {(["character", "text", "both"] as CupMode[]).map((mode) => (
               <button key={mode} type="button" onClick={() => setCupMode(mode)} aria-pressed={cupMode === mode}>
                 {mode === "text" ? <Type className="h-4 w-4" /> : <ImageIcon className="h-4 w-4" />}
@@ -595,7 +958,7 @@ export const MobileStoreApp = () => {
             ))}
           </div>
           {showsCupImage && (
-            <div className="clean-character-row">
+            <div className="mobile-app-character-strip">
               {pokemonArt.slice(0, 6).map((item) => (
                 <button
                   key={item.name}
@@ -609,19 +972,19 @@ export const MobileStoreApp = () => {
                   <img src={item.image} alt={item.name} />
                 </button>
               ))}
-              <label>
+              <label aria-label={copy.uploadImage}>
                 <Upload className="h-4 w-4" />
                 <input type="file" accept="image/*" onChange={uploadCup} />
               </label>
             </div>
           )}
           {showsCupText && (
-            <label className="clean-field">
-              <span>{t("printedText")}</span>
+            <label className="mobile-app-field">
+              <span>{copy.printedText}</span>
               <input value={cupText} onChange={(event) => setCupText(event.target.value)} maxLength={28} placeholder={t("textPlaceholder")} />
             </label>
           )}
-          <button type="button" className="clean-primary-action" onClick={addCustomCup}>
+          <button type="button" className="mobile-app-primary-action" onClick={addCustomCup}>
             <Plus className="h-4 w-4" />
             {t("addCustomCup")}
           </button>
@@ -631,49 +994,50 @@ export const MobileStoreApp = () => {
   );
 
   const renderApparel = () => (
-    <section className="clean-screen clean-studio-screen">
-      <ScreenTitle icon={Shirt} title={c.apparelTitle} description={c.apparelLead} />
-      <div className="clean-studio-card">
-        <div className="clean-apparel-preview">
+    <section className="mobile-app-screen mobile-app-apparel-screen">
+      <ScreenIntro icon={Shirt} eyebrow={screenMeta.apparel.label[language]} title={copy.apparelTitle} description={copy.apparelLead} />
+      <div className="mobile-app-studio mobile-app-apparel-studio">
+        <div className="mobile-app-apparel-stage">
           <img src={garmentStyle.mockups[garmentColor.id] ?? garmentStyle.mockups.clean} alt={garmentStyle.name[language]} />
-          <div className={`clean-apparel-print clean-apparel-print-${garmentStyle.id}`}>
+          <div className={`mobile-app-apparel-print mobile-app-apparel-print-${garmentStyle.id}`}>
             <img src={garmentPrintImage} alt={garmentUpload || garmentCharacter.name} />
             {garmentText.trim() && <span>{garmentText.trim()}</span>}
           </div>
-          <div className="clean-preview-meta">
+          <div className="mobile-app-studio-summary">
             <strong>{garmentStyle.name[language]}</strong>
             <span>{garmentSize} · {garmentColor.name[language]} · {formatPrice(garmentStyle.price)}</span>
           </div>
         </div>
-        <div className="clean-controls">
-          <div className="clean-choice-grid is-two">
-            {garmentStyles.map((style) => (
-              <button key={style.id} type="button" onClick={() => setGarmentStyle(style)} aria-pressed={garmentStyle.id === style.id}>
-                <strong>{style.name[language]}</strong>
-                <span>{formatPrice(style.price)}</span>
+
+        <div className="mobile-app-control-panel">
+          <div className="mobile-app-choice-row">
+            {garmentStyles.map((item) => (
+              <button key={item.id} type="button" onClick={() => setGarmentStyle(item)} aria-pressed={garmentStyle.id === item.id}>
+                <strong>{item.name[language]}</strong>
+                <span>{formatPrice(item.price)}</span>
               </button>
             ))}
           </div>
-          <div className="clean-size-grid">
-            {apparelSizes.map((size) => (
-              <button key={size} type="button" onClick={() => setGarmentSize(size)} aria-pressed={garmentSize === size}>
-                {size}
+          <div className="mobile-app-size-grid">
+            {apparelSizes.map((item) => (
+              <button key={item} type="button" onClick={() => setGarmentSize(item)} aria-pressed={garmentSize === item}>
+                {item}
               </button>
             ))}
           </div>
-          <div className="clean-swatch-row">
-            {garmentColors.map((color) => (
+          <div className="mobile-app-swatches">
+            {garmentColors.map((item) => (
               <button
-                key={color.id}
+                key={item.id}
                 type="button"
-                onClick={() => setGarmentColor(color)}
-                aria-label={color.name[language]}
-                aria-pressed={garmentColor.id === color.id}
-                style={{ background: color.hex }}
+                onClick={() => setGarmentColor(item)}
+                aria-label={item.name[language]}
+                aria-pressed={garmentColor.id === item.id}
+                style={{ background: item.hex }}
               />
             ))}
           </div>
-          <div className="clean-character-row">
+          <div className="mobile-app-character-strip">
             {pokemonArt.map((item) => (
               <button
                 key={item.name}
@@ -687,65 +1051,70 @@ export const MobileStoreApp = () => {
                 <img src={item.image} alt={item.name} />
               </button>
             ))}
-            <label>
+            <label aria-label={copy.uploadImage}>
               <Upload className="h-4 w-4" />
               <input type="file" accept="image/*" onChange={uploadGarment} />
             </label>
           </div>
-          <label className="clean-field">
-            <span>{t("printedText")}</span>
+          <label className="mobile-app-field">
+            <span>{copy.printedText}</span>
             <input value={garmentText} onChange={(event) => setGarmentText(event.target.value)} maxLength={24} placeholder={t("textPlaceholder")} />
           </label>
-          <button type="button" className="clean-primary-action" onClick={addCustomGarment}>
+          <button type="button" className="mobile-app-primary-action" onClick={addCustomGarment}>
             <Plus className="h-4 w-4" />
             {t("addToCart")}
           </button>
         </div>
       </div>
-      <div className="clean-list">
-        {[...tees, ...hoodies].map((product) => (
-          <ProductRow key={product.id} product={product} compact />
-        ))}
-      </div>
     </section>
   );
 
-  const renderRewards = () => {
+  const renderGames = () => {
     const SelectedIcon = selectedReward.icon;
     return (
-      <section className="clean-screen clean-game-screen">
-        <ScreenTitle icon={Gamepad2} title={c.rewardsTitle} description={c.rewardsLead} />
-        <div className="clean-game-card">
-          <div className="clean-game-stage">
-            <img src={selectedReward.character.image} alt="" aria-hidden="true" />
-            <div className="clean-game-status">
-              <SelectedIcon className="h-5 w-5" />
-              <span>{account ? (canPlayGame ? c.readyToPlay : `${c.gameUsed} · ${remainingGameLock}`) : c.createAccount}</span>
+      <section className="mobile-app-screen mobile-app-rewards-screen">
+        <ScreenIntro icon={Gamepad2} eyebrow={screenMeta.games.label[language]} title={copy.gamesTitle} description={copy.gamesLead} />
+        <div className="mobile-app-game-cabinet">
+          <div className="mobile-app-game-screen">
+            <div className="mobile-app-game-scene" aria-hidden="true">
+              <img src={selectedReward.character.image} alt="" />
+              <span />
+              <span />
+              <span />
             </div>
-            <h2>{selectedReward.mission[language]}</h2>
+            <div className="mobile-app-game-hud">
+              <SelectedIcon className="h-5 w-5" />
+              <span>{account ? (canPlayGame ? copy.readyToPlay : `${copy.locked} · ${remainingGameLock}`) : copy.createAccount}</span>
+            </div>
+            <strong>{selectedReward.mission[language]}</strong>
             <p>{selectedReward.prompt[language]}</p>
-            <div className="clean-reward-code">
-              <span>{c.activeReward}</span>
+            <div className="mobile-app-reward-meter">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="mobile-app-prize-readout">
+              <small>{copy.activeReward}</small>
               <strong>{unlockedReward.title[language]}</strong>
-              <code>{account && !canPlayGame ? unlockedReward.code : "???"}</code>
+              <code>{account && !canPlayGame ? unlockedReward.code : "???-??"}</code>
             </div>
           </div>
-          <div className="clean-game-options">
-            <span>{c.chooseChallenge}</span>
+          <div className="mobile-app-game-select">
+            <span>{copy.chooseGame}</span>
             {rewards.map((reward) => {
               const Icon = reward.icon;
               return (
                 <button key={reward.code} type="button" onClick={() => setSelectedReward(reward)} aria-pressed={selectedReward.code === reward.code}>
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-5 w-5" />
                   <strong>{reward.mission[language]}</strong>
-                  <small>{reward.title[language]}</small>
+                  <small>{reward.prompt[language]}</small>
                 </button>
               );
             })}
           </div>
-          <button type="button" className="clean-primary-action" onClick={() => playReward()}>
+          <button type="button" className="mobile-app-primary-action" onClick={() => playReward()}>
             <Gamepad2 className="h-4 w-4" />
-            {account ? c.playReward : c.createAccount}
+            {account ? copy.playReveal : copy.createAccount}
           </button>
         </div>
       </section>
@@ -753,22 +1122,25 @@ export const MobileStoreApp = () => {
   };
 
   const renderCart = () => (
-    <section className="clean-screen clean-cart-screen">
-      <ScreenTitle icon={ShoppingBag} title={c.cartTitle} description={c.cartLead} />
-      <div className="clean-cart-card">
+    <section className="mobile-app-screen mobile-app-cart-screen">
+      <ScreenIntro icon={ShoppingBag} eyebrow={screenMeta.cart.label[language]} title={copy.cartTitle} description={copy.cartLead} />
+      <div className="mobile-app-cart-panel">
         {cartItems.length === 0 ? (
-          <div className="clean-empty-cart">
-            <ShoppingBag className="h-8 w-8" />
-            <strong>{c.emptyCart}</strong>
-            <button type="button" onClick={() => navigateTo("featured")}>{c.startShopping}</button>
+          <div className="mobile-app-empty-cart">
+            <ShoppingBag className="h-7 w-7" />
+            <strong>{copy.emptyCartTitle}</strong>
+            <p>{copy.emptyCartCopy}</p>
+            <button type="button" onClick={() => openProducts("all")}>
+              {copy.continueShopping}
+            </button>
           </div>
         ) : (
-          <div className="clean-cart-list">
+          <div className="mobile-app-cart-list">
             {cartItems.map((item) => {
               const title = item.nameByLanguage?.[language] ?? item.name;
               const variant = item.variantByLanguage?.[language] ?? item.variant;
               return (
-                <article key={keyOf(item)} className="clean-cart-item">
+                <article key={keyOf(item)} className="mobile-app-cart-item">
                   <img src={item.image} alt={title} />
                   <div>
                     <strong>{title}</strong>
@@ -776,87 +1148,228 @@ export const MobileStoreApp = () => {
                     <small>{item.qty} × {formatPrice(item.price)}</small>
                   </div>
                   <button type="button" onClick={() => remove(keyOf(item))} aria-label="Remove item">
-                    <Minus className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </article>
               );
             })}
           </div>
         )}
-        <div className="clean-cart-total">
-          <span>{t("total")}</span>
+        <div className="mobile-app-cart-total">
+          <span>{copy.total}</span>
           <strong>{formatPrice(cartTotal)}</strong>
         </div>
-        <button type="button" className="clean-primary-action" onClick={() => setCartOpen(true)}>
-          <ShoppingBag className="h-4 w-4" />
-          {cartCount > 0 ? t("checkout") : t("cart")}
+        <button type="button" className="mobile-app-primary-action" onClick={() => navigateTo("checkout")} disabled={cartItems.length === 0}>
+          <CreditCard className="h-4 w-4" />
+          {copy.checkout}
         </button>
       </div>
-      <Link to="/special-request" className="clean-concierge-link">
+      <Link to="/special-request" className="mobile-app-concierge-card">
         <Search className="h-5 w-5" />
         <div>
-          <strong>{c.rareConcierge}</strong>
-          <span>{t("specialDescription")}</span>
+          <strong>{copy.specialRequest}</strong>
+          <p>{copy.specialRequestDesc}</p>
         </div>
         <ChevronRight className="h-4 w-4" />
       </Link>
     </section>
   );
 
-  return (
-    <div className="mobile-store-app clean-mobile-app">
-      <header className="clean-mobile-header">
-        <button type="button" onClick={openAccount} aria-label={t("account")}>
-          <UserRound className="h-5 w-5" />
+  const renderCheckout = () => (
+    <section className="mobile-app-screen mobile-app-checkout-screen">
+      <ScreenIntro icon={CreditCard} eyebrow={screenMeta.checkout.label[language]} title={copy.checkoutTitle} description={copy.checkoutLead} />
+      {cartItems.length === 0 ? (
+        <div className="mobile-app-empty-cart">
+          <ShoppingBag className="h-7 w-7" />
+          <strong>{copy.emptyCartTitle}</strong>
+          <p>{copy.emptyCartCopy}</p>
+          <button type="button" onClick={() => openProducts("all")}>{copy.continueShopping}</button>
+        </div>
+      ) : (
+        <>
+          <div className="mobile-app-checkout-progress" aria-label={copy.checkoutTitle}>
+            {[copy.cartTitle, copy.shipping, copy.paymentMethod, copy.orderReady].map((item, index) => (
+              <div key={item} className={index === 3 ? "is-current" : ""}>
+                <span>{index + 1}</span>
+                <small>{item}</small>
+              </div>
+            ))}
+          </div>
+          <div className="mobile-app-checkout-stack">
+            <section className="mobile-app-checkout-card">
+              <MapPin className="h-5 w-5" />
+              <div>
+                <span>{copy.shippingAddress}</span>
+                <strong>{account ? account.name : copy.accountMissing}</strong>
+                <p>{account ? `${account.phone} · ${t("location")}` : copy.createAccount}</p>
+              </div>
+              <button type="button" onClick={openAccount}>{account ? copy.open : copy.createAccount}</button>
+            </section>
+            <section className="mobile-app-checkout-card">
+              <Truck className="h-5 w-5" />
+              <div>
+                <span>{copy.shippingMethod}</span>
+                <strong>{copy.expressShipping}</strong>
+                <p>{copy.free}</p>
+              </div>
+            </section>
+            <section className="mobile-app-checkout-card">
+              <WalletCards className="h-5 w-5" />
+              <div>
+                <span>{copy.paymentMethod}</span>
+                <strong>{copy.madaVisa}</strong>
+                <p>{copy.orderReadyCopy}</p>
+              </div>
+            </section>
+          </div>
+          <div className="mobile-app-order-summary">
+            <div>
+              <span>{copy.subtotal}</span>
+              <strong>{formatPrice(cartTotal)}</strong>
+            </div>
+            <div>
+              <span>{copy.shipping}</span>
+              <strong>{copy.free}</strong>
+            </div>
+            <div>
+              <span>{copy.total}</span>
+              <strong>{formatPrice(orderTotal)}</strong>
+            </div>
+            <button type="button" className="mobile-app-primary-action">
+              <CreditCard className="h-4 w-4" />
+              {copy.payNow}
+            </button>
+          </div>
+        </>
+      )}
+    </section>
+  );
+
+  const renderAccount = () => (
+    <section className="mobile-app-screen mobile-app-profile-screen">
+      <ScreenIntro icon={UserRound} eyebrow={screenMeta.account.label[language]} title={copy.accountTitle} description={copy.accountLead} />
+      <div className="mobile-app-profile-card">
+        <div className="mobile-app-profile-avatar">
+          <UserRound className="h-7 w-7" />
+        </div>
+        <div>
+          <span>{copy.accountTitle}</span>
+          <strong>{account ? account.name : copy.accountMissing}</strong>
+          <p>{account ? account.phone : copy.createAccount}</p>
+        </div>
+        <button type="button" onClick={openAccount}>
+          <BadgeCheck className="h-4 w-4" />
+          {account ? t("account") : copy.createAccount}
         </button>
-        <button type="button" className="clean-mobile-logo" onClick={() => navigateTo("home")} aria-label={t("brand")}>
+      </div>
+      <div className="mobile-app-profile-actions">
+        <button type="button" onClick={() => navigateTo("cart")}>
+          <ShoppingBag className="h-5 w-5" />
+          <span>{copy.orders}</span>
+          <strong>{cartCount > 0 ? `${cartCount} ${screenMeta.cart.label[language]}` : copy.emptyCartTitle}</strong>
+        </button>
+        <button type="button" onClick={() => navigateTo("games")}>
+          <Gamepad2 className="h-5 w-5" />
+          <span>{copy.activeReward}</span>
+          <strong>{account && !canPlayGame ? remainingGameLock : copy.readyToPlay}</strong>
+        </button>
+        <button type="button" onClick={toggleLanguage}>
+          <Globe2 className="h-5 w-5" />
+          <span>{copy.language}</span>
+          <strong>{t("language")}</strong>
+        </button>
+        <Link to="/special-request">
+          <MessageSquare className="h-5 w-5" />
+          <span>{copy.specialRequest}</span>
+          <strong>{copy.specialRequestDesc}</strong>
+        </Link>
+        <button type="button" onClick={openAccount}>
+          <MapPin className="h-5 w-5" />
+          <span>{copy.addresses}</span>
+          <strong>{account ? t("location") : copy.createAccount}</strong>
+        </button>
+        <button type="button" onClick={() => account && logout()}>
+          <ShieldCheck className="h-5 w-5" />
+          <span>{copy.settings}</span>
+          <strong>{account ? copy.logout : copy.createAccount}</strong>
+        </button>
+      </div>
+    </section>
+  );
+
+  return (
+    <div
+      className={`mobile-store-app mobile-app-shell mobile-app-shell--${currentMeta.theme}`}
+      style={{ "--screen-accent": currentMeta.accent } as CSSProperties}
+    >
+      <header className="mobile-app-header">
+        <button
+          type="button"
+          onClick={() => (activeScreen === "home" ? navigateTo("account") : navigateTo(parentScreenFor(activeScreen)))}
+          aria-label={activeScreen === "home" ? screenMeta.account.label[language] : t("backToShop")}
+        >
+          {activeScreen === "home" ? <UserRound className="h-5 w-5" /> : <BackIcon className="h-5 w-5" />}
+        </button>
+        <button type="button" className="mobile-app-logo" onClick={() => navigateTo("home")} aria-label={t("brand")}>
           <img src={logo} alt="Pokémon SA" />
         </button>
-        <div className="clean-header-actions">
-          <button type="button" onClick={toggleLanguage} aria-label={c.languageLabel}>
+        <div className="mobile-app-header-actions">
+          <button type="button" onClick={toggleLanguage} aria-label={copy.language}>
             <Globe2 className="h-5 w-5" />
           </button>
-          <button type="button" onClick={() => navigateTo("cart")} aria-label={t("cart")} className="clean-cart-button">
+          <button type="button" onClick={() => navigateTo("cart")} aria-label={screenMeta.cart.label[language]} className="mobile-app-cart-button">
             <ShoppingBag className="h-5 w-5" />
             {cartCount > 0 && <span>{cartCount}</span>}
           </button>
         </div>
       </header>
 
-      <main className="clean-mobile-viewport" ref={viewportRef} aria-label={navItems.find((item) => item.id === activeScreen)?.label}>
-        {activeScreen === "home" && renderHome()}
-        {activeScreen === "featured" && (
-          <section className="clean-screen clean-products-screen">
-            <ScreenTitle icon={Star} title={c.featuredTitle} description={c.featuredLead} />
-            <div className="clean-list">
-              {featured.map((product) => (
-                <ProductRow key={product.id} product={product} />
-              ))}
-            </div>
-          </section>
-        )}
-        {activeScreen === "cards" && renderProductScreen("cards", Sparkles, c.cardsTitle, c.cardsLead, cards)}
-        {activeScreen === "boosters" && renderProductScreen("boosters", Package, c.boostersTitle, c.boostersLead, boosters)}
-        {activeScreen === "magnets" && renderProductScreen("magnets", Magnet, c.magnetsTitle, c.magnetsLead, magnets, true)}
-        {activeScreen === "cups" && renderCups()}
-        {activeScreen === "apparel" && renderApparel()}
-        {activeScreen === "rewards" && renderRewards()}
-        {activeScreen === "cart" && renderCart()}
-      </main>
-
-      <nav className="clean-mobile-nav" aria-label={c.shop}>
-        {navItems.map((item) => {
-          const Icon = item.icon;
+      <nav className="mobile-app-destination-rail" aria-label={copy.quickAccess} ref={railRef}>
+        {destinationScreens.map((screen) => {
+          const meta = screenMeta[screen];
+          const Icon = meta.icon;
           return (
             <button
-              key={item.id}
+              key={screen}
               type="button"
-              data-screen={item.id}
-              onClick={() => navigateTo(item.id)}
-              aria-current={activeScreen === item.id ? "page" : undefined}
+              data-screen={screen}
+              onClick={() => navigateTo(screen)}
+              aria-current={activeScreen === screen ? "page" : undefined}
             >
               <Icon className="h-4 w-4" />
-              <span>{item.label}</span>
+              <span>{meta.label[language]}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      <main ref={viewportRef} className="mobile-app-viewport" aria-label={currentMeta.label[language]}>
+        {activeScreen === "home" && renderHome()}
+        {activeScreen === "categories" && renderCategories()}
+        {activeScreen === "products" && renderProducts()}
+        {activeScreen === "detail" && renderDetail()}
+        {activeScreen === "cup" && renderCup()}
+        {activeScreen === "apparel" && renderApparel()}
+        {activeScreen === "cart" && renderCart()}
+        {activeScreen === "checkout" && renderCheckout()}
+        {activeScreen === "games" && renderGames()}
+        {activeScreen === "account" && renderAccount()}
+      </main>
+
+      <nav className="mobile-app-tabbar" aria-label={t("shop")}>
+        {bottomScreens.map((screen) => {
+          const meta = screenMeta[screen];
+          const Icon = meta.icon;
+          return (
+            <button
+              key={screen}
+              type="button"
+              data-tab-screen={screen}
+              onClick={() => navigateTo(screen)}
+              aria-current={isBottomActive(screen, activeScreen) ? "page" : undefined}
+            >
+              <Icon className="h-4 w-4" />
+              <span>{meta.label[language]}</span>
             </button>
           );
         })}

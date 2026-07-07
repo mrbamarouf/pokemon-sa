@@ -2216,6 +2216,10 @@
     touch-action: pan-y;
   }
 
+  body:has(.mobile-native-root) .pokeball-cursor {
+    display: none !important;
+  }
+
   .mobile-store-app.mobile-app-shell::before,
   .mobile-store-app.mobile-app-shell::after {
     pointer-events: none;
@@ -3871,6 +3875,602 @@
     font-size: clamp(0.58rem, 2.35vw, 0.76rem);
     font-weight: 850;
     line-height: 1.25;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-app-tabbar {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .mobile-app-section {
+    display: grid;
+    gap: 0.58rem;
+  }
+
+  .mobile-app-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-inline: 0.1rem;
+  }
+
+  .mobile-app-section-heading span {
+    color: hsl(var(--foreground));
+    font-size: 0.88rem;
+    font-weight: 950;
+    line-height: 1.1;
+  }
+
+  .mobile-app-section-heading button {
+    min-height: 2.35rem;
+    border: 1px solid var(--app-line);
+    border-radius: 999px;
+    padding: 0.48rem 0.72rem;
+    background: hsl(var(--background) / 0.5);
+    color: var(--screen-accent);
+    font-size: 0.72rem;
+    font-weight: 900;
+  }
+
+  .mobile-app-map-card {
+    text-decoration: none;
+  }
+
+  .mobile-app-category-list {
+    display: grid;
+    gap: 0.62rem;
+  }
+
+  .mobile-app-category-card {
+    --category-accent: var(--screen-accent);
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(5.4rem, 30%) auto;
+    align-items: center;
+    gap: 0.64rem;
+    min-height: 7rem;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--category-accent) 36%, var(--app-line));
+    border-radius: 1.25rem;
+    padding: 0.74rem;
+    background:
+      radial-gradient(circle at 86% 0%, color-mix(in srgb, var(--category-accent) 18%, transparent), transparent 8rem),
+      hsl(var(--card) / 0.62);
+    color: hsl(var(--foreground));
+    text-align: start;
+    box-shadow: inset 0 1px hsl(0 0% 100% / 0.08);
+  }
+
+  .mobile-app-category-card > div {
+    display: grid;
+    gap: 0.28rem;
+  }
+
+  .mobile-app-category-card svg:first-child {
+    color: var(--category-accent);
+  }
+
+  .mobile-app-category-card strong {
+    font-size: 1rem;
+    font-weight: 950;
+    line-height: 1.12;
+  }
+
+  .mobile-app-category-card span {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+
+  .mobile-app-category-card img {
+    width: 100%;
+    height: 5.65rem;
+    object-fit: contain;
+    filter: drop-shadow(0 0.8rem 1.1rem hsl(0 0% 0% / 0.32));
+  }
+
+  .mobile-app-service-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.58rem;
+  }
+
+  .mobile-app-service-grid button {
+    display: grid;
+    min-height: 7.2rem;
+    align-content: start;
+    gap: 0.34rem;
+    border: 1px solid var(--app-line);
+    border-radius: 1.18rem;
+    padding: 0.72rem;
+    background:
+      radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--screen-accent) 12%, transparent), transparent 6rem),
+      hsl(var(--card) / 0.58);
+    color: hsl(var(--foreground));
+    text-align: start;
+  }
+
+  .mobile-app-service-grid svg {
+    color: var(--screen-accent);
+  }
+
+  .mobile-app-service-grid strong {
+    font-size: 0.9rem;
+    font-weight: 950;
+    line-height: 1.1;
+  }
+
+  .mobile-app-service-grid span {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.7rem;
+    font-weight: 750;
+    line-height: 1.28;
+  }
+
+  .mobile-app-category-tabs {
+    display: flex;
+    gap: 0.42rem;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.08rem;
+    scrollbar-width: none;
+    touch-action: pan-x;
+  }
+
+  .mobile-app-category-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-app-category-tabs button {
+    flex: 0 0 auto;
+    min-height: 2.55rem;
+    border: 1px solid var(--app-line);
+    border-radius: 999px;
+    padding: 0.5rem 0.78rem;
+    background: hsl(var(--background) / 0.52);
+    color: hsl(var(--muted-foreground));
+    font-size: 0.72rem;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .mobile-app-category-tabs button[aria-pressed="true"] {
+    border-color: color-mix(in srgb, var(--screen-accent) 66%, transparent);
+    background: color-mix(in srgb, var(--screen-accent) 14%, hsl(var(--background) / 0.64));
+    color: hsl(var(--foreground));
+  }
+
+  .mobile-app-product-list {
+    display: grid;
+    gap: 0.58rem;
+  }
+
+  .mobile-app-product-media {
+    border: 0;
+    padding: 0;
+  }
+
+  .mobile-app-product-title-button {
+    display: -webkit-box;
+    width: 100%;
+    min-height: 2.25rem;
+    overflow: hidden;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: hsl(var(--foreground));
+    font-size: 0.86rem;
+    font-weight: 950;
+    line-height: 1.16;
+    letter-spacing: 0;
+    text-align: start;
+    text-decoration: none;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .mobile-app-detail-panel {
+    display: grid;
+    gap: 0.72rem;
+  }
+
+  .mobile-app-detail-gallery,
+  .mobile-app-detail-card,
+  .mobile-app-detail-specs,
+  .mobile-app-order-summary {
+    border: 1px solid color-mix(in srgb, var(--screen-accent) 30%, var(--app-line));
+    border-radius: 1.4rem;
+    background:
+      radial-gradient(circle at 92% 0%, color-mix(in srgb, var(--screen-accent) 13%, transparent), transparent 9rem),
+      hsl(var(--card) / 0.66);
+    box-shadow: inset 0 1px hsl(0 0% 100% / 0.08), 0 1rem 2.4rem hsl(0 0% 0% / 0.22);
+    backdrop-filter: blur(18px);
+  }
+
+  .mobile-app-detail-gallery {
+    display: grid;
+    gap: 0.56rem;
+    padding: 0.72rem;
+  }
+
+  .mobile-app-detail-media {
+    position: relative;
+    display: grid;
+    min-height: 18rem;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 1.15rem;
+    background:
+      radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--screen-accent) 20%, transparent), transparent 56%),
+      hsl(var(--background) / 0.52);
+  }
+
+  .mobile-app-detail-media > span {
+    position: absolute;
+    top: 0.72rem;
+    left: 0.72rem;
+    border-radius: 999px;
+    padding: 0.22rem 0.5rem;
+    background: hsl(var(--pk-yellow));
+    color: hsl(var(--background));
+    font-size: 0.58rem;
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .mobile-app-detail-media img {
+    width: 92%;
+    height: 17rem;
+    object-fit: contain;
+    filter: drop-shadow(0 1.1rem 1.5rem hsl(0 0% 0% / 0.42));
+  }
+
+  .mobile-app-detail-media button {
+    position: absolute;
+    top: 0.62rem;
+    right: 0.62rem;
+    display: grid;
+    width: 2.55rem;
+    height: 2.55rem;
+    place-items: center;
+    border: 1px solid var(--app-line);
+    border-radius: 0.9rem;
+    background: hsl(var(--background) / 0.62);
+    color: hsl(var(--foreground));
+  }
+
+  .mobile-app-detail-thumbs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.42rem;
+  }
+
+  .mobile-app-detail-thumbs button {
+    display: grid;
+    min-height: 4.3rem;
+    place-items: center;
+    border: 1px solid var(--app-line);
+    border-radius: 0.86rem;
+    padding: 0.26rem;
+    background: hsl(var(--background) / 0.48);
+  }
+
+  .mobile-app-detail-thumbs button[aria-pressed="true"] {
+    border-color: var(--screen-accent);
+  }
+
+  .mobile-app-detail-thumbs img {
+    width: 100%;
+    height: 3.7rem;
+    object-fit: contain;
+  }
+
+  .mobile-app-detail-card {
+    display: grid;
+    gap: 0.62rem;
+    padding: 0.78rem;
+  }
+
+  .mobile-app-detail-card small,
+  .mobile-app-option-block > span,
+  .mobile-app-quantity-row > span,
+  .mobile-app-checkout-card span {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.7rem;
+    font-weight: 850;
+    line-height: 1.18;
+  }
+
+  .mobile-app-detail-card h2 {
+    margin: 0;
+    color: hsl(var(--foreground));
+    font-size: clamp(1.35rem, 6.1vw, 2rem);
+    font-weight: 950;
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
+
+  .mobile-app-detail-card p {
+    margin: 0;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.84rem;
+    font-weight: 650;
+    line-height: 1.42;
+  }
+
+  .mobile-app-detail-card > strong {
+    color: var(--screen-accent);
+    font-size: 1.42rem;
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .mobile-app-option-block {
+    display: grid;
+    gap: 0.42rem;
+  }
+
+  .mobile-app-quantity-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.72rem;
+    border: 1px solid var(--app-line);
+    border-radius: 1rem;
+    padding: 0.5rem 0.58rem;
+    background: hsl(var(--background) / 0.42);
+  }
+
+  .mobile-app-quantity-stepper {
+    display: grid;
+    grid-template-columns: 2.2rem 2rem 2.2rem;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid var(--app-line);
+    border-radius: 0.82rem;
+    background: hsl(var(--background) / 0.52);
+  }
+
+  .mobile-app-quantity-stepper button {
+    display: grid;
+    width: 2.2rem;
+    height: 2.2rem;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    color: hsl(var(--foreground));
+  }
+
+  .mobile-app-quantity-stepper strong {
+    color: hsl(var(--foreground));
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 950;
+  }
+
+  .mobile-app-detail-actions {
+    display: grid;
+    grid-template-columns: 1fr 0.82fr;
+    gap: 0.48rem;
+  }
+
+  .mobile-app-detail-actions > button:not(.mobile-app-primary-action),
+  .mobile-app-checkout-card button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.34rem;
+    min-height: 2.9rem;
+    border: 1px solid var(--app-line);
+    border-radius: 0.95rem;
+    padding: 0.68rem 0.72rem;
+    background: hsl(var(--background) / 0.5);
+    color: hsl(var(--foreground));
+    font-size: 0.76rem;
+    font-weight: 950;
+    line-height: 1.1;
+  }
+
+  .mobile-app-trust-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.42rem;
+  }
+
+  .mobile-app-trust-grid div {
+    display: grid;
+    min-height: 5.4rem;
+    align-content: center;
+    justify-items: center;
+    gap: 0.35rem;
+    border: 1px solid var(--app-line);
+    border-radius: 1rem;
+    padding: 0.48rem;
+    background: hsl(var(--card) / 0.56);
+    color: hsl(var(--muted-foreground));
+    text-align: center;
+    font-size: 0.66rem;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .mobile-app-trust-grid svg {
+    color: var(--screen-accent);
+  }
+
+  .mobile-app-detail-specs {
+    display: grid;
+    gap: 0.56rem;
+    padding: 0.78rem;
+  }
+
+  .mobile-app-detail-specs h2 {
+    margin: 0;
+    color: hsl(var(--foreground));
+    font-size: 1rem;
+    font-weight: 950;
+  }
+
+  .mobile-app-detail-specs ul {
+    display: grid;
+    gap: 0.46rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mobile-app-detail-specs li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.42rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.36;
+  }
+
+  .mobile-app-detail-specs svg {
+    color: var(--screen-accent);
+  }
+
+  .mobile-app-checkout-progress {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.34rem;
+  }
+
+  .mobile-app-checkout-progress div {
+    display: grid;
+    justify-items: center;
+    gap: 0.28rem;
+    color: hsl(var(--muted-foreground));
+    text-align: center;
+  }
+
+  .mobile-app-checkout-progress span {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid var(--app-line);
+    border-radius: 999px;
+    background: hsl(var(--background) / 0.48);
+    font-size: 0.75rem;
+    font-weight: 950;
+  }
+
+  .mobile-app-checkout-progress .is-current span,
+  .mobile-app-checkout-progress div:not(.is-current) span {
+    border-color: color-mix(in srgb, var(--screen-accent) 58%, transparent);
+  }
+
+  .mobile-app-checkout-progress .is-current span {
+    background: var(--screen-accent);
+    color: hsl(var(--background));
+  }
+
+  .mobile-app-checkout-progress small {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 0.58rem;
+    font-weight: 850;
+    line-height: 1.12;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .mobile-app-checkout-stack {
+    display: grid;
+    gap: 0.58rem;
+  }
+
+  .mobile-app-checkout-card {
+    display: grid;
+    grid-template-columns: 2.55rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.58rem;
+    border: 1px solid color-mix(in srgb, var(--screen-accent) 28%, var(--app-line));
+    border-radius: 1.15rem;
+    padding: 0.68rem;
+    background: hsl(var(--card) / 0.62);
+    box-shadow: inset 0 1px hsl(0 0% 100% / 0.08);
+  }
+
+  .mobile-app-checkout-card > svg {
+    display: grid;
+    width: 2.55rem;
+    height: 2.55rem;
+    border-radius: 0.88rem;
+    padding: 0.56rem;
+    background: color-mix(in srgb, var(--screen-accent) 15%, hsl(var(--background)));
+    color: var(--screen-accent);
+  }
+
+  .mobile-app-checkout-card strong {
+    display: block;
+    margin-top: 0.1rem;
+    color: hsl(var(--foreground));
+    font-size: 0.88rem;
+    font-weight: 950;
+    line-height: 1.14;
+  }
+
+  .mobile-app-checkout-card p {
+    margin: 0.16rem 0 0;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.28;
+  }
+
+  .mobile-app-order-summary {
+    display: grid;
+    gap: 0.54rem;
+    padding: 0.78rem;
+  }
+
+  .mobile-app-order-summary div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.72rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.82rem;
+    font-weight: 850;
+  }
+
+  .mobile-app-order-summary div:last-of-type {
+    border-top: 1px solid var(--app-line);
+    padding-top: 0.58rem;
+    color: hsl(var(--foreground));
+  }
+
+  .mobile-app-order-summary strong {
+    color: var(--screen-accent);
+    font-size: 0.95rem;
+    font-weight: 950;
+  }
+
+  .mobile-app-primary-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  [dir="rtl"] .mobile-app-category-card,
+  [dir="rtl"] .mobile-app-service-grid button,
+  [dir="rtl"] .mobile-app-product-title-button,
+  [dir="rtl"] .mobile-app-checkout-card {
+    direction: rtl;
+    text-align: right;
+  }
+
+  [dir="rtl"] .mobile-app-detail-card,
+  [dir="rtl"] .mobile-app-detail-specs,
+  [dir="rtl"] .mobile-app-order-summary {
+    text-align: right;
   }
 }
 
