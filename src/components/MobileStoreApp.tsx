@@ -748,28 +748,21 @@ export const MobileStoreApp = () => {
     <section className="mobile-app-screen mobile-app-categories-screen">
       <ScreenIntro icon={Grid2X2} eyebrow={copy.quickAccess} title={copy.categoriesTitle} description={copy.categoriesLead} />
       <div className="mobile-app-category-list">
-        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#facc15" } as CSSProperties} onClick={() => navigateTo("home")}>
-          <div>
-            <Home className="h-5 w-5" />
-            <strong>{screenMeta.home.label[language]}</strong>
-            <span>{copy.shopNow}</span>
-          </div>
-          <img src={logo} alt="" aria-hidden="true" loading="lazy" />
-          <ChevronRight className="h-4 w-4" />
-        </button>
-        {categories.map((category) => {
+        {(["featured", "cards", "boosters", "magnets"] as ShopCategoryId[]).map((categoryId) => {
+          const category = categories.find((item) => item.id === categoryId);
+          if (!category) return null;
           const Icon = category.icon;
           return (
             <button
-              key={category.id}
+              key={categoryId}
               type="button"
               className="mobile-app-category-card"
               style={{ "--category-accent": category.accent } as CSSProperties}
-              onClick={() => openProducts(category.id)}
+              onClick={() => openProducts(categoryId)}
             >
               <div>
                 <Icon className="h-5 w-5" />
-                <strong>{categoryLabels[category.id][language]}</strong>
+                <strong>{categoryLabels[categoryId][language]}</strong>
                 <span>{category.count} {copy.categoryCount}</span>
               </div>
               <img src={category.image} alt="" aria-hidden="true" loading="lazy" />
@@ -786,6 +779,21 @@ export const MobileStoreApp = () => {
           <img src={pokemonArt[0].image} alt="" aria-hidden="true" loading="lazy" />
           <ChevronRight className="h-4 w-4" />
         </button>
+        {(() => {
+          const category = categories.find((item) => item.id === "apparel");
+          if (!category) return null;
+          return (
+            <button type="button" className="mobile-app-category-card" style={{ "--category-accent": category.accent } as CSSProperties} onClick={() => openProducts("apparel")}>
+              <div>
+                <Shirt className="h-5 w-5" />
+                <strong>{categoryLabels.apparel[language]}</strong>
+                <span>{category.count} {copy.categoryCount}</span>
+              </div>
+              <img src={category.image} alt="" aria-hidden="true" loading="lazy" />
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          );
+        })()}
         <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#c084fc" } as CSSProperties} onClick={() => navigateTo("apparel")}>
           <div>
             <Shirt className="h-5 w-5" />
@@ -802,33 +810,6 @@ export const MobileStoreApp = () => {
             <span>{copy.customCupDesc}</span>
           </div>
           <img src={pokemonArt[4].image} alt="" aria-hidden="true" loading="lazy" />
-          <ChevronRight className="h-4 w-4" />
-        </button>
-        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#fb7185" } as CSSProperties} onClick={() => navigateTo("games")}>
-          <div>
-            <Gamepad2 className="h-5 w-5" />
-            <strong>{screenMeta.games.label[language]}</strong>
-            <span>{copy.gamesLead}</span>
-          </div>
-          <img src={pokemonArt[1].image} alt="" aria-hidden="true" loading="lazy" />
-          <ChevronRight className="h-4 w-4" />
-        </button>
-        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#facc15" } as CSSProperties} onClick={() => navigateTo("cart")}>
-          <div>
-            <ShoppingBag className="h-5 w-5" />
-            <strong>{screenMeta.cart.label[language]}</strong>
-            <span>{cartCount > 0 ? `${cartCount} ${copy.categoryCount}` : copy.emptyCartTitle}</span>
-          </div>
-          <img src={logo} alt="" aria-hidden="true" loading="lazy" />
-          <ChevronRight className="h-4 w-4" />
-        </button>
-        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#93c5fd" } as CSSProperties} onClick={() => navigateTo("account")}>
-          <div>
-            <UserRound className="h-5 w-5" />
-            <strong>{screenMeta.account.label[language]}</strong>
-            <span>{account ? copy.accountReady : copy.createAccount}</span>
-          </div>
-          <img src={pokemonArt[5].image} alt="" aria-hidden="true" loading="lazy" />
           <ChevronRight className="h-4 w-4" />
         </button>
         <Link to="/special-request" className="mobile-app-category-card" style={{ "--category-accent": "#f97316" } as CSSProperties}>
