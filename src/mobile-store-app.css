@@ -3940,6 +3940,7 @@
       hsl(var(--card) / 0.62);
     color: hsl(var(--foreground));
     text-align: start;
+    text-decoration: none;
     box-shadow: inset 0 1px hsl(0 0% 100% / 0.08);
   }
 
@@ -5940,5 +5941,137 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.mobile-global-tabbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-global-tabbar,
+  .mobile-global-tabbar * {
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  .mobile-global-tabbar {
+    position: fixed;
+    left: max(0.52rem, env(safe-area-inset-left));
+    right: max(0.52rem, env(safe-area-inset-right));
+    bottom: max(0.5rem, env(safe-area-inset-bottom));
+    z-index: 57;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.16rem;
+    width: auto;
+    max-width: calc(100vw - 1.04rem);
+    border: 1px solid hsl(var(--border) / 0.68);
+    border-radius: 1.18rem;
+    padding: 0.3rem;
+    background: hsl(var(--background) / 0.86);
+    box-shadow: 0 1rem 2.4rem hsl(0 0% 0% / 0.42), inset 0 1px hsl(0 0% 100% / 0.08);
+    backdrop-filter: blur(24px);
+  }
+
+  .mobile-global-tabbar a {
+    position: relative;
+    display: grid;
+    min-height: 3rem;
+    place-items: center;
+    gap: 0.12rem;
+    border-radius: 0.88rem;
+    color: hsl(var(--muted-foreground));
+    text-align: center;
+    text-decoration: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-global-tabbar a[aria-current="page"],
+  .mobile-global-tabbar a:active {
+    background: hsl(var(--pk-yellow) / 0.11);
+    color: hsl(var(--pk-yellow));
+  }
+
+  .mobile-global-tabbar svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .mobile-global-tabbar span {
+    display: -webkit-box;
+    width: 100%;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: currentColor;
+    font-size: clamp(0.5rem, 2.15vw, 0.62rem);
+    font-weight: 900;
+    line-height: 1.06;
+    letter-spacing: 0;
+  }
+
+  .mobile-global-tabbar small {
+    position: absolute;
+    top: 0.16rem;
+    right: 0.22rem;
+    display: grid;
+    min-width: 1rem;
+    height: 1rem;
+    place-items: center;
+    border-radius: 999px;
+    padding-inline: 0.22rem;
+    background: hsl(var(--pk-yellow));
+    color: hsl(var(--background));
+    font-size: 0.56rem;
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .product-page,
+  .special-request-page {
+    overflow-x: clip;
+    padding-bottom: calc(9.6rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .product-page .product-mobile-buybar {
+    bottom: calc(4.78rem + env(safe-area-inset-bottom)) !important;
+    z-index: 58;
+  }
+
+  .product-page .product-detail-hero .container,
+  .special-request-page .special-request-layout {
+    padding-bottom: calc(6.6rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  [dir="rtl"] .mobile-global-tabbar a {
+    font-family: "SF Arabic", "Geeza Pro", "Tahoma", "Arial", system-ui, sans-serif;
+    letter-spacing: 0;
+  }
+
+  [dir="rtl"] .mobile-global-tabbar span {
+    font-size: clamp(0.58rem, 2.35vw, 0.74rem);
+    font-weight: 850;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 360px) {
+  .mobile-global-tabbar {
+    left: 0.42rem;
+    right: 0.42rem;
+    max-width: calc(100vw - 0.84rem);
+    gap: 0.08rem;
+    padding: 0.26rem;
+  }
+
+  .mobile-global-tabbar a {
+    min-height: 2.82rem;
+    border-radius: 0.78rem;
+  }
+
+  .mobile-global-tabbar span {
+    font-size: 0.48rem;
   }
 }

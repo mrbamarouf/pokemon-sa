@@ -3,6 +3,7 @@ import { CheckCircle2, Image as ImageIcon, MessageSquare, Package, Plus, Search,
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { useCart } from "@/store/cart";
 import logo from "@/assets/logo.png";
 import card1 from "@/assets/card-1.jpg";
@@ -257,6 +258,7 @@ const SpecialRequest = () => {
       </section>
       <Footer />
       <CartDrawer />
+      <MobileBottomNav />
     </main>
   );
 };

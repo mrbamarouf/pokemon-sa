@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Check, PackageCheck, Plus, ShieldCheck, Sparkles
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { useLanguage } from "@/context/LanguageContext";
 import { getProduct, products } from "@/data/products";
 import { useCart } from "@/store/cart";
@@ -235,6 +236,7 @@ const ProductDetail = () => {
       </section>
       <Footer />
       <CartDrawer />
+      <MobileBottomNav />
       <div className="product-mobile-buybar" aria-label={product.name[language]}>
         <div className="product-mobile-buybar-info">
           <span>{product.name[language]}</span>

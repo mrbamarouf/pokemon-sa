@@ -56,7 +56,7 @@ import hoodieWhite from "@/assets/custom-hoodie-white.jpg";
 import hoodieYellow from "@/assets/custom-hoodie-yellow.jpg";
 
 type MobileScreen = "home" | "categories" | "products" | "detail" | "cart" | "games" | "account" | "cup" | "apparel" | "checkout";
-type ShopCategoryId = "all" | Product["category"];
+type ShopCategoryId = "all" | "featured" | Product["category"];
 type ProductOptionColor = NonNullable<Product["colors"]>[number];
 type CustomColorId = "black" | "white" | "blue" | "red" | "yellow";
 type GarmentId = "tee" | "hoodie";
@@ -145,10 +145,11 @@ const cupColors = [
 
 const categoryLabels: Record<ShopCategoryId, LocalizedText> = {
   all: { en: "All products", ar: "كل المنتجات" },
-  cards: { en: "Cards", ar: "البطاقات" },
+  featured: { en: "Featured", ar: "المميز" },
+  cards: { en: "Cards", ar: "الكروت" },
   boosters: { en: "Boosters", ar: "البوكسات" },
   magnets: { en: "Magnets", ar: "المغناطيس" },
-  apparel: { en: "Ready apparel", ar: "ملابس جاهزة" },
+  apparel: { en: "Ready apparel", ar: "الملابس الجاهزة" },
 };
 
 const screenMeta: Record<MobileScreen, { label: LocalizedText; icon: LucideIcon; accent: string; theme: string }> = {
@@ -369,7 +370,7 @@ const rewards = [
 const hashToScreen = (hash: string): MobileScreen => {
   const value = hash.replace("#", "");
   if (!value || value === "top") return "home";
-  if (value === "cards" || value === "boosters" || value === "magnets") return "products";
+  if (value === "products" || value === "featured" || value === "cards" || value === "boosters" || value === "magnets" || value === "ready-apparel") return "products";
   if (value === "cups") return "cup";
   if (value === "rewards" || value === "game") return "games";
   if (value === "profile") return "account";
@@ -378,9 +379,17 @@ const hashToScreen = (hash: string): MobileScreen => {
 
 const screenToHash = (screen: MobileScreen) => (screen === "home" ? "#top" : screen === "games" ? "#game" : `#${screen}`);
 
+const hashForProductCategory = (category: ShopCategoryId) => {
+  if (category === "all") return "#products";
+  if (category === "apparel") return "#ready-apparel";
+  return `#${category}`;
+};
+
 const categoryFromHash = (hash: string): ShopCategoryId => {
   const value = hash.replace("#", "");
-  return value === "cards" || value === "boosters" || value === "magnets" ? value : "all";
+  if (value === "featured" || value === "cards" || value === "boosters" || value === "magnets") return value;
+  if (value === "ready-apparel") return "apparel";
+  return "all";
 };
 
 const parentScreenFor = (screen: MobileScreen): MobileScreen => {
@@ -469,13 +478,14 @@ export const MobileStoreApp = () => {
   }, []);
 
   const filteredProducts = useMemo(
-    () => (selectedCategory === "all" ? products : products.filter((product) => product.category === selectedCategory)),
-    [selectedCategory],
+    () => (selectedCategory === "all" ? products : selectedCategory === "featured" ? featured : products.filter((product) => product.category === selectedCategory)),
+    [featured, selectedCategory],
   );
 
   const categories = useMemo(
     () => [
       { id: "all" as const, icon: Package, image: featured[0]?.image ?? products[0].image, count: products.length, accent: "#facc15" },
+      { id: "featured" as const, icon: Star, image: featured[0]?.image ?? products[0].image, count: featured.length, accent: "#facc15" },
       { id: "cards" as const, icon: Sparkles, image: cards[0]?.image ?? products[0].image, count: cards.length, accent: "#60a5fa" },
       { id: "boosters" as const, icon: Package, image: boosters[0]?.image ?? products[0].image, count: boosters.length, accent: "#f87171" },
       { id: "magnets" as const, icon: Magnet, image: magnets[0]?.image ?? products[0].image, count: magnets.length, accent: "#34d399" },
@@ -495,9 +505,13 @@ export const MobileStoreApp = () => {
   const openProducts = useCallback(
     (category: ShopCategoryId) => {
       setSelectedCategory(category);
-      navigateTo("products");
+      setActiveScreen("products");
+      const nextHash = hashForProductCategory(category);
+      if (typeof window !== "undefined" && window.location.hash !== nextHash) {
+        window.history.pushState(null, "", nextHash);
+      }
     },
-    [navigateTo],
+    [],
   );
 
   const openProductDetail = useCallback(
@@ -514,9 +528,10 @@ export const MobileStoreApp = () => {
 
   useEffect(() => {
     const syncFromHash = () => {
-      setActiveScreen(hashToScreen(window.location.hash));
+      const nextScreen = hashToScreen(window.location.hash);
+      setActiveScreen(nextScreen);
       const hashCategory = categoryFromHash(window.location.hash);
-      if (hashCategory !== "all") setSelectedCategory(hashCategory);
+      if (nextScreen === "products") setSelectedCategory(hashCategory);
     };
     window.addEventListener("hashchange", syncFromHash);
     window.addEventListener("popstate", syncFromHash);
@@ -733,6 +748,15 @@ export const MobileStoreApp = () => {
     <section className="mobile-app-screen mobile-app-categories-screen">
       <ScreenIntro icon={Grid2X2} eyebrow={copy.quickAccess} title={copy.categoriesTitle} description={copy.categoriesLead} />
       <div className="mobile-app-category-list">
+        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#facc15" } as CSSProperties} onClick={() => navigateTo("home")}>
+          <div>
+            <Home className="h-5 w-5" />
+            <strong>{screenMeta.home.label[language]}</strong>
+            <span>{copy.shopNow}</span>
+          </div>
+          <img src={logo} alt="" aria-hidden="true" loading="lazy" />
+          <ChevronRight className="h-4 w-4" />
+        </button>
         {categories.map((category) => {
           const Icon = category.icon;
           return (
@@ -753,18 +777,69 @@ export const MobileStoreApp = () => {
             </button>
           );
         })}
-      </div>
-      <div className="mobile-app-service-grid">
-        <button type="button" onClick={() => navigateTo("cup")}>
-          <CupSoda className="h-5 w-5" />
-          <strong>{copy.customCupService}</strong>
-          <span>{copy.customCupDesc}</span>
+        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#38bdf8" } as CSSProperties} onClick={() => navigateTo("cup")}>
+          <div>
+            <CupSoda className="h-5 w-5" />
+            <strong>{language === "ar" ? "الكاسات" : "Cups"}</strong>
+            <span>{copy.customCupDesc}</span>
+          </div>
+          <img src={pokemonArt[0].image} alt="" aria-hidden="true" loading="lazy" />
+          <ChevronRight className="h-4 w-4" />
         </button>
-        <button type="button" onClick={() => navigateTo("apparel")}>
-          <Shirt className="h-5 w-5" />
-          <strong>{copy.customApparelService}</strong>
-          <span>{copy.customApparelDesc}</span>
+        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#c084fc" } as CSSProperties} onClick={() => navigateTo("apparel")}>
+          <div>
+            <Shirt className="h-5 w-5" />
+            <strong>{copy.customApparelService}</strong>
+            <span>{copy.customApparelDesc}</span>
+          </div>
+          <img src={garmentStyles[0].mockups.clean} alt="" aria-hidden="true" loading="lazy" />
+          <ChevronRight className="h-4 w-4" />
         </button>
+        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#38bdf8" } as CSSProperties} onClick={() => navigateTo("cup")}>
+          <div>
+            <CupSoda className="h-5 w-5" />
+            <strong>{copy.customCupService}</strong>
+            <span>{copy.customCupDesc}</span>
+          </div>
+          <img src={pokemonArt[4].image} alt="" aria-hidden="true" loading="lazy" />
+          <ChevronRight className="h-4 w-4" />
+        </button>
+        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#fb7185" } as CSSProperties} onClick={() => navigateTo("games")}>
+          <div>
+            <Gamepad2 className="h-5 w-5" />
+            <strong>{screenMeta.games.label[language]}</strong>
+            <span>{copy.gamesLead}</span>
+          </div>
+          <img src={pokemonArt[1].image} alt="" aria-hidden="true" loading="lazy" />
+          <ChevronRight className="h-4 w-4" />
+        </button>
+        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#facc15" } as CSSProperties} onClick={() => navigateTo("cart")}>
+          <div>
+            <ShoppingBag className="h-5 w-5" />
+            <strong>{screenMeta.cart.label[language]}</strong>
+            <span>{cartCount > 0 ? `${cartCount} ${copy.categoryCount}` : copy.emptyCartTitle}</span>
+          </div>
+          <img src={logo} alt="" aria-hidden="true" loading="lazy" />
+          <ChevronRight className="h-4 w-4" />
+        </button>
+        <button type="button" className="mobile-app-category-card" style={{ "--category-accent": "#93c5fd" } as CSSProperties} onClick={() => navigateTo("account")}>
+          <div>
+            <UserRound className="h-5 w-5" />
+            <strong>{screenMeta.account.label[language]}</strong>
+            <span>{account ? copy.accountReady : copy.createAccount}</span>
+          </div>
+          <img src={pokemonArt[5].image} alt="" aria-hidden="true" loading="lazy" />
+          <ChevronRight className="h-4 w-4" />
+        </button>
+        <Link to="/special-request" className="mobile-app-category-card" style={{ "--category-accent": "#f97316" } as CSSProperties}>
+          <div>
+            <MessageSquare className="h-5 w-5" />
+            <strong>{language === "ar" ? "طلب خاص / الكونسيرج" : "Special request / Concierge"}</strong>
+            <span>{copy.specialRequestDesc}</span>
+          </div>
+          <img src={logo} alt="" aria-hidden="true" loading="lazy" />
+          <ChevronRight className="h-4 w-4" />
+        </Link>
       </div>
     </section>
   );
@@ -774,7 +849,7 @@ export const MobileStoreApp = () => {
       <ScreenIntro icon={Package} eyebrow={categoryLabels[selectedCategory][language]} title={copy.productsTitle} description={copy.productsLead} />
       <div className="mobile-app-category-tabs" aria-label={copy.chooseCategory}>
         {categories.map((category) => (
-          <button key={category.id} type="button" onClick={() => setSelectedCategory(category.id)} aria-pressed={selectedCategory === category.id}>
+          <button key={category.id} type="button" onClick={() => openProducts(category.id)} aria-pressed={selectedCategory === category.id}>
             {categoryLabels[category.id][language]}
           </button>
         ))}

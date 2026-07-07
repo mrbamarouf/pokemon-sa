@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 const NotFound = () => {
   const location = useLocation();
@@ -19,6 +20,7 @@ const NotFound = () => {
           {t("returnHome")}
         </a>
       </div>
+      <MobileBottomNav />
     </div>
   );
 };
