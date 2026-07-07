@@ -2255,10 +2255,11 @@
 
   .mobile-app-header {
     display: grid;
-    grid-template-columns: 2.78rem minmax(0, 1fr) auto;
+    grid-template-columns: 2.78rem minmax(7.9rem, 1fr) 5.92rem;
     align-items: center;
-    gap: 0.52rem;
-    padding: calc(0.54rem + env(safe-area-inset-top)) var(--app-pad) 0.38rem;
+    gap: 0.42rem;
+    min-height: calc(3.82rem + env(safe-area-inset-top));
+    padding: calc(0.42rem + env(safe-area-inset-top)) var(--app-pad) 0.42rem;
   }
 
   .mobile-app-header button,
@@ -2296,9 +2297,11 @@
   .mobile-app-logo {
     position: absolute;
     left: 50%;
-    top: calc(0.54rem + env(safe-area-inset-top));
-    width: min(9.4rem, 44vw) !important;
-    padding-inline: 0.3rem;
+    top: calc(0.38rem + env(safe-area-inset-top));
+    z-index: 3;
+    width: 8.85rem !important;
+    height: 3.22rem !important;
+    padding: 0;
     transform: translateX(-50%);
     background: transparent !important;
     border-color: transparent !important;
@@ -2308,13 +2311,15 @@
   .mobile-app-logo img {
     display: block;
     width: 100%;
-    height: 2.25rem;
+    height: 3.05rem;
     object-fit: contain;
     filter: drop-shadow(0 0 0.85rem hsl(var(--pk-yellow) / 0.24));
   }
 
   .mobile-app-header-actions {
     display: flex;
+    grid-column: 3;
+    justify-self: end;
     justify-content: flex-end;
     gap: 0.36rem;
   }
@@ -4481,7 +4486,9 @@
   }
 
   .mobile-app-header {
-    grid-template-columns: 2.55rem minmax(0, 1fr) auto;
+    grid-template-columns: 2.55rem minmax(7.5rem, 1fr) 5.38rem;
+    gap: 0.28rem;
+    min-height: calc(3.76rem + env(safe-area-inset-top));
   }
 
   .mobile-app-header > button,
@@ -4491,11 +4498,12 @@
   }
 
   .mobile-app-logo {
-    width: min(8.7rem, 42vw) !important;
+    width: 8.15rem !important;
+    height: 3.16rem !important;
   }
 
   .mobile-app-logo img {
-    height: 2.02rem;
+    height: 3rem;
   }
 
   .mobile-app-hero {
@@ -4570,6 +4578,10 @@
 
   .mobile-app-tabbar span {
     font-size: 0.49rem;
+  }
+
+  .mobile-app-logo {
+    width: 7.5rem !important;
   }
 }
 
