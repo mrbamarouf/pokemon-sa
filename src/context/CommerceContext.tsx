@@ -47,13 +47,6 @@ export const CommerceProvider = ({ children }: { children: ReactNode }) => {
     let cancelled = false;
 
     setIsLoading(true);
-    if (!isConfigured) {
-      setCatalog([]);
-      setErrorMessage("Shopify Storefront API is not configured.");
-      setIsLoading(false);
-      return undefined;
-    }
-
     loadCommerceProducts({ first: 100 }).then((result) => {
       if (cancelled) return;
       setCatalog(result.data ?? []);
