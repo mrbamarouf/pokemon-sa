@@ -45,23 +45,35 @@ function adminUrl(route) {
   return `https://${storeDomain}/admin/api/${apiVersion}${route}`;
 }
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function shopifyRest(method, route, body) {
-  const response = await fetch(adminUrl(route), {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Access-Token": adminToken,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const text = await response.text();
-  const payload = text ? JSON.parse(text) : {};
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const response = await fetch(adminUrl(route), {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": adminToken,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const text = await response.text();
+    const payload = text ? JSON.parse(text) : {};
 
-  if (!response.ok) {
-    throw new Error(`${method} ${route} failed (${response.status}): ${text}`);
+    if (response.status === 429 && attempt < 5) {
+      const retryAfter = Number(response.headers.get("retry-after") || 0);
+      await sleep(Math.max(retryAfter * 1000, 1200 + attempt * 600));
+      continue;
+    }
+
+    if (!response.ok) {
+      throw new Error(`${method} ${route} failed (${response.status}): ${text}`);
+    }
+
+    await sleep(550);
+    return payload;
   }
-
-  return payload;
+  throw new Error(`${method} ${route} failed: Shopify rate limit did not recover.`);
 }
 
 function escapeHtml(value) {
