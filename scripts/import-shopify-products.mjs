@@ -10,6 +10,9 @@ const defaultInventory = Number(process.env.SHOPIFY_DEFAULT_INVENTORY || 25);
 const storeDomain = normalizeStoreDomain(process.env.SHOPIFY_STORE_DOMAIN || "");
 const adminToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN || "";
 const dryRun = process.argv.includes("--dry-run");
+const useExistingCollections = process.argv.includes("--use-existing-collections");
+const handlesToImport = parseHandleFilter();
+const publicationTarget = parseCliValue("--publish-publication") || process.env.SHOPIFY_PUBLICATION_NAME || "";
 
 const collectionsToCreate = [
   { handle: "featured", title: "Featured", description: "Featured Pokémon SA products." },
@@ -24,6 +27,24 @@ const collectionsToCreate = [
 
 function normalizeStoreDomain(value) {
   return value.replace(/^https?:\/\//, "").replace(/\/$/, "").trim();
+}
+
+function parseHandleFilter() {
+  const handleArg = parseCliValue("--handles");
+  if (!handleArg) return undefined;
+
+  const handles = handleArg
+    .split(",")
+    .map((handle) => handle.trim())
+    .filter(Boolean);
+
+  return handles.length ? new Set(handles) : undefined;
+}
+
+function parseCliValue(name) {
+  const prefix = `${name}=`;
+  const arg = process.argv.find((value) => value.startsWith(prefix));
+  return arg ? arg.slice(prefix.length).trim() : "";
 }
 
 function requireCredentials() {
@@ -74,6 +95,35 @@ async function shopifyRest(method, route, body) {
     return payload;
   }
   throw new Error(`${method} ${route} failed: Shopify rate limit did not recover.`);
+}
+
+async function shopifyGraphql(query, variables = {}) {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const response = await fetch(adminUrl("/graphql.json"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": adminToken,
+      },
+      body: JSON.stringify({ query, variables }),
+    });
+    const text = await response.text();
+    const payload = text ? JSON.parse(text) : {};
+
+    if (response.status === 429 && attempt < 5) {
+      const retryAfter = Number(response.headers.get("retry-after") || 0);
+      await sleep(Math.max(retryAfter * 1000, 1200 + attempt * 600));
+      continue;
+    }
+
+    if (!response.ok || payload.errors) {
+      throw new Error(`GraphQL request failed (${response.status}): ${text}`);
+    }
+
+    await sleep(550);
+    return payload.data;
+  }
+  throw new Error("GraphQL request failed: Shopify rate limit did not recover.");
 }
 
 function escapeHtml(value) {
@@ -134,6 +184,7 @@ function buildImportCatalog(localProducts, customization) {
     specs: product.specs,
     colors: product.colors,
     sizes: product.sizes,
+    inventory: product.inventory,
     imageSources: unique([product.image, ...(product.gallery || [])]),
     collectionHandles: unique([product.featured ? "featured" : "", product.category === "apparel" ? "apparel" : product.category]),
   }));
@@ -205,6 +256,7 @@ function buildOptions(item) {
 function buildVariants(item, existingVariants = []) {
   const colors = item.colors?.length ? item.colors.map((color) => color.name.en) : [undefined];
   const sizes = item.sizes?.length ? item.sizes : [undefined];
+  const inventoryQuantity = Number.isFinite(Number(item.inventory)) ? Number(item.inventory) : defaultInventory;
   let index = 0;
 
   return colors.flatMap((color) =>
@@ -214,7 +266,7 @@ function buildVariants(item, existingVariants = []) {
         price: String(item.price),
         sku: unique([item.handle, color, size]).join("-").toUpperCase().replace(/[^A-Z0-9-]/g, ""),
         inventory_management: "shopify",
-        inventory_quantity: defaultInventory,
+        inventory_quantity: inventoryQuantity,
         requires_shipping: true,
       };
       index += 1;
@@ -357,6 +409,64 @@ async function upsertCollection(collection) {
   return created.custom_collection;
 }
 
+async function requireExistingCollection(collection) {
+  const existing = await getCollectionByHandle(collection.handle);
+  if (!existing) {
+    throw new Error(`Required existing Shopify collection was not found: ${collection.handle}`);
+  }
+  return existing;
+}
+
+async function getPublicationId(target) {
+  if (!target) return "";
+  if (target.startsWith("gid://shopify/Publication/")) return target;
+
+  const data = await shopifyGraphql(`
+    query PokemonSaPublications {
+      publications(first: 50) {
+        nodes {
+          id
+          name
+        }
+      }
+    }
+  `);
+  const publication = data.publications.nodes.find((node) => node.name === target);
+  if (!publication) {
+    throw new Error(`Shopify publication was not found: ${target}`);
+  }
+  return publication.id;
+}
+
+async function publishResource(resourceId, publicationId) {
+  if (!publicationId) return;
+
+  const data = await shopifyGraphql(
+    `
+      mutation PokemonSaPublishResource($id: ID!, $input: [PublicationInput!]!) {
+        publishablePublish(id: $id, input: $input) {
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `,
+    {
+      id: resourceId,
+      input: [{ publicationId }],
+    },
+  );
+  const errors = data.publishablePublish.userErrors || [];
+  if (errors.length) {
+    throw new Error(`Publish failed for ${resourceId}: ${JSON.stringify(errors)}`);
+  }
+}
+
+function toProductGid(productId) {
+  return String(productId).startsWith("gid://shopify/Product/") ? String(productId) : `gid://shopify/Product/${productId}`;
+}
+
 async function attachProductToCollection(productId, collectionId) {
   const existing = await shopifyRest("GET", `/collects.json?product_id=${productId}&collection_id=${collectionId}`);
   if (existing.collects?.length) return existing.collects[0];
@@ -385,7 +495,15 @@ async function upsertProductMetafields(productId, metafields) {
 
 async function main() {
   console.log(`Loading Pokémon SA catalog from ${projectRoot}`);
-  const importCatalog = await loadProjectCatalog();
+  let importCatalog = await loadProjectCatalog();
+  if (handlesToImport) {
+    const availableHandles = new Set(importCatalog.map((item) => item.handle));
+    const missingHandles = [...handlesToImport].filter((handle) => !availableHandles.has(handle));
+    if (missingHandles.length) {
+      throw new Error(`Handle filter includes products missing from the local import catalog: ${missingHandles.join(", ")}`);
+    }
+    importCatalog = importCatalog.filter((item) => handlesToImport.has(item.handle));
+  }
   console.log(`Loaded ${importCatalog.length} products/custom products.`);
 
   if (dryRun) {
@@ -399,10 +517,12 @@ async function main() {
   }
 
   requireCredentials();
+  const publicationId = await getPublicationId(publicationTarget);
+  if (publicationId) console.log(`Publishing imported products to Shopify publication: ${publicationTarget}`);
 
   const collectionByHandle = new Map();
   for (const collection of collectionsToCreate) {
-    const shopifyCollection = await upsertCollection(collection);
+    const shopifyCollection = useExistingCollections ? await requireExistingCollection(collection) : await upsertCollection(collection);
     collectionByHandle.set(collection.handle, shopifyCollection);
     console.log(`Collection ready: ${collection.title} (${collection.handle})`);
   }
@@ -415,6 +535,7 @@ async function main() {
       const collection = collectionByHandle.get(handle);
       if (collection) await attachProductToCollection(product.id, collection.id);
     }
+    await publishResource(toProductGid(product.id), publicationId);
 
     console.log(`Product ready: ${item.title} (${item.handle})`);
   }
