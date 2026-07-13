@@ -1,9 +1,10 @@
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "./SectionHeader";
 import { useCart } from "@/store/cart";
+import { createProductCartItem } from "@/lib/shopify/cart";
 import { Package, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { productsByCategory } from "@/data/products";
+import { productsByCategory } from "@/lib/shopify/products";
 import { useLanguage } from "@/context/LanguageContext";
 
 const boosters = productsByCategory("boosters");
@@ -57,7 +58,7 @@ export const BoostersSection = () => {
                   <div className="mobile-card-action-row flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
                     <span className="mobile-card-price text-3xl font-display font-black text-gradient-gold">{formatPrice(b.price)}</span>
                     <button
-                      onClick={() => add({ id: b.id, name: b.name[language], nameByLanguage: b.name, price: b.price, image: b.image })}
+                      onClick={() => add(createProductCartItem({ product: b, language }))}
                       className="mobile-card-cta flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-pk-yellow px-5 text-xs font-bold uppercase tracking-wider text-background transition-all hover:glow-yellow sm:w-auto"
                     >
                       <Plus className="h-4 w-4" /> {t("addToCart")}

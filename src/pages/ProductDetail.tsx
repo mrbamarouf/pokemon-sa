@@ -6,7 +6,8 @@ import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { useLanguage } from "@/context/LanguageContext";
-import { getProduct, products } from "@/data/products";
+import { createProductCartItem } from "@/lib/shopify/cart";
+import { getProduct, getRelatedProducts } from "@/lib/shopify/products";
 import { useCart } from "@/store/cart";
 
 const ProductDetail = () => {
@@ -47,18 +48,14 @@ const ProductDetail = () => {
   if (!product) return <Navigate to="/" replace />;
 
   const BackIcon = language === "ar" ? ArrowRight : ArrowLeft;
-  const related = products.filter((item) => item.id !== product.id && item.category === product.category).slice(0, 3);
-  const fallbackRelated = related.length ? related : products.filter((item) => item.id !== product.id).slice(0, 3);
+  const fallbackRelated = getRelatedProducts(product, 3);
   const addProductToCart = () =>
-    add({
-      id: product.id,
-      name: product.name[language],
-      nameByLanguage: product.name,
-      price: product.price,
-      image: product.image,
+    add(createProductCartItem({
+      product,
+      language,
       variant,
       variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
-    });
+    }));
 
   return (
     <main className="product-page min-h-screen bg-background text-foreground">

@@ -6,26 +6,26 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { useCart } from "@/store/cart";
 import logo from "@/assets/logo.png";
-import card1 from "@/assets/card-1.jpg";
-import boosterBox from "@/assets/booster-box.jpg";
-import eliteBox from "@/assets/elite-box.jpg";
+import { createSpecialRequestCartItem } from "@/lib/shopify/cart";
+import {
+  specialRequestConditions as conditions,
+  specialRequestFeaturedArt as featuredArt,
+  specialRequestTypes,
+  type SpecialRequestIconId,
+} from "@/lib/shopify/orders";
 import { type Language, translate, useLanguage } from "@/context/LanguageContext";
 
-const featuredArt = [card1, boosterBox, eliteBox];
-
-const requestTypes = [
-  { labelKey: "rareCard", icon: Star },
-  { labelKey: "sealedBox", icon: Package },
-  { labelKey: "gradedSlab", icon: CheckCircle2 },
-  { labelKey: "customBundle", icon: Search },
-];
-
-const conditions = ["any", "nearMint", "lightlyPlayed", "sealedOnly", "graded8", "graded10"];
+const requestTypeIcons: Record<SpecialRequestIconId, typeof Star> = {
+  star: Star,
+  package: Package,
+  check: CheckCircle2,
+  search: Search,
+};
 
 const SpecialRequest = () => {
   const add = useCart((s) => s.add);
   const { language, t } = useLanguage();
-  const [requestType, setRequestType] = useState(requestTypes[0].labelKey);
+  const [requestType, setRequestType] = useState(specialRequestTypes[0].labelKey);
   const [itemName, setItemName] = useState("");
   const [budget, setBudget] = useState("");
   const [condition, setCondition] = useState(conditions[0]);
@@ -66,18 +66,17 @@ const SpecialRequest = () => {
 
   const submitRequest = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    add({
+    add(createSpecialRequestCartItem({
       id: `special-${requestType}`,
-      name: `${t("specialOrder")} Quote`,
-      nameByLanguage: { en: `${translate("en", "specialOrder")} Quote`, ar: `عرض سعر ${translate("ar", "specialOrder")}` },
-      price: 0,
+      language,
+      name: { en: `${translate("en", "specialOrder")} Quote`, ar: `عرض سعر ${translate("ar", "specialOrder")}` },
       image: logo,
       variant: notes.trim() ? `${requestSummary} · ${notes.trim()}` : requestSummary,
       variantByLanguage: {
         en: notes.trim() ? `${requestSummaryForLanguage("en")} · ${notes.trim()}` : requestSummaryForLanguage("en"),
         ar: notes.trim() ? `${requestSummaryForLanguage("ar")} · ${notes.trim()}` : requestSummaryForLanguage("ar"),
       },
-    });
+    }));
     setSubmitted(true);
   };
 
@@ -141,8 +140,8 @@ const SpecialRequest = () => {
               <div>
                 <div className="mb-3 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{t("requestType")}</div>
                 <div className="special-request-type-grid grid grid-cols-2 gap-2">
-                  {requestTypes.map((type) => {
-                    const Icon = type.icon;
+                  {specialRequestTypes.map((type) => {
+                    const Icon = requestTypeIcons[type.icon];
                     return (
                       <button
                         key={type.labelKey}

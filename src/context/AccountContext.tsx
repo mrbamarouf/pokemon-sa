@@ -1,15 +1,19 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import {
+  cleanCustomerPhone,
+  clearLocalCustomerAccount,
+  formatRewardLockRemaining,
+  readLocalCustomerAccount,
+  readRewardLocks,
+  REWARD_LOCK_WINDOW_MS,
+  writeLocalCustomerAccount,
+  writeRewardLocks,
+  type CustomerRewardLock,
+  type LocalCustomerAccount,
+} from "@/lib/shopify/customer";
 
-type Account = {
-  name: string;
-  phone: string;
-  email?: string;
-};
-
-type GameLock = {
-  playedAt: number;
-  reward?: string;
-};
+type Account = LocalCustomerAccount;
+type GameLock = CustomerRewardLock;
 
 type AccountContextValue = {
   account: Account | null;
@@ -23,54 +27,21 @@ type AccountContextValue = {
   consumeGameChance: (reward?: string) => boolean;
 };
 
-const ACCOUNT_KEY = "pokemon-sa-account";
-const GAME_LOCKS_KEY = "pokemon-sa-game-locks";
-const DAY = 24 * 60 * 60 * 1000;
-
-const readAccount = (): Account | null => {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(ACCOUNT_KEY);
-    return raw ? (JSON.parse(raw) as Account) : null;
-  } catch {
-    return null;
-  }
-};
-
-const readLocks = (): Record<string, GameLock> => {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = window.localStorage.getItem(GAME_LOCKS_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, GameLock>) : {};
-  } catch {
-    return {};
-  }
-};
-
-const cleanPhone = (phone: string) => phone.replace(/[^\d+]/g, "");
-
-const formatRemaining = (ms: number) => {
-  const totalMinutes = Math.max(1, Math.ceil(ms / 60000));
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-};
-
 const AccountContext = createContext<AccountContextValue | undefined>(undefined);
 
 export const AccountProvider = ({ children }: { children: ReactNode }) => {
-  const [account, setAccount] = useState<Account | null>(() => readAccount());
-  const [locks, setLocks] = useState<Record<string, GameLock>>(() => readLocks());
+  const [account, setAccount] = useState<Account | null>(() => readLocalCustomerAccount());
+  const [locks, setLocks] = useState<Record<string, GameLock>>(() => readRewardLocks());
   const [isAccountOpen, setIsAccountOpen] = useState(false);
 
-  const phoneKey = account ? cleanPhone(account.phone) : "";
+  const phoneKey = account ? cleanCustomerPhone(account.phone) : "";
   const lock = phoneKey ? locks[phoneKey] : undefined;
-  const elapsed = lock ? Date.now() - lock.playedAt : DAY + 1;
-  const canPlayGame = Boolean(account) && elapsed >= DAY;
+  const elapsed = lock ? Date.now() - lock.playedAt : REWARD_LOCK_WINDOW_MS + 1;
+  const canPlayGame = Boolean(account) && elapsed >= REWARD_LOCK_WINDOW_MS;
 
   const saveLocks = (next: Record<string, GameLock>) => {
     setLocks(next);
-    window.localStorage.setItem(GAME_LOCKS_KEY, JSON.stringify(next));
+    writeRewardLocks(next);
   };
 
   const value = useMemo<AccountContextValue>(
@@ -80,17 +51,17 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
       openAccount: () => setIsAccountOpen(true),
       closeAccount: () => setIsAccountOpen(false),
       saveAccount: (nextAccount) => {
-        const normalized = { ...nextAccount, phone: cleanPhone(nextAccount.phone) };
+        const normalized = { ...nextAccount, phone: cleanCustomerPhone(nextAccount.phone) };
         setAccount(normalized);
-        window.localStorage.setItem(ACCOUNT_KEY, JSON.stringify(normalized));
+        writeLocalCustomerAccount(normalized);
         setIsAccountOpen(false);
       },
       logout: () => {
         setAccount(null);
-        window.localStorage.removeItem(ACCOUNT_KEY);
+        clearLocalCustomerAccount();
       },
       canPlayGame,
-      remainingGameLock: lock && elapsed < DAY ? formatRemaining(DAY - elapsed) : "",
+      remainingGameLock: lock && elapsed < REWARD_LOCK_WINDOW_MS ? formatRewardLockRemaining(REWARD_LOCK_WINDOW_MS - elapsed) : "",
       consumeGameChance: (reward) => {
         if (!account || !phoneKey || !canPlayGame) return false;
         saveLocks({ ...locks, [phoneKey]: { playedAt: Date.now(), reward } });

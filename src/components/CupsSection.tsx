@@ -3,49 +3,23 @@ import { Check, Image as ImageIcon, Palette, Plus, Sparkles, Type, Upload } from
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "./SectionHeader";
 import { useCart } from "@/store/cart";
+import { createCustomCartItem } from "@/lib/shopify/cart";
 import logo from "@/assets/logo.png";
+import {
+  cupArtwork as officialArt,
+  cupColors,
+  cupModeLabels as modeLabels,
+  cupStyles,
+  type CupMode as PrintMode,
+  type CupStyle,
+} from "@/lib/shopify/customization";
 import { useLanguage, Language } from "@/context/LanguageContext";
-
-type PrintMode = "character" | "text" | "both";
-type CupStyle = {
-  id: string;
-  name: Record<Language, string>;
-  price: number;
-  finish: Record<Language, string>;
-};
-
-const officialArt = [
-  { name: "Pikachu", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png" },
-  { name: "Charizard", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png" },
-  { name: "Dragonite", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/149.png" },
-  { name: "Eevee", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/133.png" },
-];
-
-const cupStyles: CupStyle[] = [
-  { id: "ceramic", name: { en: "Ceramic Mug", ar: "كوب سيراميك" }, price: 189, finish: { en: "Glossy print", ar: "طباعة لامعة" } },
-  { id: "travel", name: { en: "Travel Cup", ar: "كوب سفر" }, price: 249, finish: { en: "Thermal sleeve", ar: "غلاف حراري" } },
-  { id: "cold", name: { en: "Cold Tumbler", ar: "كوب بارد" }, price: 219, finish: { en: "Clear lid", ar: "غطاء شفاف" } },
-];
-
-const cupColors = [
-  { name: { en: "White", ar: "أبيض" }, hex: "#f8fafc", shadow: "#dbeafe" },
-  { name: { en: "Yellow", ar: "أصفر" }, hex: "#facc15", shadow: "#854d0e" },
-  { name: { en: "Electric Blue", ar: "أزرق كهربائي" }, hex: "#38bdf8", shadow: "#075985" },
-  { name: { en: "Cherry Red", ar: "أحمر" }, hex: "#ef4444", shadow: "#7f1d1d" },
-  { name: { en: "Midnight", ar: "ليلي" }, hex: "#111827", shadow: "#020617" },
-];
 
 const printModes: { id: PrintMode; labelKey: string; icon: typeof ImageIcon }[] = [
   { id: "character", labelKey: "image", icon: ImageIcon },
   { id: "text", labelKey: "text", icon: Type },
   { id: "both", labelKey: "both", icon: Sparkles },
 ];
-
-const modeLabels: Record<PrintMode, Record<Language, string>> = {
-  character: { en: "Image", ar: "صورة" },
-  text: { en: "Text", ar: "نص" },
-  both: { en: "Both", ar: "الاثنين" },
-};
 
 export const CupsSection = () => {
   const add = useCart((s) => s.add);
@@ -88,15 +62,15 @@ export const CupsSection = () => {
   };
 
   const addCup = () => {
-    add({
+    add(createCustomCartItem({
       id: `cup-${style.id}`,
-      name: cupNameForLanguage(language),
-      nameByLanguage: { en: cupNameForLanguage("en"), ar: cupNameForLanguage("ar") },
+      name: { en: cupNameForLanguage("en"), ar: cupNameForLanguage("ar") },
+      language,
       price: style.price,
       image: showsImage ? printImage : logo,
       variant,
       variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
-    });
+    }));
   };
 
   return (

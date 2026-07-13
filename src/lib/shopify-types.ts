@@ -15,6 +15,14 @@ export type ShopifyImage = {
   height?: number;
 };
 
+export type ShopifyMetafield = {
+  id: ShopifyId;
+  namespace: string;
+  key: string;
+  value: string;
+  type?: string;
+};
+
 export type ShopifySelectedOption = {
   name: string;
   value: string;
@@ -33,6 +41,12 @@ export type ShopifyProductVariant = {
   metadata?: Record<string, JsonValue>;
 };
 
+export type ShopifyProductOption = {
+  id?: ShopifyId;
+  name: string;
+  values: string[];
+};
+
 export type ShopifyProduct = {
   id: ShopifyId;
   handle: string;
@@ -46,6 +60,8 @@ export type ShopifyProduct = {
   availableForSale: boolean;
   featuredImage?: ShopifyImage;
   images: ShopifyImage[];
+  options?: ShopifyProductOption[];
+  metafields?: ShopifyMetafield[];
   variants: ShopifyProductVariant[];
   priceRange: {
     minVariantPrice: ShopifyMoney;
@@ -112,6 +128,26 @@ export type ShopifyBuyerIdentity = {
   countryCode?: "SA";
 };
 
+export type ShopifyMailingAddress = {
+  id: ShopifyId;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  company?: string;
+  country?: string;
+  countryCodeV2?: "SA";
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+  phone?: string;
+  province?: string;
+  zip?: string;
+};
+
+export type ShopifyMailingAddressInput = Omit<ShopifyMailingAddress, "id" | "countryCodeV2" | "name"> & {
+  countryCode?: "SA";
+};
+
 export type ShopifyCheckout = {
   id: ShopifyId;
   cartId?: ShopifyId;
@@ -133,6 +169,8 @@ export type ShopifyCustomer = {
   displayName?: string;
   acceptsMarketing?: boolean;
   defaultAddressId?: ShopifyId;
+  defaultAddress?: ShopifyMailingAddress;
+  addresses?: ShopifyMailingAddress[];
   pokemonSaProfileId?: EntityId;
   createdAt?: ISODateTime;
   updatedAt?: ISODateTime;

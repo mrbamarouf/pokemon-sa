@@ -1,5 +1,5 @@
 import { CupSoda, Gamepad2, Magnet, Package, Shirt, Sparkles } from "lucide-react";
-import { productsByCategory } from "@/data/products";
+import { productsByCategory } from "@/lib/shopify/products";
 import { useLanguage } from "@/context/LanguageContext";
 import { skipSplashIntroOnNextLoad } from "@/components/SplashIntro";
 

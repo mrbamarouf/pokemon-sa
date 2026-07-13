@@ -38,110 +38,38 @@ import {
   Zap,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
-import { Product, products, productsByCategory } from "@/data/products";
+import { Product, getFeaturedProducts, getProductCatalog, getProductsForCategory, getRelatedProducts, productsByCategory } from "@/lib/shopify/products";
+import {
+  apparelSizes,
+  cupColors,
+  cupModeLabels,
+  cupStyles,
+  garmentColors,
+  garmentStyles,
+  pokemonArt,
+  type CupMode,
+} from "@/lib/shopify/customization";
+import { mobileRewards, type RewardIconId } from "@/lib/shopify/rewards";
 import { Language, useLanguage } from "@/context/LanguageContext";
 import { keyOf, useCart } from "@/store/cart";
+import { createCustomCartItem, createProductCartItem } from "@/lib/shopify/cart";
 import { useAccount } from "@/context/AccountContext";
-import teeBlack from "@/assets/custom-tee-black.jpg";
-import teeBlue from "@/assets/custom-tee-blue.jpg";
-import teeClean from "@/assets/custom-tee-clean.jpg";
-import teeRed from "@/assets/custom-tee-red.jpg";
-import teeWhite from "@/assets/custom-tee-white.jpg";
-import teeYellow from "@/assets/custom-tee-yellow.jpg";
-import hoodieBlack from "@/assets/custom-hoodie-black.jpg";
-import hoodieBlue from "@/assets/custom-hoodie-blue.jpg";
-import hoodieClean from "@/assets/custom-hoodie-clean.jpg";
-import hoodieRed from "@/assets/custom-hoodie-red.jpg";
-import hoodieWhite from "@/assets/custom-hoodie-white.jpg";
-import hoodieYellow from "@/assets/custom-hoodie-yellow.jpg";
 
 type MobileScreen = "home" | "categories" | "products" | "detail" | "cart" | "games" | "account" | "cup" | "apparel" | "checkout";
 type ShopCategoryId = "all" | "featured" | Product["category"];
 type ProductOptionColor = NonNullable<Product["colors"]>[number];
-type CustomColorId = "black" | "white" | "blue" | "red" | "yellow";
-type GarmentId = "tee" | "hoodie";
-type CupMode = "character" | "text" | "both";
 
 type LocalizedText = Record<Language, string>;
-
-type CustomColor = {
-  id: CustomColorId;
-  name: LocalizedText;
-  hex: string;
-};
-
-type GarmentStyle = {
-  id: GarmentId;
-  name: LocalizedText;
-  price: number;
-  mockups: Record<CustomColorId | "clean", string>;
-};
-
-type CupStyle = {
-  id: string;
-  name: LocalizedText;
-  price: number;
-  finish: LocalizedText;
-};
 
 const screenIds: MobileScreen[] = ["home", "categories", "products", "detail", "cart", "games", "account", "cup", "apparel", "checkout"];
 const destinationScreens: MobileScreen[] = ["home", "categories", "products", "cup", "apparel", "cart", "checkout", "games", "account"];
 const bottomScreens: MobileScreen[] = ["home", "categories", "cart", "games", "account"];
 
+const products = getProductCatalog();
 const cards = productsByCategory("cards");
 const boosters = productsByCategory("boosters");
 const magnets = productsByCategory("magnets");
 const apparelProducts = productsByCategory("apparel");
-
-const pokemonArt = [
-  { name: "Pikachu", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png" },
-  { name: "Charizard", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png" },
-  { name: "Mewtwo", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/150.png" },
-  { name: "Rayquaza", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/384.png" },
-  { name: "Eevee", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/133.png" },
-  { name: "Gengar", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/094.png" },
-  { name: "Lucario", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/448.png" },
-  { name: "Dragonite", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/149.png" },
-];
-
-const garmentStyles: GarmentStyle[] = [
-  {
-    id: "tee",
-    name: { en: "Custom T-Shirt", ar: "تيشيرت مخصص" },
-    price: 499,
-    mockups: { black: teeBlack, white: teeWhite, blue: teeBlue, red: teeRed, yellow: teeYellow, clean: teeClean },
-  },
-  {
-    id: "hoodie",
-    name: { en: "Custom Hoodie", ar: "هودي مخصص" },
-    price: 999,
-    mockups: { black: hoodieBlack, white: hoodieWhite, blue: hoodieBlue, red: hoodieRed, yellow: hoodieYellow, clean: hoodieClean },
-  },
-];
-
-const garmentColors: CustomColor[] = [
-  { id: "black", name: { en: "Black", ar: "أسود" }, hex: "#0a0a0a" },
-  { id: "white", name: { en: "White", ar: "أبيض" }, hex: "#f8fafc" },
-  { id: "blue", name: { en: "Electric Blue", ar: "أزرق كهربائي" }, hex: "#2563eb" },
-  { id: "red", name: { en: "Trainer Red", ar: "أحمر المدرب" }, hex: "#dc2626" },
-  { id: "yellow", name: { en: "Volt Yellow", ar: "أصفر كهربائي" }, hex: "#facc15" },
-];
-
-const apparelSizes = ["XS", "S", "M", "L", "XL", "XXL"];
-
-const cupStyles: CupStyle[] = [
-  { id: "ceramic", name: { en: "Ceramic Mug", ar: "كوب سيراميك" }, price: 189, finish: { en: "Glossy print", ar: "طباعة لامعة" } },
-  { id: "travel", name: { en: "Travel Cup", ar: "كوب سفر" }, price: 249, finish: { en: "Thermal sleeve", ar: "غلاف حراري" } },
-  { id: "cold", name: { en: "Cold Tumbler", ar: "كوب بارد" }, price: 219, finish: { en: "Clear lid", ar: "غطاء شفاف" } },
-];
-
-const cupColors = [
-  { name: { en: "White", ar: "أبيض" }, hex: "#f8fafc", shadow: "#dbeafe" },
-  { name: { en: "Yellow", ar: "أصفر" }, hex: "#facc15", shadow: "#854d0e" },
-  { name: { en: "Electric Blue", ar: "أزرق كهربائي" }, hex: "#38bdf8", shadow: "#075985" },
-  { name: { en: "Cherry Red", ar: "أحمر" }, hex: "#ef4444", shadow: "#7f1d1d" },
-  { name: { en: "Midnight", ar: "ليلي" }, hex: "#111827", shadow: "#020617" },
-];
 
 const categoryLabels: Record<ShopCategoryId, LocalizedText> = {
   all: { en: "All products", ar: "كل المنتجات" },
@@ -334,38 +262,13 @@ const mobileCopy = {
   },
 } as const;
 
-const cupModeLabels: Record<CupMode, LocalizedText> = {
-  character: { en: "Image", ar: "صورة" },
-  text: { en: "Text", ar: "نص" },
-  both: { en: "Both", ar: "الاثنين" },
+const rewardIconMap: Record<RewardIconId, LucideIcon> = {
+  zap: Zap,
+  gift: Gift,
+  trophy: Trophy,
 };
 
-const rewards = [
-  {
-    code: "QUIZ10",
-    title: { en: "10% Off", ar: "خصم 10%" },
-    mission: { en: "Volt Quiz", ar: "تحدي الإجابة" },
-    prompt: { en: "Answer before the meter runs out", ar: "أجب قبل انتهاء عداد الطاقة" },
-    icon: Zap,
-    character: pokemonArt[0],
-  },
-  {
-    code: "GIFT-SA",
-    title: { en: "Free Gift", ar: "هدية مجانية" },
-    mission: { en: "Lucky Draw", ar: "سحب الحظ" },
-    prompt: { en: "Catch the falling prize", ar: "التقط الجائزة وهي تسقط" },
-    icon: Gift,
-    character: pokemonArt[4],
-  },
-  {
-    code: "CASH25",
-    title: { en: "SAR 25 Cashback", ar: "استرداد 25 ر.س" },
-    mission: { en: "Speed Battle", ar: "تحدي السرعة" },
-    prompt: { en: "Win the trainer round", ar: "اكسب جولة المدرب" },
-    icon: Trophy,
-    character: pokemonArt[1],
-  },
-];
+const rewards = mobileRewards.map((reward) => ({ ...reward, icon: rewardIconMap[reward.icon] }));
 
 const hashToScreen = (hash: string): MobileScreen => {
   const value = hash.replace("#", "");
@@ -472,14 +375,11 @@ export const MobileStoreApp = () => {
   const showsCupImage = cupMode === "character" || cupMode === "both";
   const showsCupText = cupMode === "text" || cupMode === "both";
 
-  const featured = useMemo(() => {
-    const selected = [products.find((item) => item.featured), cards[0], boosters[0], magnets[0], apparelProducts[0]].filter(Boolean);
-    return selected as Product[];
-  }, []);
+  const featured = useMemo(() => getFeaturedProducts(), []);
 
   const filteredProducts = useMemo(
-    () => (selectedCategory === "all" ? products : selectedCategory === "featured" ? featured : products.filter((product) => product.category === selectedCategory)),
-    [featured, selectedCategory],
+    () => getProductsForCategory(selectedCategory),
+    [selectedCategory],
   );
 
   const categories = useMemo(
@@ -549,15 +449,13 @@ export const MobileStoreApp = () => {
   }, [activeScreen]);
 
   const addProductToCart = (product: Product, variant?: string, variantByLanguage?: { en?: string; ar?: string }, image = product.image) => {
-    add({
-      id: product.id,
-      name: product.name[language],
-      nameByLanguage: product.name,
-      price: product.price,
+    add(createProductCartItem({
+      product,
+      language,
       image,
       variant,
       variantByLanguage,
-    });
+    }));
     setCartOpen(false);
   };
 
@@ -604,29 +502,29 @@ export const MobileStoreApp = () => {
   };
 
   const addCustomGarment = () => {
-    add({
+    add(createCustomCartItem({
       id: `custom-apparel-${garmentStyle.id}`,
-      name: garmentStyle.name[language],
-      nameByLanguage: garmentStyle.name,
+      name: garmentStyle.name,
+      language,
       price: garmentStyle.price,
       image: garmentPrintImage,
       variant: garmentVariantFor(language),
       variantByLanguage: { en: garmentVariantFor("en"), ar: garmentVariantFor("ar") },
-    });
+    }));
     setCartOpen(false);
     navigateTo("cart");
   };
 
   const addCustomCup = () => {
-    add({
+    add(createCustomCartItem({
       id: `cup-${cupStyle.id}`,
-      name: cupNameFor(language),
-      nameByLanguage: { en: cupNameFor("en"), ar: cupNameFor("ar") },
+      name: { en: cupNameFor("en"), ar: cupNameFor("ar") },
+      language,
       price: cupStyle.price,
       image: showsCupImage ? cupPrintImage : logo,
       variant: cupVariantFor(language),
       variantByLanguage: { en: cupVariantFor("en"), ar: cupVariantFor("ar") },
-    });
+    }));
     setCartOpen(false);
     navigateTo("cart");
   };
@@ -842,7 +740,7 @@ export const MobileStoreApp = () => {
   );
 
   const renderDetail = () => {
-    const related = products.filter((item) => item.id !== selectedProduct.id && item.category === selectedProduct.category).slice(0, 4);
+    const related = getRelatedProducts(selectedProduct, 4);
     return (
       <section className="mobile-app-screen mobile-app-detail-screen">
         <ScreenIntro icon={Sparkles} eyebrow={screenMeta.detail.label[language]} title={selectedProduct.name[language]} description={copy.detailLead} />

@@ -4,19 +4,16 @@ import { Reveal } from "./Reveal";
 import { SectionHeader } from "./SectionHeader";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAccount } from "@/context/AccountContext";
+import {
+  rewardMemoryPool as memoryPool,
+  rewardQuizBank as quizBank,
+  rewardTypeBattles as typeBattles,
+  rewardWheelItems as rewards,
+} from "@/lib/shopify/rewards";
 
 type GameKey = "wheel" | "quiz" | "memory" | "type";
 type QuizResult = "" | "win" | "lose" | "incorrect";
 type TypeResult = "" | "win" | "lose";
-
-const art = {
-  pikachu: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png",
-  charizard: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png",
-  blastoise: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/009.png",
-  venusaur: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/003.png",
-  dragonite: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/149.png",
-  mewtwo: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/150.png",
-};
 
 const copy = {
   en: {
@@ -73,89 +70,7 @@ const copy = {
   },
 };
 
-const rewards = {
-  en: [
-    { title: "10% Off", code: "QUIZ10", tone: "from-pk-yellow to-amber-400" },
-    { title: "Free Gift", code: "GIFT-SA", tone: "from-pk-blue to-cyan-300" },
-    { title: "SAR 25 Cashback", code: "CASH25", tone: "from-pk-red to-rose-400" },
-    { title: "Jeddah Shipping", code: "JEDDAHSHIP", tone: "from-emerald-400 to-lime-300" },
-  ],
-  ar: [
-    { title: "خصم 10%", code: "QUIZ10", tone: "from-pk-yellow to-amber-400" },
-    { title: "هدية مجانية", code: "GIFT-SA", tone: "from-pk-blue to-cyan-300" },
-    { title: "استرداد 25 ر.س", code: "CASH25", tone: "from-pk-red to-rose-400" },
-    { title: "شحن جدة", code: "JEDDAHSHIP", tone: "from-emerald-400 to-lime-300" },
-  ],
-};
-
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
-
-const quizBank = [
-  {
-    id: "water-counter",
-    question: { en: "Which type has the advantage against Water?", ar: "أي نوع أقوى ضد النوع المائي؟" },
-    options: ["Grass", "Fire", "Rock", "Ice"],
-    answer: "Grass",
-  },
-  {
-    id: "charmander-evolution",
-    question: { en: "Which Pokémon evolves from Charmander?", ar: "ما هو التطور التالي لـ Charmander؟" },
-    options: ["Charmeleon", "Dragonite", "Flareon", "Moltres"],
-    answer: "Charmeleon",
-  },
-  {
-    id: "genetic-pokemon",
-    question: { en: "Which Pokémon is known as the Genetic Pokémon?", ar: "من هو Pokémon المعروف باسم Genetic Pokémon؟" },
-    options: ["Mewtwo", "Lucario", "Gengar", "Rayquaza"],
-    answer: "Mewtwo",
-  },
-  {
-    id: "catch-item",
-    question: { en: "Which item is used to catch wild Pokémon?", ar: "ما الأداة المستخدمة لالتقاط Pokémon؟" },
-    options: ["Poké Ball", "Potion", "Rare Candy", "Energy Card"],
-    answer: "Poké Ball",
-  },
-];
-
-const memoryPool = [
-  { pair: "pikachu", image: art.pikachu },
-  { pair: "charizard", image: art.charizard },
-  { pair: "dragonite", image: art.dragonite },
-  { pair: "gengar", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/094.png" },
-];
-
-const typeBattles = [
-  {
-    opponent: "Blastoise",
-    image: art.blastoise,
-    prompt: { en: "Opponent is a Water type. Choose the best counter.", ar: "الخصم من النوع المائي. اختر أفضل مواجهة." },
-    options: [
-      { id: "charizard", label: "Charizard", image: art.charizard, win: false },
-      { id: "venusaur", label: "Venusaur", image: art.venusaur, win: true },
-      { id: "mewtwo", label: "Mewtwo", image: art.mewtwo, win: false },
-    ],
-  },
-  {
-    opponent: "Charizard",
-    image: art.charizard,
-    prompt: { en: "Opponent is Fire and Flying. Pick the safer battle answer.", ar: "الخصم ناري وطائر. اختر المواجهة الأقوى." },
-    options: [
-      { id: "blastoise", label: "Blastoise", image: art.blastoise, win: true },
-      { id: "venusaur", label: "Venusaur", image: art.venusaur, win: false },
-      { id: "dragonite", label: "Dragonite", image: art.dragonite, win: false },
-    ],
-  },
-  {
-    opponent: "Mewtwo",
-    image: art.mewtwo,
-    prompt: { en: "Opponent is Psychic. Which choice pressures it best?", ar: "الخصم من النوع النفسي. أي اختيار يضغط عليه أكثر؟" },
-    options: [
-      { id: "gengar", label: "Gengar", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/094.png", win: true },
-      { id: "pikachu", label: "Pikachu", image: art.pikachu, win: false },
-      { id: "venusaur", label: "Venusaur", image: art.venusaur, win: false },
-    ],
-  },
-];
 
 const createQuiz = () => {
   const selected = quizBank[Math.floor(Math.random() * quizBank.length)];

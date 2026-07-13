@@ -1,9 +1,10 @@
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "./SectionHeader";
 import { useCart } from "@/store/cart";
+import { createProductCartItem } from "@/lib/shopify/cart";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { productsByCategory } from "@/data/products";
+import { productsByCategory } from "@/lib/shopify/products";
 import { useLanguage } from "@/context/LanguageContext";
 
 const magnets = productsByCategory("magnets");
@@ -65,7 +66,7 @@ export const MagnetsSection = () => {
                     <span className="mobile-card-price text-xl font-display font-black text-gradient-gold">{formatPrice(m.price)}</span>
                   </div>
                   <button
-                    onClick={() => add({ id: m.id, name: m.name[language], nameByLanguage: m.name, price: m.price, image: m.image })}
+                    onClick={() => add(createProductCartItem({ product: m, language }))}
                     className="mobile-card-cta grid h-11 w-11 shrink-0 place-items-center rounded-full bg-pk-blue text-background transition-all hover:glow-electric"
                     aria-label={t("addToCart")}
                   >

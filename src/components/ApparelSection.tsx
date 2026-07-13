@@ -2,87 +2,22 @@ import { ChangeEvent, useMemo, useState } from "react";
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "./SectionHeader";
 import { useCart } from "@/store/cart";
+import { createCustomCartItem, createProductCartItem } from "@/lib/shopify/cart";
 import { Check, Image as ImageIcon, Palette, Plus, Ruler, Sparkles, Type, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Product, productsByCategory } from "@/data/products";
+import { Product, productsByCategory } from "@/lib/shopify/products";
+import {
+  apparelSizes,
+  apparelSizeGuide as sizeGuide,
+  garmentColors as customColors,
+  garmentStyles as customStyles,
+  pokemonArt as characterArt,
+} from "@/lib/shopify/customization";
 import { Language, useLanguage } from "@/context/LanguageContext";
-import teeBlack from "@/assets/custom-tee-black.jpg";
-import teeBlue from "@/assets/custom-tee-blue.jpg";
-import teeClean from "@/assets/custom-tee-clean.jpg";
-import teeRed from "@/assets/custom-tee-red.jpg";
-import teeWhite from "@/assets/custom-tee-white.jpg";
-import teeYellow from "@/assets/custom-tee-yellow.jpg";
-import hoodieBlack from "@/assets/custom-hoodie-black.jpg";
-import hoodieBlue from "@/assets/custom-hoodie-blue.jpg";
-import hoodieClean from "@/assets/custom-hoodie-clean.jpg";
-import hoodieRed from "@/assets/custom-hoodie-red.jpg";
-import hoodieWhite from "@/assets/custom-hoodie-white.jpg";
-import hoodieYellow from "@/assets/custom-hoodie-yellow.jpg";
 
 const apparel = productsByCategory("apparel");
 const tees = apparel.filter((item) => item.id.startsWith("t"));
 const hoodies = apparel.filter((item) => item.id.startsWith("h"));
-
-const characterArt = [
-  { name: "Pikachu", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png" },
-  { name: "Charizard", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/006.png" },
-  { name: "Mewtwo", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/150.png" },
-  { name: "Rayquaza", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/384.png" },
-  { name: "Eevee", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/133.png" },
-  { name: "Gengar", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/094.png" },
-  { name: "Lucario", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/448.png" },
-  { name: "Dragonite", image: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/149.png" },
-];
-
-type CustomColorId = "black" | "white" | "blue" | "red" | "yellow";
-type CustomStyleId = "tee" | "hoodie";
-
-type CustomColor = {
-  id: CustomColorId;
-  name: Record<Language, string>;
-  hex: string;
-};
-
-type CustomStyle = {
-  id: CustomStyleId;
-  name: Record<Language, string>;
-  price: number;
-  mockups: Record<CustomColorId | "clean", string>;
-};
-
-const customStyles: CustomStyle[] = [
-  {
-    id: "tee",
-    name: { en: "Custom T-Shirt", ar: "تيشيرت مخصص" },
-    price: 499,
-    mockups: { black: teeBlack, white: teeWhite, blue: teeBlue, red: teeRed, yellow: teeYellow, clean: teeClean },
-  },
-  {
-    id: "hoodie",
-    name: { en: "Custom Hoodie", ar: "هودي مخصص" },
-    price: 999,
-    mockups: { black: hoodieBlack, white: hoodieWhite, blue: hoodieBlue, red: hoodieRed, yellow: hoodieYellow, clean: hoodieClean },
-  },
-];
-
-const customColors: CustomColor[] = [
-  { id: "black", name: { en: "Black", ar: "أسود" }, hex: "#0a0a0a" },
-  { id: "white", name: { en: "White", ar: "أبيض" }, hex: "#f8fafc" },
-  { id: "blue", name: { en: "Electric Blue", ar: "أزرق كهربائي" }, hex: "#2563eb" },
-  { id: "red", name: { en: "Trainer Red", ar: "أحمر المدرب" }, hex: "#dc2626" },
-  { id: "yellow", name: { en: "Volt Yellow", ar: "أصفر كهربائي" }, hex: "#facc15" },
-];
-
-const apparelSizes = ["XS", "S", "M", "L", "XL", "XXL"];
-
-const sizeGuide = [
-  { size: "XS", chest: "48 cm", length: "66 cm", shoulder: "43 cm" },
-  { size: "S", chest: "51 cm", length: "69 cm", shoulder: "45 cm" },
-  { size: "M", chest: "54 cm", length: "72 cm", shoulder: "47 cm" },
-  { size: "L", chest: "57 cm", length: "75 cm", shoulder: "49 cm" },
-  { size: "XL", chest: "61 cm", length: "78 cm", shoulder: "52 cm" },
-  { size: "XXL", chest: "65 cm", length: "81 cm", shoulder: "55 cm" },
-];
 
 const customText: Record<Language, Record<string, string>> = {
   en: {
@@ -223,15 +158,12 @@ const ApparelCard = ({ item }: { item: Product }) => {
 
         <button
           onClick={() =>
-            add({
-              id: item.id,
-              name: item.name[language],
-              nameByLanguage: item.name,
-              price: item.price,
-              image: item.image,
+            add(createProductCartItem({
+              product: item,
+              language,
               variant: variantByLanguage[language],
               variantByLanguage,
-            })
+            }))
           }
           className="mobile-card-cta w-full h-11 rounded-full bg-pk-blue text-background font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 hover:glow-electric transition-all"
         >
@@ -422,15 +354,15 @@ const CustomApparelStudio = () => {
 
             <button
               onClick={() =>
-                add({
+                add(createCustomCartItem({
                   id: `custom-apparel-${style.id}`,
-                  name: style.name[language],
-                  nameByLanguage: style.name,
+                  name: style.name,
+                  language,
                   price: style.price,
                   image: printImage,
                   variant,
                   variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
-                })
+                }))
               }
               className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-gradient-electric font-display text-sm font-bold uppercase tracking-wider text-background glow-electric transition-transform hover:scale-[1.02]"
             >

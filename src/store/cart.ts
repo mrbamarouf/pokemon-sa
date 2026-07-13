@@ -1,15 +1,12 @@
 import { create } from "zustand";
+import {
+  calculateCartItemCount,
+  calculateCartSubtotal,
+  createCartItemKey,
+  type CommerceCartItem,
+} from "@/lib/shopify/cart";
 
-export type CartItem = {
-  id: string;
-  name: string;
-  nameByLanguage?: { en: string; ar: string };
-  price: number;
-  image: string;
-  variant?: string;
-  variantByLanguage?: { en?: string; ar?: string };
-  qty: number;
-};
+export type CartItem = CommerceCartItem;
 
 type CartState = {
   items: CartItem[];
@@ -22,7 +19,7 @@ type CartState = {
   total: () => number;
 };
 
-const keyOf = (i: { id: string; variant?: string }) => `${i.id}__${i.variant ?? ""}`;
+const keyOf = createCartItemKey;
 
 export const useCart = create<CartState>((set, get) => ({
   items: [],
@@ -39,8 +36,8 @@ export const useCart = create<CartState>((set, get) => ({
   remove: (key) => set((s) => ({ items: s.items.filter((i) => keyOf(i) !== key) })),
   clear: () => set({ items: [] }),
   setOpen: (v) => set({ isOpen: v }),
-  count: () => get().items.reduce((a, b) => a + b.qty, 0),
-  total: () => get().items.reduce((a, b) => a + b.qty * b.price, 0),
+  count: () => calculateCartItemCount(get().items),
+  total: () => calculateCartSubtotal(get().items),
 }));
 
 export { keyOf };
