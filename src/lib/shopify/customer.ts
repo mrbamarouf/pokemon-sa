@@ -5,6 +5,7 @@ import type {
   ShopifyMailingAddressInput,
 } from "@/lib/shopify-types";
 import { shopifyBackendNotConfigured } from "./client";
+import { getShopifyAccountLogoutUrl, getShopifyAccountUrl } from "./config";
 
 export type LocalCustomerAccount = {
   name: string;
@@ -57,6 +58,28 @@ export const clearLocalCustomerAccount = () => {
   window.localStorage.removeItem(ACCOUNT_STORAGE_KEY);
 };
 
+const redirectToShopifyAccount = (url: string) => {
+  if (typeof window === "undefined" || !url) return;
+  const next = new URL(url);
+  next.searchParams.set("return_url", window.location.href);
+  window.location.assign(next.toString());
+};
+
+export const startShopifyCustomerAccountLogin = () => {
+  redirectToShopifyAccount(getShopifyAccountUrl());
+};
+
+export const startShopifyCustomerAccountRegister = () => {
+  redirectToShopifyAccount(getShopifyAccountUrl());
+};
+
+export const startShopifyCustomerAccountLogout = () => {
+  if (typeof window === "undefined") return;
+  clearLocalCustomerAccount();
+  const logoutUrl = getShopifyAccountLogoutUrl();
+  if (logoutUrl) window.location.assign(logoutUrl);
+};
+
 export const readRewardLocks = (): Record<string, CustomerRewardLock> => {
   if (typeof window === "undefined") return {};
   try {
@@ -76,7 +99,8 @@ export const signInShopifyCustomer = async (
   input: ShopifyCustomerSignInInput,
 ): Promise<ServiceResult<ShopifyCustomerAccessToken>> => {
   void input;
-  return shopifyBackendNotConfigured<ShopifyCustomerAccessToken>();
+  startShopifyCustomerAccountLogin();
+  return shopifyBackendNotConfigured<ShopifyCustomerAccessToken>("Shopify Customer Accounts authentication redirects to Shopify.");
 };
 
 export const getShopifyCustomer = async (accessToken: string): Promise<ServiceResult<ShopifyCustomer>> => {

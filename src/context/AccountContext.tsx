@@ -3,10 +3,10 @@ import {
   cleanCustomerPhone,
   clearLocalCustomerAccount,
   formatRewardLockRemaining,
-  readLocalCustomerAccount,
   readRewardLocks,
   REWARD_LOCK_WINDOW_MS,
-  writeLocalCustomerAccount,
+  startShopifyCustomerAccountLogin,
+  startShopifyCustomerAccountLogout,
   writeRewardLocks,
   type CustomerRewardLock,
   type LocalCustomerAccount,
@@ -30,7 +30,7 @@ type AccountContextValue = {
 const AccountContext = createContext<AccountContextValue | undefined>(undefined);
 
 export const AccountProvider = ({ children }: { children: ReactNode }) => {
-  const [account, setAccount] = useState<Account | null>(() => readLocalCustomerAccount());
+  const [account, setAccount] = useState<Account | null>(null);
   const [locks, setLocks] = useState<Record<string, GameLock>>(() => readRewardLocks());
   const [isAccountOpen, setIsAccountOpen] = useState(false);
 
@@ -50,15 +50,13 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
       isAccountOpen,
       openAccount: () => setIsAccountOpen(true),
       closeAccount: () => setIsAccountOpen(false),
-      saveAccount: (nextAccount) => {
-        const normalized = { ...nextAccount, phone: cleanCustomerPhone(nextAccount.phone) };
-        setAccount(normalized);
-        writeLocalCustomerAccount(normalized);
-        setIsAccountOpen(false);
+      saveAccount: () => {
+        startShopifyCustomerAccountLogin();
       },
       logout: () => {
         setAccount(null);
         clearLocalCustomerAccount();
+        startShopifyCustomerAccountLogout();
       },
       canPlayGame,
       remainingGameLock: lock && elapsed < REWARD_LOCK_WINDOW_MS ? formatRewardLockRemaining(REWARD_LOCK_WINDOW_MS - elapsed) : "",

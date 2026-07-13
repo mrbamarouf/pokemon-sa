@@ -1,9 +1,12 @@
 import type { LocalizedText, ServiceResult, StoreLanguage } from "@/lib/store-schema";
 import type {
+  ShopifyCartAttribute,
   ShopifyBuyerIdentity,
   ShopifyCart,
   ShopifyCartLineInput,
   ShopifyId,
+  ShopifyMoney,
+  ShopifyProductVariant,
 } from "@/lib/shopify-types";
 import type { Product } from "./products";
 import { shopifyBackendNotConfigured, storefrontRequest } from "./client";
@@ -34,12 +37,14 @@ export const createProductCartItem = ({
   variant,
   variantByLanguage,
   image,
+  shopifyVariantId,
 }: {
   product: Product;
   language: StoreLanguage;
   variant?: string;
   variantByLanguage?: { en?: string; ar?: string };
   image?: string;
+  shopifyVariantId?: ShopifyId;
 }): Omit<CommerceCartItem, "qty"> => ({
   id: product.id,
   name: product.name[language],
@@ -48,7 +53,7 @@ export const createProductCartItem = ({
   image: image ?? product.image,
   variant,
   variantByLanguage,
-  shopifyVariantId: product.shopifyVariantId,
+  shopifyVariantId: shopifyVariantId ?? product.shopifyVariantId,
 });
 
 export const createCustomCartItem = ({
@@ -59,6 +64,7 @@ export const createCustomCartItem = ({
   image,
   variant,
   variantByLanguage,
+  shopifyVariantId,
 }: {
   id: string;
   name: LocalizedText;
@@ -67,6 +73,7 @@ export const createCustomCartItem = ({
   image: string;
   variant?: string;
   variantByLanguage?: { en?: string; ar?: string };
+  shopifyVariantId?: ShopifyId;
 }): Omit<CommerceCartItem, "qty"> => ({
   id,
   name: name[language],
@@ -75,6 +82,7 @@ export const createCustomCartItem = ({
   image,
   variant,
   variantByLanguage,
+  shopifyVariantId,
 });
 
 export const createSpecialRequestCartItem = ({
@@ -111,7 +119,6 @@ fragment PokemonSaCart on Cart {
     email
     phone
     countryCode
-    customer { id email phone firstName lastName displayName }
   }
   cost {
     subtotalAmount { amount currencyCode }
@@ -196,7 +203,46 @@ mutation PokemonSaCartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuye
   }
 }`;
 
-const mapCart = (cart: any): ShopifyCart | null => {
+type StorefrontCartLine = {
+  id: ShopifyId;
+  quantity: number;
+  attributes?: ShopifyCartAttribute[];
+  merchandise: ShopifyProductVariant;
+  cost?: {
+    subtotalAmount: ShopifyMoney;
+    totalAmount: ShopifyMoney;
+  };
+};
+
+type StorefrontCart = {
+  id: ShopifyId;
+  checkoutUrl?: string;
+  totalQuantity?: number;
+  attributes?: ShopifyCartAttribute[];
+  buyerIdentity?: ShopifyBuyerIdentity;
+  cost?: {
+    subtotalAmount: ShopifyMoney;
+    totalAmount: ShopifyMoney;
+    totalTaxAmount?: ShopifyMoney;
+  };
+  lines?: {
+    nodes?: StorefrontCartLine[];
+  };
+};
+
+type StorefrontCartUserError = {
+  field?: string[];
+  message: string;
+};
+
+type StorefrontCartMutationResult = {
+  cart?: StorefrontCart | null;
+  userErrors?: StorefrontCartUserError[];
+};
+
+type StorefrontCartMutationPayload<K extends string> = Record<K, StorefrontCartMutationResult | null>;
+
+const mapCart = (cart?: StorefrontCart | null): ShopifyCart | null => {
   if (!cart) return null;
   return {
     id: cart.id,
@@ -211,7 +257,7 @@ const mapCart = (cart: any): ShopifyCart | null => {
           totalTaxAmount: cart.cost.totalTaxAmount,
         }
       : undefined,
-    lines: (cart.lines?.nodes ?? []).map((line: any) => ({
+    lines: (cart.lines?.nodes ?? []).map((line) => ({
       id: line.id,
       quantity: line.quantity,
       attributes: line.attributes ?? [],
@@ -226,7 +272,7 @@ const mapCart = (cart: any): ShopifyCart | null => {
   };
 };
 
-const cartMutationResult = <T extends Record<string, any>>(payload: T | null, key: keyof T): ServiceResult<ShopifyCart> => {
+const cartMutationResult = <K extends string>(payload: StorefrontCartMutationPayload<K> | null, key: K): ServiceResult<ShopifyCart> => {
   const result = payload?.[key];
   const userErrors = result?.userErrors ?? [];
   if (userErrors.length) {
@@ -258,7 +304,7 @@ export const createShopifyCartLinesFromItems = (items: CommerceCartItem[]): Shop
 export const getShopifyCart = async (cartId: ShopifyId): Promise<ServiceResult<ShopifyCart>> => {
   if (!isShopifyConfigured()) return shopifyBackendNotConfigured<ShopifyCart>();
 
-  const response = await storefrontRequest<{ cart: any }>({
+  const response = await storefrontRequest<{ cart: StorefrontCart | null }>({
     query: CART_QUERY,
     variables: { id: cartId },
   });
@@ -275,7 +321,7 @@ export const createShopifyCart = async (
 ): Promise<ServiceResult<ShopifyCart>> => {
   if (!isShopifyConfigured()) return shopifyBackendNotConfigured<ShopifyCart>();
 
-  const response = await storefrontRequest<{ cartCreate: { cart: any; userErrors: Array<{ field?: string[]; message: string }> } }>({
+  const response = await storefrontRequest<StorefrontCartMutationPayload<"cartCreate">>({
     query: CART_CREATE_MUTATION,
     variables: { input: { lines, buyerIdentity } },
   });
@@ -290,7 +336,7 @@ export const addShopifyCartLines = async (
 ): Promise<ServiceResult<ShopifyCart>> => {
   if (!isShopifyConfigured()) return shopifyBackendNotConfigured<ShopifyCart>();
 
-  const response = await storefrontRequest<{ cartLinesAdd: { cart: any; userErrors: Array<{ field?: string[]; message: string }> } }>({
+  const response = await storefrontRequest<StorefrontCartMutationPayload<"cartLinesAdd">>({
     query: CART_LINES_ADD_MUTATION,
     variables: { cartId, lines },
   });
@@ -305,7 +351,7 @@ export const updateShopifyCartLines = async (
 ): Promise<ServiceResult<ShopifyCart>> => {
   if (!isShopifyConfigured()) return shopifyBackendNotConfigured<ShopifyCart>();
 
-  const response = await storefrontRequest<{ cartLinesUpdate: { cart: any; userErrors: Array<{ field?: string[]; message: string }> } }>({
+  const response = await storefrontRequest<StorefrontCartMutationPayload<"cartLinesUpdate">>({
     query: CART_LINES_UPDATE_MUTATION,
     variables: { cartId, lines },
   });
@@ -320,7 +366,7 @@ export const removeShopifyCartLines = async (
 ): Promise<ServiceResult<ShopifyCart>> => {
   if (!isShopifyConfigured()) return shopifyBackendNotConfigured<ShopifyCart>();
 
-  const response = await storefrontRequest<{ cartLinesRemove: { cart: any; userErrors: Array<{ field?: string[]; message: string }> } }>({
+  const response = await storefrontRequest<StorefrontCartMutationPayload<"cartLinesRemove">>({
     query: CART_LINES_REMOVE_MUTATION,
     variables: { cartId, lineIds },
   });
@@ -335,7 +381,7 @@ export const updateShopifyBuyerIdentity = async (
 ): Promise<ServiceResult<ShopifyCart>> => {
   if (!isShopifyConfigured()) return shopifyBackendNotConfigured<ShopifyCart>();
 
-  const response = await storefrontRequest<{ cartBuyerIdentityUpdate: { cart: any; userErrors: Array<{ field?: string[]; message: string }> } }>({
+  const response = await storefrontRequest<StorefrontCartMutationPayload<"cartBuyerIdentityUpdate">>({
     query: CART_BUYER_IDENTITY_UPDATE_MUTATION,
     variables: { cartId, buyerIdentity },
   });

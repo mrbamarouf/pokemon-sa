@@ -5,7 +5,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useAccount } from "@/context/AccountContext";
 
 export const CartDrawer = () => {
-  const { items, isOpen, setOpen, remove, total } = useCart();
+  const { items, isOpen, setOpen, remove, total, checkout } = useCart();
   const { language, t, formatPrice } = useLanguage();
   const { account, openAccount } = useAccount();
 
@@ -87,11 +87,11 @@ export const CartDrawer = () => {
           <button
             disabled={items.length === 0}
             onClick={() => {
-              if (!account) openAccount();
+              void checkout();
             }}
             className="w-full h-12 rounded-full bg-gradient-electric text-background font-display font-bold uppercase tracking-wider text-sm disabled:opacity-40 hover:scale-[1.02] transition-transform glow-electric"
           >
-            {account ? t("checkout") : t("account")}
+            {t("checkout")}
           </button>
         </div>
       </aside>

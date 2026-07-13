@@ -1,9 +1,4 @@
-import {
-  getProduct as getLocalProduct,
-  products as localProducts,
-  type Product as LocalProduct,
-} from "@/data/products";
-import type { ServiceResult } from "@/lib/store-schema";
+import type { LocalizedText, ServiceResult } from "@/lib/store-schema";
 import type {
   ShopifyConnection,
   ShopifyImage,
@@ -13,25 +8,41 @@ import type {
   ShopifyProductVariant,
 } from "@/lib/shopify-types";
 import { isShopifyConfigured, shopifyConfig } from "./config";
-import { storefrontRequest } from "./client";
+import { shopifyBackendNotConfigured, storefrontRequest } from "./client";
 
-export type Product = LocalProduct & {
-  shopifyProductId?: string;
+export type ProductCategory = "cards" | "boosters" | "magnets" | "apparel" | "cups" | "custom-cups" | "custom-apparel";
+
+export type Product = {
+  id: string;
+  category: ProductCategory;
+  name: LocalizedText;
+  subtitle: LocalizedText;
+  description: LocalizedText;
+  price: number;
+  image: string;
+  gallery: string[];
+  badge?: LocalizedText;
+  featured?: boolean;
+  specs: Record<"en" | "ar", string[]>;
+  colors?: { name: LocalizedText; hex: string }[];
+  sizes?: string[];
+  shopifyProductId: string;
   shopifyVariantId?: string;
-  shopifyHandle?: string;
-  availableForSale?: boolean;
+  shopifyHandle: string;
+  shopifyVariants: ShopifyProductVariant[];
+  availableForSale: boolean;
 };
-export type ProductCategory = Product["category"];
+
 export type ShopCategoryId = "all" | "featured" | ProductCategory;
 
-export const products = localProducts;
+export const products: Product[] = [];
 
-export const getProductCatalog = () => products as Product[];
+export const getProductCatalog = () => products;
 
 export const getProductFromCatalog = (id?: string, catalog: Product[] = getProductCatalog()) =>
   catalog.find((product) => product.id === id || product.shopifyProductId === id || product.shopifyHandle === id);
 
-export const getProduct = (id?: string) => getProductFromCatalog(id) ?? getLocalProduct(id);
+export const getProduct = (id?: string) => getProductFromCatalog(id);
 
 export const productsByCategoryFromCatalog = (category: ProductCategory, catalog: Product[] = getProductCatalog()) =>
   catalog.filter((product) => product.category === category);
@@ -79,8 +90,8 @@ export const toShopifyImage = (url?: string, altText?: string): ShopifyImage | u
   url ? { url, altText } : undefined;
 
 export const mapLocalProductToShopifyProduct = (product: Product): ShopifyProduct => ({
-  id: product.shopifyProductId ?? product.id,
-  handle: product.shopifyHandle ?? product.id,
+  id: product.shopifyProductId,
+  handle: product.shopifyHandle,
   title: product.name.en,
   localizedTitle: product.name,
   description: product.description.en,
@@ -88,19 +99,21 @@ export const mapLocalProductToShopifyProduct = (product: Product): ShopifyProduc
   productType: product.category,
   vendor: "Pokémon SA",
   tags: [product.category, ...(product.featured ? ["featured"] : [])],
-  availableForSale: product.availableForSale ?? true,
+  availableForSale: product.availableForSale,
   featuredImage: toShopifyImage(product.image, product.name.en),
   images: product.gallery.map((image) => ({ url: image, altText: product.name.en })),
-  variants: [
-    {
-      id: product.shopifyVariantId ?? `${product.id}-default`,
-      title: "Default",
-      availableForSale: product.availableForSale ?? true,
-      selectedOptions: [],
-      price: toShopifyMoney(product.price),
-      image: toShopifyImage(product.image, product.name.en),
-    },
-  ],
+  variants: product.shopifyVariants.length
+    ? product.shopifyVariants
+    : [
+        {
+          id: product.shopifyVariantId ?? `${product.id}-default`,
+          title: "Default",
+          availableForSale: product.availableForSale,
+          selectedOptions: [],
+          price: toShopifyMoney(product.price),
+          image: toShopifyImage(product.image, product.name.en),
+        },
+      ],
   priceRange: {
     minVariantPrice: toShopifyMoney(product.price),
     maxVariantPrice: toShopifyMoney(product.price),
@@ -135,9 +148,11 @@ const PRODUCT_CATEGORY_BY_HANDLE: Record<string, ProductCategory> = {
   magnet: "magnets",
   apparel: "apparel",
   "ready-apparel": "apparel",
+  cups: "cups",
+  cup: "cups",
+  "custom-cups": "custom-cups",
+  "custom-apparel": "custom-apparel",
 };
-
-const localById = new Map(products.map((product) => [product.id, product as Product]));
 
 const normalizeCategory = (value?: string | null): ProductCategory | undefined => {
   if (!value) return undefined;
@@ -164,46 +179,50 @@ const parseMetafieldJson = <T>(metafields: StorefrontMetafield[] | undefined, ke
   }
 };
 
+const parseMetafieldText = (metafields: StorefrontMetafield[] | undefined, key: string) => findMetafield(metafields, key)?.value;
+
 const normalizeProductImage = (image?: ShopifyImage) => image?.url;
+
+const fallbackLocalized = (value: string): LocalizedText => ({ en: value, ar: value });
 
 export const mapStorefrontProductToLocalProduct = (product: StorefrontProductNode): Product => {
   const tags = product.tags ?? [];
   const localId = tagValue(tags, "pokemon-sa:id:") ?? tagValue(tags, "pokemon-sa:") ?? product.handle;
-  const fallback = localById.get(localId) ?? localById.get(product.handle);
   const metafields = product.metafields ?? [];
   const images = product.images?.nodes?.map((image) => image.url).filter(Boolean) ?? [];
-  const firstVariant = product.variants?.nodes?.[0];
+  const variants = product.variants?.nodes ?? [];
+  const firstVariant = variants[0];
   const isFeatured = tags.some((tag) => tag.toLowerCase() === "featured" || tag.toLowerCase() === "pokemon-sa:featured");
   const category =
-    normalizeCategory(parseMetafieldJson<string>(metafields, "category")) ??
+    normalizeCategory(parseMetafieldText(metafields, "category")) ??
     normalizeCategory(product.productType) ??
     normalizeCategory(tagValue(tags, "category:")) ??
-    fallback?.category ??
     "cards";
+  const price = Number(firstVariant?.price.amount ?? product.priceRange.minVariantPrice.amount);
+  const featuredImage = normalizeProductImage(product.featuredImage) ?? images[0] ?? "";
 
   return {
-    id: fallback?.id ?? product.handle,
+    id: localId,
     shopifyProductId: product.id,
     shopifyVariantId: firstVariant?.id,
     shopifyHandle: product.handle,
+    shopifyVariants: variants,
     category,
-    name: parseMetafieldJson(metafields, "localized_title") ?? fallback?.name ?? { en: product.title, ar: product.title },
+    name: parseMetafieldJson(metafields, "localized_title") ?? fallbackLocalized(product.title),
     subtitle:
       parseMetafieldJson(metafields, "localized_subtitle") ??
-      fallback?.subtitle ??
-      { en: product.productType ?? "Pokémon SA product", ar: product.productType ?? "منتج Pokémon SA" },
+      fallbackLocalized(product.productType ?? "Pokémon SA product"),
     description:
       parseMetafieldJson(metafields, "localized_description") ??
-      fallback?.description ??
-      { en: product.description ?? "", ar: product.description ?? "" },
-    price: Number(firstVariant?.price.amount ?? product.priceRange.minVariantPrice.amount),
-    image: normalizeProductImage(product.featuredImage) ?? images[0] ?? fallback?.image ?? "",
-    gallery: images.length ? images : fallback?.gallery ?? [normalizeProductImage(product.featuredImage) ?? ""].filter(Boolean),
-    badge: parseMetafieldJson(metafields, "localized_badge") ?? fallback?.badge,
-    featured: isFeatured || fallback?.featured,
-    specs: parseMetafieldJson(metafields, "localized_specs") ?? fallback?.specs ?? { en: [], ar: [] },
-    colors: parseMetafieldJson(metafields, "colors") ?? fallback?.colors,
-    sizes: parseMetafieldJson(metafields, "sizes") ?? fallback?.sizes,
+      fallbackLocalized(product.description ?? ""),
+    price,
+    image: featuredImage,
+    gallery: images.length ? images : [featuredImage].filter(Boolean),
+    badge: parseMetafieldJson(metafields, "localized_badge"),
+    featured: isFeatured,
+    specs: parseMetafieldJson(metafields, "localized_specs") ?? { en: [], ar: [] },
+    colors: parseMetafieldJson(metafields, "colors"),
+    sizes: parseMetafieldJson(metafields, "sizes"),
     availableForSale: product.availableForSale,
   };
 };
@@ -230,7 +249,7 @@ query PokemonSaProducts($first: Int!, $after: String, $query: String) {
       featuredImage { url altText width height }
       images(first: 12) { nodes { url altText width height } pageInfo { hasNextPage endCursor } }
       options { id name values }
-      variants(first: 50) {
+      variants(first: 100) {
         nodes {
           id
           title
@@ -269,6 +288,10 @@ query PokemonSaProducts($first: Int!, $after: String, $query: String) {
 
 const filterProducts = (catalog: Product[], query: ShopifyProductQuery) => {
   if (query.collectionHandle === "featured" || query.tag === "featured") return catalog.filter((product) => product.featured);
+  if (query.collectionHandle) {
+    const category = normalizeCategory(query.collectionHandle);
+    if (category) return catalog.filter((product) => product.category === category);
+  }
   if (query.productType) {
     const category = normalizeCategory(query.productType);
     if (category) return catalog.filter((product) => product.category === category);
@@ -279,46 +302,20 @@ const filterProducts = (catalog: Product[], query: ShopifyProductQuery) => {
 export const fetchStorefrontProducts = async (
   query: ShopifyProductQuery = {},
 ): Promise<ServiceResult<ShopifyConnection<ShopifyProduct>>> => {
-  if (!isShopifyConfigured()) {
-    return {
-      data: {
-        nodes: filterProducts(getProductCatalog(), query).map(mapLocalProductToShopifyProduct),
-        pageInfo: { hasNextPage: false },
-      },
-      error: null,
-    };
-  }
-
-  const response = await storefrontRequest<StorefrontProductsResponse>({
-    query: STOREFRONT_PRODUCTS_QUERY,
-    variables: {
-      first: query.first ?? 100,
-      after: query.after,
-      query: buildStorefrontSearchQuery(query),
-    },
-  });
-
-  if (!response.data) {
-    return {
-      data: {
-        nodes: filterProducts(getProductCatalog(), query).map(mapLocalProductToShopifyProduct),
-        pageInfo: { hasNextPage: false },
-      },
-      error: response.error,
-    };
-  }
-
+  const products = await loadCommerceProducts(query);
   return {
-    data: {
-      nodes: response.data.products.nodes.map(mapStorefrontProductToLocalProduct).map(mapLocalProductToShopifyProduct),
-      pageInfo: response.data.products.pageInfo,
-    },
-    error: null,
+    data: products.data
+      ? {
+          nodes: products.data.map(mapLocalProductToShopifyProduct),
+          pageInfo: { hasNextPage: false },
+        }
+      : null,
+    error: products.error,
   };
 };
 
 export const loadCommerceProducts = async (query: ShopifyProductQuery = {}): Promise<ServiceResult<Product[]>> => {
-  if (!isShopifyConfigured()) return { data: filterProducts(getProductCatalog(), query), error: null };
+  if (!isShopifyConfigured()) return shopifyBackendNotConfigured<Product[]>();
 
   const response = await storefrontRequest<StorefrontProductsResponse>({
     query: STOREFRONT_PRODUCTS_QUERY,
@@ -329,9 +326,7 @@ export const loadCommerceProducts = async (query: ShopifyProductQuery = {}): Pro
     },
   });
 
-  if (!response.data) {
-    return { data: filterProducts(getProductCatalog(), query), error: response.error };
-  }
+  if (!response.data) return { data: null, error: response.error };
 
   return {
     data: filterProducts(response.data.products.nodes.map(mapStorefrontProductToLocalProduct), query),
@@ -349,6 +344,9 @@ export const listShopifyProducts = async (
   return fetchStorefrontProducts(query);
 };
 
+export const searchShopifyProducts = async (query: string, first = 20): Promise<ServiceResult<Product[]>> =>
+  loadCommerceProducts({ query, first });
+
 export const getShopifyProduct = async (handleOrId: string): Promise<ServiceResult<ShopifyProduct>> => {
   const catalog = await loadCommerceProducts({ first: 100 });
   const product = catalog.data?.find((item) => item.id === handleOrId || item.shopifyHandle === handleOrId || item.shopifyProductId === handleOrId);
@@ -356,6 +354,22 @@ export const getShopifyProduct = async (handleOrId: string): Promise<ServiceResu
     data: product ? mapLocalProductToShopifyProduct(product) : null,
     error: catalog.error,
   };
+};
+
+export const getProductVariantIdForOptions = (
+  product: Product,
+  options: Record<string, string | undefined>,
+) => {
+  const optionEntries = Object.entries(options).filter((entry): entry is [string, string] => Boolean(entry[1]));
+  if (!optionEntries.length) return product.shopifyVariantId;
+
+  const variant = product.shopifyVariants.find((item) =>
+    optionEntries.every(([name, value]) =>
+      item.selectedOptions.some((option) => option.name.toLowerCase() === name.toLowerCase() && option.value === value),
+    ),
+  );
+
+  return variant?.id ?? product.shopifyVariantId;
 };
 
 export const PRODUCT_CARD_FRAGMENT = `# Shopify Storefront Product fragment placeholder.

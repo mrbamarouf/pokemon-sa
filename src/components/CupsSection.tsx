@@ -14,6 +14,7 @@ import {
   type CupStyle,
 } from "@/lib/shopify/customization";
 import { useLanguage, Language } from "@/context/LanguageContext";
+import { useCommerce } from "@/context/CommerceContext";
 
 const printModes: { id: PrintMode; labelKey: string; icon: typeof ImageIcon }[] = [
   { id: "character", labelKey: "image", icon: ImageIcon },
@@ -23,6 +24,7 @@ const printModes: { id: PrintMode; labelKey: string; icon: typeof ImageIcon }[] 
 
 export const CupsSection = () => {
   const add = useCart((s) => s.add);
+  const { getProduct } = useCommerce();
   const { language, t, formatPrice } = useLanguage();
   const [style, setStyle] = useState<CupStyle>(cupStyles[0]);
   const [color, setColor] = useState(cupColors[0]);
@@ -33,6 +35,7 @@ export const CupsSection = () => {
   const [uploadName, setUploadName] = useState("");
 
   const printImage = uploadPreview || art.image;
+  const shopifyCupProduct = getProduct(`custom-cup-${style.id}`);
   const showsImage = mode === "character" || mode === "both";
   const showsText = mode === "text" || mode === "both";
 
@@ -70,6 +73,7 @@ export const CupsSection = () => {
       image: showsImage ? printImage : logo,
       variant,
       variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
+      shopifyVariantId: shopifyCupProduct?.shopifyVariantId,
     }));
   };
 

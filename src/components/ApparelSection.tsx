@@ -5,7 +5,7 @@ import { useCart } from "@/store/cart";
 import { createCustomCartItem, createProductCartItem } from "@/lib/shopify/cart";
 import { Check, Image as ImageIcon, Palette, Plus, Ruler, Sparkles, Type, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Product } from "@/lib/shopify/products";
+import { getProductVariantIdForOptions, Product } from "@/lib/shopify/products";
 import {
   apparelSizes,
   apparelSizeGuide as sizeGuide,
@@ -160,6 +160,7 @@ const ApparelCard = ({ item }: { item: Product }) => {
               language,
               variant: variantByLanguage[language],
               variantByLanguage,
+              shopifyVariantId: getProductVariantIdForOptions(item, { Color: color?.name.en, Size: size }),
             }))
           }
           className="mobile-card-cta w-full h-11 rounded-full bg-pk-blue text-background font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 hover:glow-electric transition-all"
@@ -173,6 +174,7 @@ const ApparelCard = ({ item }: { item: Product }) => {
 
 const CustomApparelStudio = () => {
   const add = useCart((s) => s.add);
+  const { getProduct } = useCommerce();
   const { language, t, formatPrice } = useLanguage();
   const copy = customText[language];
   const [style, setStyle] = useState(customStyles[0]);
@@ -184,6 +186,7 @@ const CustomApparelStudio = () => {
   const [uploadName, setUploadName] = useState("");
 
   const printImage = uploadPreview || character.image;
+  const shopifyCustomProduct = getProduct(`custom-apparel-${style.id}`);
 
   const variantForLanguage = (targetLanguage: Language) => {
     const parts = [style.name[targetLanguage], size, color.name[targetLanguage], uploadName || character.name];
@@ -359,6 +362,7 @@ const CustomApparelStudio = () => {
                   image: printImage,
                   variant,
                   variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
+                  shopifyVariantId: shopifyCustomProduct?.shopifyVariantId,
                 }))
               }
               className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-gradient-electric font-display text-sm font-bold uppercase tracking-wider text-background glow-electric transition-transform hover:scale-[1.02]"

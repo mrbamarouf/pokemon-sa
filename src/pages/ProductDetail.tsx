@@ -8,11 +8,12 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { useLanguage } from "@/context/LanguageContext";
 import { createProductCartItem } from "@/lib/shopify/cart";
 import { useCommerce } from "@/context/CommerceContext";
+import { getProductVariantIdForOptions } from "@/lib/shopify/products";
 import { useCart } from "@/store/cart";
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const { getProduct, getRelatedProducts } = useCommerce();
+  const { isLoading, getProduct, getRelatedProducts } = useCommerce();
   const product = getProduct(id);
   const { language, t, formatPrice } = useLanguage();
   const add = useCart((s) => s.add);
@@ -46,6 +47,7 @@ const ProductDetail = () => {
 
   const variant = useMemo(() => variantForLanguage(language), [color, language, size]);
 
+  if (!product && isLoading) return null;
   if (!product) return <Navigate to="/" replace />;
 
   const BackIcon = language === "ar" ? ArrowRight : ArrowLeft;
@@ -56,6 +58,7 @@ const ProductDetail = () => {
       language,
       variant,
       variantByLanguage: { en: variantForLanguage("en"), ar: variantForLanguage("ar") },
+      shopifyVariantId: getProductVariantIdForOptions(product, { Color: color?.name.en, Size: size }),
     }));
 
   return (

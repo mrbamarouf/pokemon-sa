@@ -54,7 +54,7 @@ import { useCommerce } from "@/context/CommerceContext";
 import { keyOf, useCart } from "@/store/cart";
 import { createCustomCartItem, createProductCartItem } from "@/lib/shopify/cart";
 import { useAccount } from "@/context/AccountContext";
-import type { Product } from "@/lib/shopify/products";
+import { getProductVariantIdForOptions, type Product } from "@/lib/shopify/products";
 
 type MobileScreen = "home" | "categories" | "products" | "detail" | "cart" | "games" | "account" | "cup" | "apparel" | "checkout";
 type ShopCategoryId = "all" | "featured" | Product["category"];
@@ -335,6 +335,7 @@ export const MobileStoreApp = () => {
     getFeaturedProducts,
     getProductsForCategory,
     getRelatedProducts,
+    getProduct,
   } = useCommerce();
   const cards = productsByCategory("cards");
   const boosters = productsByCategory("boosters");
@@ -342,6 +343,7 @@ export const MobileStoreApp = () => {
   const apparelProducts = productsByCategory("apparel");
   const add = useCart((state) => state.add);
   const remove = useCart((state) => state.remove);
+  const checkout = useCart((state) => state.checkout);
   const cartItems = useCart((state) => state.items);
   const setCartOpen = useCart((state) => state.setOpen);
   const { account, openAccount, canPlayGame, remainingGameLock, consumeGameChance, logout } = useAccount();
@@ -469,13 +471,20 @@ export const MobileStoreApp = () => {
     });
   }, [activeScreen]);
 
-  const addProductToCart = (product: Product, variant?: string, variantByLanguage?: { en?: string; ar?: string }, image = product.image) => {
+  const addProductToCart = (
+    product: Product,
+    variant?: string,
+    variantByLanguage?: { en?: string; ar?: string },
+    image = product.image,
+    shopifyVariantId = product.shopifyVariantId,
+  ) => {
     add(createProductCartItem({
       product,
       language,
       image,
       variant,
       variantByLanguage,
+      shopifyVariantId,
     }));
     setCartOpen(false);
   };
@@ -488,8 +497,18 @@ export const MobileStoreApp = () => {
   };
 
   const addDetailProduct = (nextScreen: MobileScreen = "cart") => {
+    const shopifyVariantId = getProductVariantIdForOptions(selectedProduct, {
+      Color: detailColor?.name.en,
+      Size: detailSize,
+    });
     for (let index = 0; index < detailQty; index += 1) {
-      addProductToCart(selectedProduct, detailVariantFor(language), { en: detailVariantFor("en"), ar: detailVariantFor("ar") });
+      addProductToCart(
+        selectedProduct,
+        detailVariantFor(language),
+        { en: detailVariantFor("en"), ar: detailVariantFor("ar") },
+        selectedProduct.image,
+        shopifyVariantId,
+      );
     }
     navigateTo(nextScreen);
   };
@@ -523,6 +542,7 @@ export const MobileStoreApp = () => {
   };
 
   const addCustomGarment = () => {
+    const shopifyCustomProduct = getProduct(`custom-apparel-${garmentStyle.id}`);
     add(createCustomCartItem({
       id: `custom-apparel-${garmentStyle.id}`,
       name: garmentStyle.name,
@@ -531,12 +551,14 @@ export const MobileStoreApp = () => {
       image: garmentPrintImage,
       variant: garmentVariantFor(language),
       variantByLanguage: { en: garmentVariantFor("en"), ar: garmentVariantFor("ar") },
+      shopifyVariantId: shopifyCustomProduct?.shopifyVariantId,
     }));
     setCartOpen(false);
     navigateTo("cart");
   };
 
   const addCustomCup = () => {
+    const shopifyCupProduct = getProduct(`custom-cup-${cupStyle.id}`);
     add(createCustomCartItem({
       id: `cup-${cupStyle.id}`,
       name: { en: cupNameFor("en"), ar: cupNameFor("ar") },
@@ -545,6 +567,7 @@ export const MobileStoreApp = () => {
       image: showsCupImage ? cupPrintImage : logo,
       variant: cupVariantFor(language),
       variantByLanguage: { en: cupVariantFor("en"), ar: cupVariantFor("ar") },
+      shopifyVariantId: shopifyCupProduct?.shopifyVariantId,
     }));
     setCartOpen(false);
     navigateTo("cart");
@@ -1210,7 +1233,7 @@ export const MobileStoreApp = () => {
               <span>{copy.total}</span>
               <strong>{formatPrice(orderTotal)}</strong>
             </div>
-            <button type="button" className="mobile-app-primary-action">
+            <button type="button" className="mobile-app-primary-action" onClick={() => void checkout()}>
               <CreditCard className="h-4 w-4" />
               {copy.payNow}
             </button>

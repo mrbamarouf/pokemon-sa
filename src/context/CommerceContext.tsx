@@ -2,7 +2,6 @@ import { createContext, type ReactNode, useContext, useEffect, useMemo, useState
 import { isShopifyConfigured } from "@/lib/shopify/config";
 import {
   getFeaturedProductsFromCatalog,
-  getProductCatalog,
   getProductFromCatalog,
   getProductsForCategoryFromCatalog,
   getRelatedProductsFromCatalog,
@@ -25,36 +24,39 @@ type CommerceContextValue = {
   getRelatedProducts: (product: Product, limit?: number) => Product[];
 };
 
-const localCatalog = getProductCatalog();
-
 const fallbackValue: CommerceContextValue = {
-  products: localCatalog,
-  isLoading: false,
+  products: [],
+  isLoading: true,
   isShopifyConnected: false,
-  getProduct: (id?: string) => getProductFromCatalog(id, localCatalog),
-  productsByCategory: (category) => productsByCategoryFromCatalog(category, localCatalog),
-  getFeaturedProducts: () => getFeaturedProductsFromCatalog(localCatalog),
-  getProductsForCategory: (category) => getProductsForCategoryFromCatalog(category, localCatalog),
-  getRelatedProducts: (product, limit = 3) => getRelatedProductsFromCatalog(product, limit, localCatalog),
+  getProduct: () => undefined,
+  productsByCategory: () => [],
+  getFeaturedProducts: () => [],
+  getProductsForCategory: () => [],
+  getRelatedProducts: () => [],
 };
 
 const CommerceContext = createContext<CommerceContextValue>(fallbackValue);
 
 export const CommerceProvider = ({ children }: { children: ReactNode }) => {
-  const [catalog, setCatalog] = useState<Product[]>(localCatalog);
-  const [isLoading, setIsLoading] = useState(false);
+  const [catalog, setCatalog] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const isConfigured = isShopifyConfigured();
 
   useEffect(() => {
     let cancelled = false;
 
-    if (!isConfigured) return undefined;
-
     setIsLoading(true);
+    if (!isConfigured) {
+      setCatalog([]);
+      setErrorMessage("Shopify Storefront API is not configured.");
+      setIsLoading(false);
+      return undefined;
+    }
+
     loadCommerceProducts({ first: 100 }).then((result) => {
       if (cancelled) return;
-      if (result.data?.length) setCatalog(result.data);
+      setCatalog(result.data ?? []);
       setErrorMessage(result.error?.message);
       setIsLoading(false);
     });
@@ -68,7 +70,7 @@ export const CommerceProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       products: catalog,
       isLoading,
-      isShopifyConnected: isConfigured && !errorMessage,
+      isShopifyConnected: isConfigured && !errorMessage && catalog.length > 0,
       errorMessage,
       getProduct: (id?: string) => getProductFromCatalog(id, catalog),
       productsByCategory: (category) => productsByCategoryFromCatalog(category, catalog),
@@ -78,6 +80,8 @@ export const CommerceProvider = ({ children }: { children: ReactNode }) => {
     }),
     [catalog, errorMessage, isConfigured, isLoading],
   );
+
+  if (isLoading && catalog.length === 0) return null;
 
   return <CommerceContext.Provider value={value}>{children}</CommerceContext.Provider>;
 };
