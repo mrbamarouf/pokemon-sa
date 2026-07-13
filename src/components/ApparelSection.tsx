@@ -5,7 +5,7 @@ import { useCart } from "@/store/cart";
 import { createCustomCartItem, createProductCartItem } from "@/lib/shopify/cart";
 import { Check, Image as ImageIcon, Palette, Plus, Ruler, Sparkles, Type, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Product, productsByCategory } from "@/lib/shopify/products";
+import { Product } from "@/lib/shopify/products";
 import {
   apparelSizes,
   apparelSizeGuide as sizeGuide,
@@ -14,10 +14,7 @@ import {
   pokemonArt as characterArt,
 } from "@/lib/shopify/customization";
 import { Language, useLanguage } from "@/context/LanguageContext";
-
-const apparel = productsByCategory("apparel");
-const tees = apparel.filter((item) => item.id.startsWith("t"));
-const hoodies = apparel.filter((item) => item.id.startsWith("h"));
+import { useCommerce } from "@/context/CommerceContext";
 
 const customText: Record<Language, Record<string, string>> = {
   en: {
@@ -380,7 +377,11 @@ const CustomApparelStudio = () => {
 
 export const ApparelSection = () => {
   const { t, language } = useLanguage();
+  const { productsByCategory } = useCommerce();
   const copy = customText[language];
+  const apparel = productsByCategory("apparel");
+  const tees = apparel.filter((item) => item.id.startsWith("t"));
+  const hoodies = apparel.filter((item) => item.id.startsWith("h"));
   return (
     <section id="apparel" className="mobile-showcase-section relative py-28 bg-gradient-to-b from-background via-pk-yellow/5 to-background">
       <div className="container space-y-20">

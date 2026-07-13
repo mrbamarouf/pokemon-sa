@@ -4,14 +4,14 @@ import { useCart } from "@/store/cart";
 import { createProductCartItem } from "@/lib/shopify/cart";
 import { Package, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { productsByCategory } from "@/lib/shopify/products";
+import { useCommerce } from "@/context/CommerceContext";
 import { useLanguage } from "@/context/LanguageContext";
-
-const boosters = productsByCategory("boosters");
 
 export const BoostersSection = () => {
   const add = useCart((s) => s.add);
+  const { productsByCategory } = useCommerce();
   const { language, t, formatPrice } = useLanguage();
+  const boosters = productsByCategory("boosters");
   return (
     <section id="boosters" className="mobile-showcase-section relative py-28 bg-gradient-to-b from-background via-pk-blue/5 to-background">
       <div className="container">

@@ -4,14 +4,14 @@ import { useCart } from "@/store/cart";
 import { createProductCartItem } from "@/lib/shopify/cart";
 import { Plus, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
-import { productsByCategory } from "@/lib/shopify/products";
+import { useCommerce } from "@/context/CommerceContext";
 import { useLanguage } from "@/context/LanguageContext";
-
-const cards = productsByCategory("cards");
 
 export const CardsSection = () => {
   const add = useCart((s) => s.add);
+  const { productsByCategory } = useCommerce();
   const { language, t, formatPrice } = useLanguage();
+  const cards = productsByCategory("cards");
   return (
     <section id="cards" className="mobile-showcase-section relative py-28">
       <div className="container">

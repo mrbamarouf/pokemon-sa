@@ -9,6 +9,7 @@ import SpecialRequest from "./pages/SpecialRequest.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { AccountProvider } from "@/context/AccountContext";
+import { CommerceProvider } from "@/context/CommerceContext";
 import { AccountModal } from "@/components/AccountModal";
 import { PokeballCursor } from "@/components/PokeballCursor";
 import { PokemonWorldFX } from "@/components/PokemonWorldFX";
@@ -22,25 +23,27 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
       <AccountProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <SplashIntro />
-          <MobileTouchGuard />
-          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <RouteScrollManager />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/special-request" element={<SpecialRequest />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-          <AccountModal />
-          <PokemonWorldFX />
-          <PokeballCursor />
-        </TooltipProvider>
+        <CommerceProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <SplashIntro />
+            <MobileTouchGuard />
+            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <RouteScrollManager />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/special-request" element={<SpecialRequest />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+            <AccountModal />
+            <PokemonWorldFX />
+            <PokeballCursor />
+          </TooltipProvider>
+        </CommerceProvider>
       </AccountProvider>
     </LanguageProvider>
   </QueryClientProvider>

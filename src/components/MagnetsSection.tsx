@@ -4,15 +4,16 @@ import { useCart } from "@/store/cart";
 import { createProductCartItem } from "@/lib/shopify/cart";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { productsByCategory } from "@/lib/shopify/products";
+import { useCommerce } from "@/context/CommerceContext";
 import { useLanguage } from "@/context/LanguageContext";
 
-const magnets = productsByCategory("magnets");
 const tones = ["from-pk-yellow/25 via-background to-pk-blue/15", "from-pk-red/25 via-background to-pk-blue/20", "from-pk-blue/25 via-background to-pk-yellow/20"];
 
 export const MagnetsSection = () => {
   const add = useCart((s) => s.add);
+  const { productsByCategory } = useCommerce();
   const { language, t, formatPrice } = useLanguage();
+  const magnets = productsByCategory("magnets");
   return (
     <section id="magnets" className="mobile-showcase-section relative py-28">
       <div className="container">

@@ -1,19 +1,19 @@
 import { CupSoda, Gamepad2, Magnet, Package, Shirt, Sparkles } from "lucide-react";
-import { productsByCategory } from "@/lib/shopify/products";
+import { useCommerce } from "@/context/CommerceContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { skipSplashIntroOnNextLoad } from "@/components/SplashIntro";
 
-const items = [
-  { href: "#cards", labelKey: "cards", icon: Sparkles, count: productsByCategory("cards").length },
-  { href: "#boosters", labelKey: "boosters", icon: Package, count: productsByCategory("boosters").length },
-  { href: "#magnets", labelKey: "magnets", icon: Magnet, count: productsByCategory("magnets").length },
-  { href: "#cups", labelKey: "cups", icon: CupSoda, count: 3 },
-  { href: "#apparel", labelKey: "apparel", icon: Shirt, count: productsByCategory("apparel").length },
-  { href: "#game", labelKey: "game", icon: Gamepad2, count: 4 },
-];
-
 export const MobileShopDock = () => {
   const { t } = useLanguage();
+  const { productsByCategory } = useCommerce();
+  const items = [
+    { href: "#cards", labelKey: "cards", icon: Sparkles, count: productsByCategory("cards").length },
+    { href: "#boosters", labelKey: "boosters", icon: Package, count: productsByCategory("boosters").length },
+    { href: "#magnets", labelKey: "magnets", icon: Magnet, count: productsByCategory("magnets").length },
+    { href: "#cups", labelKey: "cups", icon: CupSoda, count: 3 },
+    { href: "#apparel", labelKey: "apparel", icon: Shirt, count: productsByCategory("apparel").length },
+    { href: "#game", labelKey: "game", icon: Gamepad2, count: 4 },
+  ];
 
   return (
     <nav className="mobile-shop-dock" aria-label={t("shop")}>

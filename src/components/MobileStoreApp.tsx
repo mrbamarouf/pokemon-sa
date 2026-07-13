@@ -38,7 +38,6 @@ import {
   Zap,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
-import { Product, getFeaturedProducts, getProductCatalog, getProductsForCategory, getRelatedProducts, productsByCategory } from "@/lib/shopify/products";
 import {
   apparelSizes,
   cupColors,
@@ -51,9 +50,11 @@ import {
 } from "@/lib/shopify/customization";
 import { mobileRewards, type RewardIconId } from "@/lib/shopify/rewards";
 import { Language, useLanguage } from "@/context/LanguageContext";
+import { useCommerce } from "@/context/CommerceContext";
 import { keyOf, useCart } from "@/store/cart";
 import { createCustomCartItem, createProductCartItem } from "@/lib/shopify/cart";
 import { useAccount } from "@/context/AccountContext";
+import type { Product } from "@/lib/shopify/products";
 
 type MobileScreen = "home" | "categories" | "products" | "detail" | "cart" | "games" | "account" | "cup" | "apparel" | "checkout";
 type ShopCategoryId = "all" | "featured" | Product["category"];
@@ -64,12 +65,6 @@ type LocalizedText = Record<Language, string>;
 const screenIds: MobileScreen[] = ["home", "categories", "products", "detail", "cart", "games", "account", "cup", "apparel", "checkout"];
 const destinationScreens: MobileScreen[] = ["home", "categories", "products", "cup", "apparel", "cart", "checkout", "games", "account"];
 const bottomScreens: MobileScreen[] = ["home", "categories", "cart", "games", "account"];
-
-const products = getProductCatalog();
-const cards = productsByCategory("cards");
-const boosters = productsByCategory("boosters");
-const magnets = productsByCategory("magnets");
-const apparelProducts = productsByCategory("apparel");
 
 const categoryLabels: Record<ShopCategoryId, LocalizedText> = {
   all: { en: "All products", ar: "كل المنتجات" },
@@ -334,6 +329,17 @@ const ScreenIntro = ({
 
 export const MobileStoreApp = () => {
   const { language, t, formatPrice, toggleLanguage } = useLanguage();
+  const {
+    products,
+    productsByCategory,
+    getFeaturedProducts,
+    getProductsForCategory,
+    getRelatedProducts,
+  } = useCommerce();
+  const cards = productsByCategory("cards");
+  const boosters = productsByCategory("boosters");
+  const magnets = productsByCategory("magnets");
+  const apparelProducts = productsByCategory("apparel");
   const add = useCart((state) => state.add);
   const remove = useCart((state) => state.remove);
   const cartItems = useCart((state) => state.items);
@@ -375,11 +381,11 @@ export const MobileStoreApp = () => {
   const showsCupImage = cupMode === "character" || cupMode === "both";
   const showsCupText = cupMode === "text" || cupMode === "both";
 
-  const featured = useMemo(() => getFeaturedProducts(), []);
+  const featured = useMemo(() => getFeaturedProducts(), [getFeaturedProducts]);
 
   const filteredProducts = useMemo(
     () => getProductsForCategory(selectedCategory),
-    [selectedCategory],
+    [getProductsForCategory, selectedCategory],
   );
 
   const categories = useMemo(
@@ -391,7 +397,7 @@ export const MobileStoreApp = () => {
       { id: "magnets" as const, icon: Magnet, image: magnets[0]?.image ?? products[0].image, count: magnets.length, accent: "#34d399" },
       { id: "apparel" as const, icon: Shirt, image: apparelProducts[0]?.image ?? products[0].image, count: apparelProducts.length, accent: "#c084fc" },
     ],
-    [featured],
+    [apparelProducts.length, apparelProducts, boosters.length, boosters, cards.length, cards, featured, magnets.length, magnets, products.length, products],
   );
 
   const navigateTo = useCallback((screen: MobileScreen) => {
@@ -425,6 +431,21 @@ export const MobileStoreApp = () => {
     },
     [navigateTo],
   );
+
+  useEffect(() => {
+    const currentProduct = products.find((product) => product.id === selectedProduct.id);
+    if (currentProduct && currentProduct !== selectedProduct) {
+      setSelectedProduct(currentProduct);
+    } else if (!currentProduct && products[0]) {
+      setSelectedProduct(products[0]);
+    }
+  }, [products, selectedProduct.id]);
+
+  useEffect(() => {
+    setDetailImage(selectedProduct.gallery[0] || selectedProduct.image);
+    setDetailColor(selectedProduct.colors?.[0]);
+    setDetailSize(selectedProduct.sizes?.[2] || selectedProduct.sizes?.[0] || "");
+  }, [selectedProduct]);
 
   useEffect(() => {
     const syncFromHash = () => {

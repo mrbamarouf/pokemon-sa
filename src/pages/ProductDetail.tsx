@@ -7,11 +7,12 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { useLanguage } from "@/context/LanguageContext";
 import { createProductCartItem } from "@/lib/shopify/cart";
-import { getProduct, getRelatedProducts } from "@/lib/shopify/products";
+import { useCommerce } from "@/context/CommerceContext";
 import { useCart } from "@/store/cart";
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const { getProduct, getRelatedProducts } = useCommerce();
   const product = getProduct(id);
   const { language, t, formatPrice } = useLanguage();
   const add = useCart((s) => s.add);
