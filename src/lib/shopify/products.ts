@@ -7,6 +7,7 @@ import type {
   ShopifyProductQuery,
   ShopifyProductVariant,
 } from "@/lib/shopify-types";
+import { products as localProducts, type Product as LocalProduct } from "@/data/products";
 import { isShopifyConfigured, shopifyConfig } from "./config";
 import { shopifyBackendNotConfigured, storefrontRequest } from "./client";
 
@@ -35,7 +36,15 @@ export type Product = {
 
 export type ShopCategoryId = "all" | "featured" | ProductCategory;
 
-export const products: Product[] = [];
+const mapLocalProductToCommerceProduct = (product: LocalProduct): Product => ({
+  ...product,
+  shopifyProductId: product.id,
+  shopifyHandle: product.id,
+  shopifyVariants: [],
+  availableForSale: true,
+});
+
+export const products: Product[] = localProducts.map(mapLocalProductToCommerceProduct);
 
 export const getProductCatalog = () => products;
 
@@ -315,7 +324,13 @@ export const fetchStorefrontProducts = async (
 };
 
 export const loadCommerceProducts = async (query: ShopifyProductQuery = {}): Promise<ServiceResult<Product[]>> => {
-  if (!isShopifyConfigured()) return shopifyBackendNotConfigured<Product[]>();
+  const fallbackProducts = filterProducts(products, query);
+  if (!isShopifyConfigured()) {
+    return {
+      data: fallbackProducts,
+      error: { code: "backend_not_configured", message: "Shopify Storefront API is not configured." },
+    };
+  }
 
   const response = await storefrontRequest<StorefrontProductsResponse>({
     query: STOREFRONT_PRODUCTS_QUERY,
@@ -326,7 +341,7 @@ export const loadCommerceProducts = async (query: ShopifyProductQuery = {}): Pro
     },
   });
 
-  if (!response.data) return { data: null, error: response.error };
+  if (!response.data) return { data: fallbackProducts, error: response.error };
 
   return {
     data: filterProducts(response.data.products.nodes.map(mapStorefrontProductToLocalProduct), query),
