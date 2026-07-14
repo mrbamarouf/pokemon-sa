@@ -37,10 +37,10 @@ const copy = {
     typePrompt: "Opponent is Blastoise. Which pick has the best advantage?",
     typeWin: "Smart battle call. Cashback unlocked.",
     typeLose: "Not this matchup. Try another pick.",
-    accountRequired: "Create your trainer account first. Rewards are limited to one chance every 24 hours per mobile number.",
+    accountRequired: "Sign in with Shopify first. Rewards are limited to one chance every 24 hours per customer account.",
     locked: "Your daily chance is already used.",
     nextChance: "Next chance in",
-    accountButton: "Create Account",
+    accountButton: "Sign in with Shopify",
   },
   ar: {
     choose: "اختر التحدي",
@@ -63,10 +63,10 @@ const copy = {
     typePrompt: "الخصم Blastoise. من هو الاختيار الأقوى؟",
     typeWin: "اختيار ممتاز. تم فتح كود الاسترداد.",
     typeLose: "المواجهة ليست الأفضل. جرّب اختيار آخر.",
-    accountRequired: "أنشئ حساب المدرب أولًا. المكافآت محدودة بفرصة واحدة كل 24 ساعة لكل رقم جوال.",
+    accountRequired: "سجّل دخولك عبر Shopify أولًا. المكافآت محدودة بفرصة واحدة كل 24 ساعة لكل حساب.",
     locked: "تم استخدام فرصتك اليومية.",
     nextChance: "الفرصة القادمة بعد",
-    accountButton: "إنشاء حساب",
+    accountButton: "تسجيل الدخول عبر Shopify",
   },
 };
 
@@ -416,7 +416,7 @@ export const RewardGameSection = () => {
                 canPlayGame ? (
                   <>
                     <Check className="h-4 w-4" />
-                    {account.phone}
+                    {account.email || account.name}
                   </>
                 ) : (
                   <>

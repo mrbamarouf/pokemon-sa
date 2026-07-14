@@ -125,9 +125,9 @@ const mobileCopy = {
     emptyCartTitle: "Cart is empty",
     emptyCartCopy: "Start from products or a custom studio.",
     continueShopping: "Continue shopping",
-    accountReady: "Account ready",
+    accountReady: "Signed in",
     accountMissing: "Account needed",
-    createAccount: "Create account",
+    createAccount: "Sign in with Shopify",
     quickAccess: "Quick access",
     categoryCount: "items",
     customCupService: "Cup design",
@@ -208,9 +208,9 @@ const mobileCopy = {
     emptyCartTitle: "السلة فارغة",
     emptyCartCopy: "ابدأ من المنتجات أو من إحدى شاشات التخصيص.",
     continueShopping: "متابعة التسوق",
-    accountReady: "الحساب جاهز",
-    accountMissing: "الحساب مطلوب",
-    createAccount: "إنشاء حساب",
+    accountReady: "تم تسجيل الدخول",
+    accountMissing: "تسجيل الدخول مطلوب",
+    createAccount: "تسجيل الدخول عبر Shopify",
     quickAccess: "وصول سريع",
     categoryCount: "منتجات",
     customCupService: "تصميم الكوب",
@@ -1199,7 +1199,7 @@ export const MobileStoreApp = () => {
               <div>
                 <span>{copy.shippingAddress}</span>
                 <strong>{account ? account.name : copy.accountMissing}</strong>
-                <p>{account ? `${account.phone} · ${t("location")}` : copy.createAccount}</p>
+                <p>{account ? `${account.email || account.phone || t("location")} · ${t("location")}` : copy.createAccount}</p>
               </div>
               <button type="button" onClick={openAccount}>{account ? copy.open : copy.createAccount}</button>
             </section>
@@ -1253,7 +1253,7 @@ export const MobileStoreApp = () => {
         <div>
           <span>{copy.accountTitle}</span>
           <strong>{account ? account.name : copy.accountMissing}</strong>
-          <p>{account ? account.phone : copy.createAccount}</p>
+          <p>{account ? account.email || account.phone || copy.accountReady : copy.createAccount}</p>
         </div>
         <button type="button" onClick={openAccount}>
           <BadgeCheck className="h-4 w-4" />
@@ -1264,7 +1264,7 @@ export const MobileStoreApp = () => {
         <button type="button" onClick={() => navigateTo("cart")}>
           <ShoppingBag className="h-5 w-5" />
           <span>{copy.orders}</span>
-          <strong>{cartCount > 0 ? `${cartCount} ${screenMeta.cart.label[language]}` : copy.emptyCartTitle}</strong>
+          <strong>{account ? `${account.orders.length} ${copy.orders}` : cartCount > 0 ? `${cartCount} ${screenMeta.cart.label[language]}` : copy.emptyCartTitle}</strong>
         </button>
         <button type="button" onClick={() => navigateTo("games")}>
           <Gamepad2 className="h-5 w-5" />
@@ -1284,7 +1284,7 @@ export const MobileStoreApp = () => {
         <button type="button" onClick={openAccount}>
           <MapPin className="h-5 w-5" />
           <span>{copy.addresses}</span>
-          <strong>{account ? t("location") : copy.createAccount}</strong>
+          <strong>{account ? `${account.addresses.length} ${copy.addresses}` : copy.createAccount}</strong>
         </button>
         <button type="button" onClick={() => account && logout()}>
           <ShieldCheck className="h-5 w-5" />

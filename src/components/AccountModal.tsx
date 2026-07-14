@@ -1,52 +1,46 @@
-import { FormEvent, useEffect, useState } from "react";
-import { Mail, Phone, User, X } from "lucide-react";
+import { LogOut, Mail, MapPin, Package, ShieldCheck, User, X } from "lucide-react";
 import { useAccount } from "@/context/AccountContext";
 import { useLanguage } from "@/context/LanguageContext";
 
 const text = {
   en: {
     title: "Trainer Account",
-    subtitle: "Create your account for checkout and one reward game chance every 24 hours. Delivery details can be completed during payment.",
-    name: "Full name",
-    phone: "Mobile number",
-    email: "Email optional",
-    save: "Save Account",
+    subtitle: "Sign in securely with Shopify to view your profile, saved addresses, order history, and checkout faster.",
+    signIn: "Sign in with email",
     logout: "Logout",
-    active: "Account active",
+    active: "Shopify account active",
+    secure: "Shopify sends a one-time verification code to your email.",
+    profile: "Profile",
+    addresses: "Saved addresses",
+    orders: "Orders",
+    noAddresses: "No saved addresses yet",
+    noOrders: "No orders yet",
+    loading: "Checking Shopify session...",
   },
   ar: {
     title: "حساب المدرب",
-    subtitle: "أنشئ حسابك لإتمام الطلب وفرصة واحدة للألعاب كل 24 ساعة. العنوان والتوصيل تكون في خطوة الدفع لاحقًا.",
-    name: "الاسم الكامل",
-    phone: "رقم الجوال",
-    email: "الإيميل اختياري",
-    save: "حفظ الحساب",
+    subtitle: "سجّل دخولك بأمان عبر Shopify لعرض الملف الشخصي والعناوين المحفوظة والطلبات وتسريع الدفع.",
+    signIn: "تسجيل الدخول بالإيميل",
     logout: "تسجيل خروج",
-    active: "الحساب مفعل",
+    active: "حساب Shopify مفعل",
+    secure: "يرسل Shopify رمز تحقق لمرة واحدة إلى بريدك الإلكتروني.",
+    profile: "الملف الشخصي",
+    addresses: "العناوين المحفوظة",
+    orders: "الطلبات",
+    noAddresses: "لا توجد عناوين محفوظة بعد",
+    noOrders: "لا توجد طلبات بعد",
+    loading: "جاري التحقق من جلسة Shopify...",
   },
 };
 
 export const AccountModal = () => {
-  const { account, isAccountOpen, closeAccount, saveAccount, logout } = useAccount();
+  const { account, isAccountLoading, isAccountOpen, closeAccount, saveAccount, logout } = useAccount();
   const { language, dir } = useLanguage();
   const copy = text[language];
-  const [name, setName] = useState(account?.name || "");
-  const [phone, setPhone] = useState(account?.phone || "");
-  const [email, setEmail] = useState(account?.email || "");
-
-  useEffect(() => {
-    if (!isAccountOpen) return;
-    setName(account?.name || "");
-    setPhone(account?.phone || "");
-    setEmail(account?.email || "");
-  }, [account, isAccountOpen]);
+  const defaultAddress = account?.defaultAddress || account?.addresses[0];
+  const addressText = defaultAddress?.formatted?.join(", ") || defaultAddress?.formattedArea || defaultAddress?.city || "";
 
   if (!isAccountOpen) return null;
-
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    saveAccount({ name: name.trim(), phone: phone.trim(), email: email.trim() || undefined });
-  };
 
   return (
     <div className="account-modal fixed inset-0 z-[90] grid place-items-center bg-background/80 p-4 backdrop-blur-xl">
@@ -65,42 +59,86 @@ export const AccountModal = () => {
           </button>
         </div>
 
-        <form onSubmit={submit} className="space-y-4 p-5">
-          <label className="block">
-            <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              <User className="h-4 w-4" />
-              {copy.name}
-            </span>
-            <input required value={name} onChange={(event) => setName(event.target.value)} className="h-12 w-full rounded-xl border border-border bg-background/70 px-4 outline-none focus:border-pk-yellow" />
-          </label>
+        <div className="space-y-4 p-5">
+          {isAccountLoading ? (
+            <div className="rounded-2xl border border-border bg-background/60 p-4 text-sm text-muted-foreground">{copy.loading}</div>
+          ) : account ? (
+            <>
+              <div className="rounded-2xl border border-border bg-background/60 p-4">
+                <span className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  <ShieldCheck className="h-4 w-4" />
+                  {copy.profile}
+                </span>
+                <p className="font-display text-xl font-black text-foreground">{account.name}</p>
+                {account.email && (
+                  <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                    <Mail className="h-4 w-4" />
+                    {account.email}
+                  </p>
+                )}
+              </div>
 
-          <label className="block">
-            <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              <Phone className="h-4 w-4" />
-              {copy.phone}
-            </span>
-            <input required value={phone} onChange={(event) => setPhone(event.target.value)} inputMode="tel" className="h-12 w-full rounded-xl border border-border bg-background/70 px-4 outline-none focus:border-pk-yellow" />
-          </label>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-border bg-background/60 p-4">
+                  <span className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    {copy.addresses}
+                  </span>
+                  <p className="text-sm leading-relaxed text-foreground">{addressText || copy.noAddresses}</p>
+                </div>
 
-          <label className="block">
-            <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              <Mail className="h-4 w-4" />
-              {copy.email}
-            </span>
-            <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" className="h-12 w-full rounded-xl border border-border bg-background/70 px-4 outline-none focus:border-pk-yellow" />
-          </label>
+                <div className="rounded-2xl border border-border bg-background/60 p-4">
+                  <span className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    <Package className="h-4 w-4" />
+                    {copy.orders}
+                  </span>
+                  <p className="font-display text-xl font-black text-foreground">{account.orders.length}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{account.orders[0]?.name || copy.noOrders}</p>
+                </div>
+              </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <button className="h-12 flex-1 rounded-full bg-gradient-electric font-display text-sm font-bold uppercase tracking-wider text-background glow-electric">
-              {copy.save}
-            </button>
-            {account && (
-              <button type="button" onClick={logout} className="h-12 rounded-full border border-border px-6 text-sm font-bold text-muted-foreground hover:border-pk-yellow hover:text-pk-yellow">
-                {copy.logout}
+              {account.orders.length > 0 && (
+                <div className="max-h-48 space-y-2 overflow-y-auto pr-1">
+                  {account.orders.map((order) => (
+                    <a
+                      key={order.id}
+                      href={order.statusPageUrl || "#"}
+                      className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background/60 px-4 py-3 text-sm hover:border-pk-yellow"
+                      target={order.statusPageUrl ? "_blank" : undefined}
+                      rel={order.statusPageUrl ? "noreferrer" : undefined}
+                    >
+                      <span className="font-bold text-foreground">{order.name || `#${order.number}`}</span>
+                      <span className="text-muted-foreground">
+                        {order.totalPrice ? `${Number(order.totalPrice.amount).toLocaleString(language === "ar" ? "ar-SA" : "en-US")} ${order.totalPrice.currencyCode}` : ""}
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              <button type="button" onClick={logout} className="h-12 w-full rounded-full border border-border px-6 text-sm font-bold text-muted-foreground hover:border-pk-yellow hover:text-pk-yellow">
+                <span className="inline-flex items-center justify-center gap-2">
+                  <LogOut className="h-4 w-4" />
+                  {copy.logout}
+                </span>
               </button>
-            )}
-          </div>
-        </form>
+            </>
+          ) : (
+            <>
+              <div className="rounded-2xl border border-border bg-background/60 p-4 text-sm leading-relaxed text-muted-foreground">
+                <span className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-pk-yellow">
+                  <ShieldCheck className="h-4 w-4" />
+                  Shopify Customer Accounts
+                </span>
+                {copy.secure}
+              </div>
+
+              <button onClick={() => saveAccount()} className="h-12 w-full rounded-full bg-gradient-electric font-display text-sm font-bold uppercase tracking-wider text-background glow-electric">
+                {copy.signIn}
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

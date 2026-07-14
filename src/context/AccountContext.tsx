@@ -1,7 +1,8 @@
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
-  cleanCustomerPhone,
-  clearLocalCustomerAccount,
+  cleanCustomerIdentifier,
+  clearLegacyLocalCustomerAccount,
+  fetchShopifyCustomerSession,
   formatRewardLockRemaining,
   readRewardLocks,
   REWARD_LOCK_WINDOW_MS,
@@ -9,18 +10,21 @@ import {
   startShopifyCustomerAccountLogout,
   writeRewardLocks,
   type CustomerRewardLock,
-  type LocalCustomerAccount,
+  type ShopifyCustomerAccount,
 } from "@/lib/shopify/customer";
+import { useLanguage } from "./LanguageContext";
 
-type Account = LocalCustomerAccount;
+type Account = ShopifyCustomerAccount;
 type GameLock = CustomerRewardLock;
 
 type AccountContextValue = {
   account: Account | null;
+  isAccountLoading: boolean;
   isAccountOpen: boolean;
   openAccount: () => void;
   closeAccount: () => void;
-  saveAccount: (account: Account) => void;
+  saveAccount: (account?: Partial<Account>) => void;
+  refreshAccount: () => Promise<void>;
   logout: () => void;
   canPlayGame: boolean;
   remainingGameLock: string;
@@ -30,12 +34,37 @@ type AccountContextValue = {
 const AccountContext = createContext<AccountContextValue | undefined>(undefined);
 
 export const AccountProvider = ({ children }: { children: ReactNode }) => {
+  const { language } = useLanguage();
   const [account, setAccount] = useState<Account | null>(null);
+  const [isAccountLoading, setIsAccountLoading] = useState(true);
   const [locks, setLocks] = useState<Record<string, GameLock>>(() => readRewardLocks());
   const [isAccountOpen, setIsAccountOpen] = useState(false);
 
-  const phoneKey = account ? cleanCustomerPhone(account.phone) : "";
-  const lock = phoneKey ? locks[phoneKey] : undefined;
+  useEffect(() => {
+    let active = true;
+    clearLegacyLocalCustomerAccount();
+    const loadAccount = async () => {
+      setIsAccountLoading(true);
+      const result = await fetchShopifyCustomerSession();
+      if (!active) return;
+      setAccount(result.data?.account ?? null);
+      setIsAccountLoading(false);
+    };
+    void loadAccount();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const refreshAccount = useCallback(async () => {
+    setIsAccountLoading(true);
+    const result = await fetchShopifyCustomerSession();
+    setAccount(result.data?.account ?? null);
+    setIsAccountLoading(false);
+  }, []);
+
+  const customerKey = account ? cleanCustomerIdentifier(account.id || account.email || account.name) : "";
+  const lock = customerKey ? locks[customerKey] : undefined;
   const elapsed = lock ? Date.now() - lock.playedAt : REWARD_LOCK_WINDOW_MS + 1;
   const canPlayGame = Boolean(account) && elapsed >= REWARD_LOCK_WINDOW_MS;
 
@@ -47,26 +76,28 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
   const value = useMemo<AccountContextValue>(
     () => ({
       account,
+      isAccountLoading,
       isAccountOpen,
       openAccount: () => setIsAccountOpen(true),
       closeAccount: () => setIsAccountOpen(false),
       saveAccount: () => {
-        startShopifyCustomerAccountLogin();
+        startShopifyCustomerAccountLogin({ language });
       },
+      refreshAccount,
       logout: () => {
         setAccount(null);
-        clearLocalCustomerAccount();
+        clearLegacyLocalCustomerAccount();
         startShopifyCustomerAccountLogout();
       },
       canPlayGame,
       remainingGameLock: lock && elapsed < REWARD_LOCK_WINDOW_MS ? formatRewardLockRemaining(REWARD_LOCK_WINDOW_MS - elapsed) : "",
       consumeGameChance: (reward) => {
-        if (!account || !phoneKey || !canPlayGame) return false;
-        saveLocks({ ...locks, [phoneKey]: { playedAt: Date.now(), reward } });
+        if (!account || !customerKey || !canPlayGame) return false;
+        saveLocks({ ...locks, [customerKey]: { playedAt: Date.now(), reward } });
         return true;
       },
     }),
-    [account, canPlayGame, elapsed, isAccountOpen, lock, locks, phoneKey],
+    [account, canPlayGame, customerKey, elapsed, isAccountLoading, isAccountOpen, language, lock, locks, refreshAccount],
   );
 
   return <AccountContext.Provider value={value}>{children}</AccountContext.Provider>;

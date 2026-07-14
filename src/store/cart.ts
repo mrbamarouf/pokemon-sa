@@ -7,6 +7,7 @@ import {
   createCartItemKey,
   type CommerceCartItem,
 } from "@/lib/shopify/cart";
+import { attachAuthenticatedCustomerToCart } from "@/lib/shopify/customer";
 
 export type CartItem = CommerceCartItem;
 
@@ -37,11 +38,13 @@ const syncShopifyCart = async (items: CartItem[], set: (partial: Partial<CartSta
 
   set({ isSyncing: true, syncError: undefined });
   const result = await createShopifyCart(lines);
+  const identityResult = result.data?.id ? await attachAuthenticatedCustomerToCart(result.data.id) : null;
+  const checkoutUrl = identityResult?.data?.checkoutUrl || result.data?.checkoutUrl;
   set({
     isSyncing: false,
     shopifyCartId: result.data?.id,
-    checkoutUrl: result.data?.checkoutUrl,
-    syncError: result.error?.message,
+    checkoutUrl,
+    syncError: result.error?.message || identityResult?.error?.message,
   });
 };
 

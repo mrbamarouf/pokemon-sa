@@ -78,7 +78,7 @@ export const CartDrawer = () => {
               account ? "border-pk-yellow/40 bg-pk-yellow/10 text-pk-yellow" : "border-border bg-muted/30 text-muted-foreground hover:border-pk-yellow"
             }`}
           >
-            {account ? `${t("checkoutReady")} · ${account.phone}` : t("checkoutNeedsAccount")}
+            {account ? `${t("checkoutReady")} · ${account.email || account.name}` : t("checkoutNeedsAccount")}
           </button>
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground uppercase tracking-wider">{t("total")}</span>
