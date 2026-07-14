@@ -5,7 +5,7 @@ import {
   storefrontQuery,
   type ApiRequest,
   type ApiResponse,
-} from "./_utils";
+} from "./_utils.js";
 
 type Body = {
   cartId?: string;

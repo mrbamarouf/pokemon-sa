@@ -5,7 +5,7 @@ import {
   sendJson,
   type ApiRequest,
   type ApiResponse,
-} from "./_utils";
+} from "./_utils.js";
 
 type CustomerAddressNode = {
   id: string;

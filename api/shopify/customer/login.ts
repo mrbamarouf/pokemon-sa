@@ -12,7 +12,7 @@ import {
   setOAuthStateCookie,
   type ApiRequest,
   type ApiResponse,
-} from "./_utils";
+} from "./_utils.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method && req.method !== "GET") {
