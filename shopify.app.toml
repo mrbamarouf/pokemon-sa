@@ -1,0 +1,30 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "a7cf2859f719a312d109e0d2c8e1b520"
+name = "Pokemon SA"
+application_url = "https://www.pokemon-sa.com/"
+embedded = false
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "customer_read_customers,customer_read_orders"
+
+[auth]
+redirect_urls = [ "https://shopify.dev/apps/default-app-home/api/auth" ]
+
+[customer_authentication]
+redirect_uris = [
+  "https://www.pokemon-sa.com/api/shopify/customer/callback"
+]
+javascript_origins = [
+  "https://www.pokemon-sa.com"
+]
+logout_urls = [
+  "https://www.pokemon-sa.com/"
+]
+
+[webhooks]
+api_version = "2026-10"
+
+[build]
+automatically_update_urls_on_dev = false
